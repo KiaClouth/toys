@@ -1,0 +1,27 @@
+[package]
+name = "kiya-tool"
+version = "0.1.0"
+authors = ["clouthber@gamil.com"]
+description = "A sample project with wasm-pack"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/JingTionXiaoHuo/vite-react-electron-babylon"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.80"
+web-sys = { version = "0.3.57", features = [
+    'console',
+    'CanvasRenderingContext2d',
+    'CssStyleDeclaration',
+    'Document',
+    'Element',
+    'EventTarget',
+    'HtmlCanvasElement',
+    'HtmlElement',
+    'MouseEvent',
+    'Node',
+    'Window'
+    ] }

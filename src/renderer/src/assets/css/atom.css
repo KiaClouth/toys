@@ -1,0 +1,251 @@
+/* 基础属性定义 */
+:root {
+  /* 基础字号定义 */
+  --base-font-size: 15px;
+
+  /* 字体家族定义 */
+  --font_family: DIN, Helvetica Neue, Helvetica, Ubuntu, -apple-system,
+    BlinkMacSystemFont, Segoe UI, Roboto, Hiragino Sans GB, Microsoft YaHei UI,
+    Microsoft YaHei, Source Han Sans CN, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol;
+
+  /* 数量定义 */
+  --number_of_grids: 12;
+
+  /* 长度定义 */
+  --column: 84px;
+  --gutter: 20px;
+
+  /* 圆角定义 */
+  --border-radius-large: 20px;
+  --border-radius-normal: 8px;
+  --border-radius-small: 4px;
+
+  /* 描边定义 */
+  --border-thick: 3px;
+  --border-normal: 2px;
+  --border-thin: 1px;
+
+  /* 时间定义 */
+  --time-short: 100ms;
+  --time-normal: 200ms;
+  --time-long: 300ms;
+}
+
+/* 第二个root用于复合属性定义 */
+:root {
+  /* 宽度定义 */
+  --typeArea: calc( var(--column) * var(--number_of_grids) + var(--gutter) * calc(  var(--number_of_grids) - 1 ) );
+}
+
+body{
+  --invisible: rgba(0, 0, 0, 0);
+}
+
+/* .light基础色定义 */
+body.light {
+  /* 颜色定义 */
+
+  /* 文本颜色 */
+  --title-color-1: #383646;
+  --title-color-2: #4d4b5b;
+  --main-text-color: #565667;
+  --secondary-text-color: #818195;
+  --white-100: rgba(255, 255, 255, 1);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --disable: #b0b0c8;
+  --placeholder: #ccd6de;
+
+  /* 背景色 */
+  --main-color-4: #151327;
+  --main-color-2: #332f45;
+  --negative-3-bg: #rgba(160, 168, 174, 0.3);
+  --negative-2-bg: rgba(160, 168, 174, 0.2);
+  --negative-1-bg: rgba(160, 168, 174, 0.1);
+  --table-content-color: #f5f8f9;
+  --main-color-1: #fbfdff;
+  --white-30: rgba(255, 255, 255, 0.3);
+  --white-10: rgba(255, 255, 255, 0.1);
+  --main-color-6: #f0e1de;
+  --main-color-5: #b6ebee;
+  --bg-okki:#ECF0F3;
+  --bg-info: #dcf6fa;
+  --bg-successful: #ddf7e3;
+  --bg-warring: #fdebe0;
+  --bg-dargerous: #fee0e3;
+  --bg-studio: #ff902e;
+
+  /* 高亮色 */
+  --main-color-3-dodging-1: #ff5500;
+  --main-color-3: #ff681d;
+  --main-color-3-10: rgba(255, 104, 29, 0.1);
+  --main-color-3-30: rgba(255, 104, 29, 0.3);
+  --main-color-3-burning-1: #ff7936;
+  --main-color-3-burning-2: #ff8a4f;
+  --info: #11c5db;
+  --successful: #1bc943;
+  --warring: #f4772e;
+  --dangerous: #ff5670;
+
+  /* 装饰色 */
+  --deepblue: #3c44b1;
+  --skyblue: #4191ff;
+  --young: #11c5db;
+  --green: #1bc943;
+  --yellow: #f4772e;
+  --red: #f83245;
+  --grey: #7a7b97;
+
+  /* 阴影色 */
+  --big-shadow-color: rgba(56, 71, 101, 0.08);
+  --small-shadow-color: rgba(0, 17, 43, 0.08);
+}
+
+/* .light复合属性定义 */
+body.light {
+  /* 效果定义 */
+  --shadow-nav-2: 0px 4px 8px var(--small-shadow-color);
+  --shadow-big: 0px 20px 50px 0px var(--big-shadow-color);
+  --shadow-small: 0px 8px 16px 0px var(--small-shadow-color);
+  --inputbox-hover-effect: 0px 0px 0px 3px var(--main-color-3-10),0px 0px 0px 1px var(--main-color-3);
+  --inputbox-dangreous-effect: 0px 0px 0px 3px var(--bg-dargerous), 0px 0px 0px 1px var(--dangerous);
+  --main-button-shadow: 0px 4px 8px 0px var(--main-color-3-30);
+  --tab-active-underline: 0px 4px 0px 0px var(--main-color-3);
+}
+
+/* .grey基础色定义 */
+body.grey {/* 颜色定义 */
+
+  /* 文本颜色 */
+  --title-color-1: #383646;
+  --title-color-2: #4d4b5b;
+  --main-text-color: #565667;
+  --secondary-text-color: #818195;
+  --white-100: rgba(255, 255, 255, 1);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --disable: #b0b0c8;
+  --placeholder: #ccd6de;
+
+  /* 背景色 */
+  --main-color-4: #151327;
+  --main-color-2: #332f45;
+  --negative-3-bg: #rgba(160, 168, 174, 0.3);
+  --negative-2-bg: rgba(160, 168, 174, 0.2);
+  --negative-1-bg: rgba(160, 168, 174, 0.1);
+  --table-content-color: #f5f8f9;
+  --main-color-1: #fbfdff;
+  --white-30: rgba(255, 255, 255, 0.3);
+  --white-10: rgba(255, 255, 255, 0.1);
+  --main-color-6: #f0e1de;
+  --main-color-5: #b6ebee;
+  --bg-info: #dcf6fa;
+  --bg-successful: #ddf7e3;
+  --bg-warring: #fdebe0;
+  --bg-dargerous: #fee0e3;
+  --bg-studio: #ff902e;
+
+  /* 高亮色 */
+  --main-color-3-dodging-1: #ff5500;
+  --main-color-3: #ff681d;
+  --main-color-3-10: rgba(255, 104, 29, 0.1);
+  --main-color-3-30: rgba(255, 104, 29, 0.3);
+  --main-color-3-burning-1: #ff7936;
+  --main-color-3-burning-2: #ff8a4f;
+  --info: #11c5db;
+  --successful: #1bc943;
+  --warring: #f4772e;
+  --dangerous: #ff5670;
+
+  /* 装饰色 */
+  --deepblue: #3c44b1;
+  --skyblue: #4191ff;
+  --young: #11c5db;
+  --green: #1bc943;
+  --yellow: #f4772e;
+  --red: #f83245;
+  --grey: #7a7b97;
+
+  /* 阴影色 */
+  --big-shadow-color: rgba(56, 71, 101, 0.08);
+  --small-shadow-color: rgba(0, 17, 43, 0.08);
+}
+
+/* .grey复合属性定义 */
+body.grey {
+  /* 效果定义 */
+  --shadow-nav-2: 0px 4px 8px var(--small-shadow-color);
+  --shadow1: 0px 20px 50px 0px var(--big-shadow-color);
+  --shadow0: 0px 8px 16px 0px var(--small-shadow-color);
+  --inputbox-hover-effect: 0px 0px 0px 3px var(--main-color-3-10),0px 0px 0px 1px var(--main-color-3);
+  --inputbox-dangreous-effect: 0px 0px 0px 3px var(--bg-dargerous), 0px 0px 0px 1px var(--dangerous);
+  --main-button-shadow: 0px 4px 8px 0px var(--main-color-3-30);
+  --tab-active-underline: 0px 4px 0px 0px var(--main-color-3);
+}
+
+/* .black基础色定义 */
+body.black {/* 颜色定义 */
+
+  /* 文本颜色 */
+  --title-color-1: #383646;
+  --title-color-2: #4d4b5b;
+  --main-text-color: #565667;
+  --secondary-text-color: #818195;
+  --white-100: rgba(255, 255, 255, 1);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --disable: #b0b0c8;
+  --placeholder: #ccd6de;
+
+  /* 背景色 */
+  --main-color-4: #151327;
+  --main-color-2: #332f45;
+  --negative-3-bg: #rgba(160, 168, 174, 0.3);
+  --negative-2-bg: rgba(160, 168, 174, 0.2);
+  --negative-1-bg: rgba(160, 168, 174, 0.1);
+  --table-content-color: #f5f8f9;
+  --main-color-1: #fbfdff;
+  --white-30: rgba(255, 255, 255, 0.3);
+  --white-10: rgba(255, 255, 255, 0.1);
+  --main-color-6: #f0e1de;
+  --main-color-5: #b6ebee;
+  --bg-info: #dcf6fa;
+  --bg-successful: #ddf7e3;
+  --bg-warring: #fdebe0;
+  --bg-dargerous: #fee0e3;
+  --bg-studio: #ff902e;
+
+  /* 高亮色 */
+  --main-color-3-dodging-1: #ff5500;
+  --main-color-3: #ff681d;
+  --main-color-3-10: rgba(255, 104, 29, 0.1);
+  --main-color-3-30: rgba(255, 104, 29, 0.3);
+  --main-color-3-burning-1: #ff7936;
+  --main-color-3-burning-2: #ff8a4f;
+  --info: #11c5db;
+  --successful: #1bc943;
+  --warring: #f4772e;
+  --dangerous: #ff5670;
+
+  /* 装饰色 */
+  --deepblue: #3c44b1;
+  --skyblue: #4191ff;
+  --young: #11c5db;
+  --green: #1bc943;
+  --yellow: #f4772e;
+  --red: #f83245;
+  --grey: #7a7b97;
+
+  /* 阴影色 */
+  --big-shadow-color: rgba(56, 71, 101, 0.08);
+  --small-shadow-color: rgba(0, 17, 43, 0.08);
+}
+/* .black复合属性定义 */
+body.black {
+  /* 效果定义 */
+  --shadow-nav-2: 0px 4px 8px var(--small-shadow-color);
+  --shadow1: 0px 20px 50px 0px var(--big-shadow-color);
+  --shadow0: 0px 8px 16px 0px var(--small-shadow-color);
+  --inputbox-hover-effect: 0px 0px 0px 3px var(--main-color-3-10),0px 0px 0px 1px var(--main-color-3);
+  --inputbox-dangreous-effect: 0px 0px 0px 3px var(--bg-dargerous), 0px 0px 0px 1px var(--dangerous);
+  --main-button-shadow: 0px 4px 8px 0px var(--main-color-3-30);
+  --tab-active-underline: 0px 4px 0px 0px var(--main-color-3);
+}
