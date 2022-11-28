@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { root, resize } from './tool'
-import { default as wasm, greet, hcl_init } from './assets/wasm/pkg/kiya_tool'
 
 import BabylonBox from './components/BabylonBox'
 import Menu from './components/Menu'
 import LoadingAnimation from './components/LoadingAnimation'
 import Versions from './components/Versions'
 import BannerBox from './components/BannerBox'
+import PaintBox from './components/PaintBox'
 
 export default function GS(): JSX.Element {
   const [appState, setAppState] = useState('LoadingAnimation')
-  const appStateArray = ['Paint', 'BannerBox', 'BabylonBox']
+  // const appStateArray = ['Paint', 'BannerBox', 'BabylonBox']
 
   const classReplace = (): string => {
     switch (appState) {
@@ -56,13 +56,9 @@ export default function GS(): JSX.Element {
 
   switch (appState) {
     case 'Paint': {
-      wasm().then(() => {
-        greet('Trump is a pig! lalalal~')
-        hcl_init()
-      })
       return (
         <div id="GS" className={'default ' + appState}>
-          <canvas id="wasmCanvas"></canvas>
+          <PaintBox />
           <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
         </div>
       )
