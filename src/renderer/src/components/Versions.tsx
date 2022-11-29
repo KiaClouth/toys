@@ -11,7 +11,7 @@ export default function Versions(): JSX.Element {
       })
     }, 1000)
 
-    return function clear() {
+    return () => {
       clearInterval(playTime)
     }
   }, [])

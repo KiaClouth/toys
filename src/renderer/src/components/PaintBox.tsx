@@ -13,15 +13,16 @@ export default function BabylonBox(): JSX.Element {
         greet('Trump is a pig! lalalal~')
         hcl_init()
       })
-    } else {
-      console.log('没找到canvas对象')
-    }
-
-    return () => {
-      if (isCanvas(canvas)) {
+      canvas.onclick = (): void => {
+        alert('click!')
+      }
+      return () => {
         window.removeEventListener('ReactDomRender', () => canvasResize(canvas))
         root.removeEventListener('resize', () => canvasResize(canvas))
       }
+    } else {
+      console.log('没找到canvas对象')
+      return () => {}
     }
   }, [])
 

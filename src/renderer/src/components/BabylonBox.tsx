@@ -11,15 +11,13 @@ export default function BabylonBox(): JSX.Element {
       window.addEventListener('ReactDomRender', () => canvasResize(canvas))
       window.addEventListener('resize', () => canvasResize(canvas))
       createBabylonScene(canvas)
-    } else {
-      console.log('cannot find canvas')
-    }
-
-    return () => {
-      if (isCanvas(canvas)) {
+      return () => {
         window.removeEventListener('ReactDomRender', () => canvasResize(canvas))
         root.removeEventListener('resize', () => canvasResize(canvas))
       }
+    } else {
+      console.log('cannot find canvas')
+      return () => {}
     }
   }, [])
 
