@@ -352,7 +352,7 @@ body {
 
 #loadingBox .line .circle,
 #loadingBox .shadow .circle {
-  --animationTime: 2000ms;
+  --animationTime: 1600ms;
   --startTime: 750ms;
   --intervalTime: 20ms;
   transition: all 0.3s;
