@@ -1,1 +1,1 @@
-export default function Wrapper(lttrs:any,opt:any)
+export default function Wrapper(lttrs: any, opt: any)
