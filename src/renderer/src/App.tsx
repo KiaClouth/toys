@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { root, resize } from './tool'
 
 import BabylonBox from './components/BabylonBox'
 import Menu from './components/Menu'
@@ -9,7 +8,7 @@ import BannerBox from './components/BannerBox'
 import PaintBox from './components/PaintBox'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('LoadingAnimation')
+  const [appState, setAppState] = useState('Paint')
   // const appStateArray = ['Paint', 'BannerBox', 'BabylonBox']
 
   const classReplace = (): string => {
@@ -32,19 +31,6 @@ export default function GS(): JSX.Element {
     }
   }
 
-  // 监听键盘事件
-  window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.code == 'F11') {
-      e.preventDefault()
-      root.classList.contains('fullScreen')
-        ? root.classList.remove('fullScreen')
-        : root.classList.add('fullScreen')
-      root.dispatchEvent(resize)
-    } else if (e.code == 'KeyA' || e.code == 'ArrowLeft') {
-      console.log('a && left')
-    }
-  })
-
   useEffect(() => {
     // 初始化
     window.dispatchEvent(new CustomEvent('ReactDomRender', { detail: 'base' }))
@@ -57,7 +43,7 @@ export default function GS(): JSX.Element {
   switch (appState) {
     case 'Paint': {
       return (
-        <div id="GS" className={'default ' + appState}>
+        <div id="GS" data-state={appState}>
           <PaintBox />
           <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
         </div>
@@ -65,7 +51,7 @@ export default function GS(): JSX.Element {
     }
     case 'BabylonBox':
       return (
-        <div id="GS" className={'default ' + appState}>
+        <div id="GS" data-state={appState}>
           <BabylonBox />
           <Versions />
           <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
@@ -73,7 +59,7 @@ export default function GS(): JSX.Element {
       )
     case 'BannerBox':
       return (
-        <div id="GS" className={'default ' + appState}>
+        <div id="GS" data-state={appState}>
           <BannerBox />
           <Versions />
           <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
@@ -81,7 +67,7 @@ export default function GS(): JSX.Element {
       )
     default:
       return (
-        <div id="GS" className={'default ' + appState}>
+        <div id="GS" data-state={appState}>
           <LoadingAnimation />
           <Versions />
           <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
