@@ -97,7 +97,7 @@ export default function BannerBox(): JSX.Element {
             const percentage = event.lengthComputable
               ? ' ' + Math.floor((event.loaded / event.total) * 100) + '%'
               : ''
-            document.getElementById('LoadingProgress')!.innerHTML = percentage
+            document.getElementsByClassName('LoadingProgress')[0]!.innerHTML = percentage
             if (Math.floor((event.loaded / event.total) * 100) === 100) {
               const bodyStateClock = setInterval(() => {
                 const loadedTime = new Date().getTime()
@@ -470,15 +470,15 @@ export default function BannerBox(): JSX.Element {
 
   return (
     <div id="BannerBox">
-      <div id="top_nav">
+      <div className="top_nav">
         <img src={top_nav_url} />
       </div>
-      <div id="banner_area">
-        <img id="contrast" src={contrast_url} />
-        <canvas id="BannerCanvas"> Your browser does not support the canvas element. </canvas>
+      <div className="banner_area">
+        <img className="contrast" src={contrast_url} />
+        <canvas id="BannerCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       </div>
       <div className="loading_progress">
-        LoadingProgress:<span id="LoadingProgress"></span>
+        LoadingProgress:<span className="LoadingProgress"></span>
       </div>
     </div>
   )

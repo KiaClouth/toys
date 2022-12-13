@@ -8,11 +8,10 @@ export default function BabylonBox(): JSX.Element {
     const canvas = document.getElementById('babylonCanvas')
 
     if (isCanvas(canvas)) {
-      window.addEventListener('ReactDomRender', () => canvasResize(canvas))
       window.addEventListener('resize', () => canvasResize(canvas))
+      canvasResize(canvas)
       createBabylonScene(canvas)
       return () => {
-        window.removeEventListener('ReactDomRender', () => canvasResize(canvas))
         root.removeEventListener('resize', () => canvasResize(canvas))
       }
     } else {
@@ -146,9 +145,9 @@ export default function BabylonBox(): JSX.Element {
 
   return (
     <div id="BabylonBox">
-      <canvas id="babylonCanvas"> 当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试 </canvas>
+      <canvas id="babylonCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       <div className="pfs-info">
-        FPS: <span id="FPS"></span>
+        FPS: <span className="FPS"></span>
       </div>
     </div>
   )

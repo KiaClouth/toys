@@ -181,6 +181,7 @@ export function canvasResize(canvas: HTMLCanvasElement, width?: number, height?:
     canvas.width = canvas.parentElement!.clientWidth
     canvas.height = canvas.parentElement!.clientHeight
   }
+  // console.log('canvas：' + canvas.id + '的尺寸设置完成！')
 }
 
 //判断对象是否为HTMLCanvasElement

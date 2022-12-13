@@ -28,7 +28,7 @@
 /* 基础属性定义 */
 :root {
   /* 基础字号定义 */
-  --base-font-size: 15px;
+  --base-font-size: 12px;
 
   /* 字体家族定义 */
   --font_family: DINpro, Helvetica Neue, Helvetica, Ubuntu, -apple-system, BlinkMacSystemFont,
