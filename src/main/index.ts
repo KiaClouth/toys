@@ -33,7 +33,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    // mainWindow.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

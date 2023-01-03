@@ -73,69 +73,88 @@ body {
   /* background: rgba(0,0,0,0.2); */
 }
 
+/* button组件 */
+button {
+  font: normal 14px/22px var(--font_family);
+  padding: 10px 20px;
+  border-radius: var(--border-radius-normal);
+  border: none;
+  cursor: pointer;
+}
+
 /* title组件：
 梯度: +3px +2px +0px +2px +4px +4px +4px +8px +12px +16px
 行高 = 字号 + 8px */
+:is(title, h1, h2, h3, h4, h5, h6, h7, h8, h9){
+  color: var(--title-color-2);
+}
+
+title {
+  display: block;
+}
 
 /* H1 */
-h1,
-.title {
+h1{
   font: bold calc(1rem + 2px + 4px * 3 + 8px + 12px + 16px) / calc(1em + 8px) var(--font_family);
 }
 
 /* H2 */
 h2,
-.content .title {
+.content title {
   font: bold calc(1rem + 2px + 4px * 3 + 8px + 12px) / calc(1em + 8px) var(--font_family);
 }
 
 /* H3 */
 h3,
-.content .content .title {
+.content .content title {
   font: bold calc(1rem + 2px + 4px * 3 + 8px) / calc(1em + 8px) var(--font_family);
 }
 
 /* H4 */
 h4,
-.content .content .content .title {
+.content .content .content title {
   font: bold calc(1rem + 2px + 4px * 3) / calc(1em + 8px) var(--font_family);
 }
 
 /* H5 */
 h5,
-.content .content .content .content .title {
+.content .content .content .content title {
   font: bold calc(1rem + 2px + 4px * 2) / calc(1em + 8px) var(--font_family);
 }
 
 /* H6 */
 h6,
-.content .content .content .content .content .title {
+.content .content .content .content .content title {
   font: bold calc(1rem + 2px + 4px) / calc(1em + 8px) var(--font_family);
 }
 
 /* H7 */
-.content .content .content .content .content .content .title {
+h7,
+.content .content .content .content .content .content title {
   font: bold calc(1rem + 2px) / calc(1em + 8px) var(--font_family);
 }
 
 /* H8 */
-.content .content .content .content .content .content .content .title {
+h8,
+.content .content .content .content .content .content .content title {
   font: bold 1rem / calc(1em + 8px) var(--font_family);
 }
 
 /* H9 */
-.content .content .content .content .content .content .content .content .title {
+h9,
+.content .content .content .content .content .content .content .content title {
   font: bold calc(1rem - 2px) / calc(1em + 8px) var(--font_family);
 }
 
-/* H10 */
-.content .content .content .content .content .content .content .content .content .title {
-  font: bold calc(1rem - 2px - 3px) / calc(1em + 8px) var(--font_family);
+/* 非粗体title */
+:is(title, h1, h2, h3, h4, h5, h6, h7, h8, h9).normal {
+  font-weight: normal;
+  color: var(--title-color-1);
 }
 
-/* 非粗体title */
-:is(.title, h1, h2, h3, h4, h5, h6).normal {
-  font-weight: normal;
+p {
+  color: var(--main-text-color);
+  font: normal 14px/20px var(--font_family);
 }
 
 #root {

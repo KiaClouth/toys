@@ -1,4 +1,4 @@
-import App from './App'
+import App from './WoniuSec'
 import { root, resize } from './tool'
 import SmoothCorners from './assets/js-plugin/houdini/smooth-corners.worklet.js?url'
 import ReactDOM from 'react-dom/client'

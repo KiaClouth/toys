@@ -8,14 +8,13 @@ import BannerBox from './components/BannerBox'
 import PaintBox from './components/PaintBox'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('Paint')
+  const [appState, setAppState] = useState('BannerBox')
   // const appStateArray = ['Paint', 'BannerBox', 'BabylonBox']
 
   const classReplace = (): string => {
     switch (appState) {
-      case 'LoadingAnimation': {
+      case 'LoadingAnimation':
         return 'Paint'
-      }
 
       case 'Paint':
         return 'BannerBox'

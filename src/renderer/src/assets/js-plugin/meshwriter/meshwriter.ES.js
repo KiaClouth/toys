@@ -1,22 +1,25 @@
 import PMZ from "./dist/pangmenzhengdao";
+import HBSB from "./dist/helvetica-black-semibold";
 import HNM from "./helveticaneue-medium";
 import earcut from "earcut";
 
 // >>>>>  STEP 1 <<<<<
 
-var scene, FONTS, defaultColor, defaultOpac, naturalLetterHeight, curveSampleSize, Γ = Math.floor, pmz, hnm, debug;
+var scene, FONTS, defaultColor, defaultOpac, naturalLetterHeight, curveSampleSize, Γ = Math.floor, pmz, hnm, hbsb, debug;
 var b128back, b128digits;
 var B = {}, methodsList = [  "Vector2", "Vector3", "Path2", "Curve3", "Color3", "SolidParticleSystem", "PolygonMeshBuilder", "CSG", "StandardMaterial", "Mesh", ];
 prepArray();
 // >>>>>  STEP 2 <<<<<
 pmz = PMZ(codeList);
+hbsb = HBSB(codeList);
 hnm = HNM(codeList); // Do not remove
 // >>>>>  STEP 2 <<<<<
 FONTS = {};
 // >>>>>  STEP 3 <<<<<
 FONTS["PangMenZhengDao"] = pmz;
+FONTS["Helvetica-Black-SemiBold"] = hbsb;
 FONTS["HelveticaNeue-Medium"] = hnm; // Do not remove
-// >>>>>  STEP 3 <<<<<
+// >>>>>  STEP 4 <<<<<
 defaultColor = "#808080";
 defaultOpac = 1;
 curveSampleSize = 6;

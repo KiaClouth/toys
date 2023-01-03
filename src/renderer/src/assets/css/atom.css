@@ -1,46 +1,15 @@
-/* 外部字体引入 */
-@font-face {
-  font-family: 'DINpro';
-  src: url('../font/DINpro-black.woff2') format('woff2'), url('../font/DINpro-black.woff') format('woff');
-  font-weight: 900;
-}
-@font-face {
-  font-family: 'DINpro';
-  src: url('../font/DINpro-bold.woff2') format('woff2'), url('../font/DINpro-bold.woff') format('woff');
-  font-weight: 700;
-}
-@font-face {
-  font-family: 'DINpro';
-  src: url('../font/DINpro-medium.woff2') format('woff2'), url('../font/DINpro-medium.woff') format('woff');
-  font-weight: 500;
-}
-@font-face {
-  font-family: 'DINpro';
-  src: url('../font/DINpro-regular.woff2') format('woff2'), url('../font/DINpro-regular.woff') format('woff');
-  font-weight: 300;
-}
-@font-face {
-  font-family: 'DINpro';
-  src: url('../font/DINpro-light.woff2') format('woff2'), url('../font/DINpro-light.woff') format('woff');
-  font-weight: 100;
-}
-
 /* 基础属性定义 */
 :root {
-  /* 基础字号定义 */
-  --base-font-size: 12px;
-
   /* 字体家族定义 */
   --font_family: DINpro, Helvetica Neue, Helvetica, Ubuntu, -apple-system, BlinkMacSystemFont,
     Segoe UI, Roboto, Hiragino Sans GB, Microsoft YaHei UI, Microsoft YaHei, Source Han Sans CN,
     sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
 
-  /* 数量定义 */
-  --number_of_grids: 12;
+  /* 基础字号定义 */
+  --base-font-size: 12px;
 
-  /* 长度定义 */
-  --column: 84px;
-  --gutter: 20px;
+  /* 版心宽度定义 */
+  --typeArea: 1420px;
 
   /* 圆角定义 */
   --border-radius-large: 20px;
@@ -56,18 +25,6 @@
   --time-short: 100ms;
   --time-normal: 200ms;
   --time-long: 300ms;
-}
-
-/* 第二个root用于复合属性定义 */
-:root {
-  /* 宽度定义 */
-  --typeArea: calc(
-    var(--column) * var(--number_of_grids) + var(--gutter) * calc(var(--number_of_grids) - 1)
-  );
-}
-
-body {
-  --invisible: rgba(0, 0, 0, 0);
 }
 
 /* .light基础色定义 */
@@ -92,16 +49,18 @@ body.light {
   --negative-1-bg: rgba(160, 168, 174, 0.1);
   --table-content-color: #f5f8f9;
   --main-color-1: #fbfdff;
-  --white-30: rgba(255, 255, 255, 0.3);
-  --white-10: rgba(255, 255, 255, 0.1);
-  --main-color-6: #f0e1de;
-  --main-color-5: #b6ebee;
-  --bg-okki: #ecf0f3;
+  --bg-white-100: #ffffff;
+  --bg-white-30: rgba(255, 255, 255, 0.3);
+  --bg-white-10: rgba(255, 255, 255, 0.1);
+  --bg-main-color-6: #f0e1de;
+  --bg-main-color-5: #b6ebee;
+  --bg-ooki: #ecf0f3;
   --bg-info: #dcf6fa;
   --bg-successful: #ddf7e3;
   --bg-warring: #fdebe0;
   --bg-dargerous: #fee0e3;
-  --bg-studio: #ff902e;
+  --bg-linear-negative: linear-gradient(245deg, var(--bg-white-100) 0%, var(--bg-ooki) 100%);
+  --bg-linear-positive: linear-gradient(115deg, var(--bg-white-100) 0%, var(--bg-ooki) 100%);
 
   /* 高亮色 */
   --main-color-3-dodging-1: #ff5500;
@@ -281,4 +240,82 @@ body.black {
   --inputbox-dangreous-effect: 0px 0px 0px 3px var(--bg-dargerous), 0px 0px 0px 1px var(--dangerous);
   --main-button-shadow: 0px 4px 8px 0px var(--main-color-3-30);
   --tab-active-underline: 0px 4px 0px 0px var(--main-color-3);
+}
+
+.convex {
+  --offset: 5px;
+  background: var(--bg-linear-positive) no-repeat;
+  background-blend-mode: multiply;
+  position: relative;
+}
+
+.concave {
+  --offset: 5px;
+  background: var(--bg-linear-negative) no-repeat;
+  background-blend-mode: multiply;
+  position: relative;
+}
+
+/* :is(.convex, .concave)::before {
+  mix-blend-mode: overlay;
+  content: '';
+  z-index: -1;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right bottom, #ffffff 0%, #ffffff 52%,#000000 52%,#000000 100%);
+  border-radius: inherit;
+  top: calc( 0px - var(--offset));
+  left: calc( 0px - var(--offset));
+  filter: blur(calc( var(--offset) * 3 ));
+}
+
+:is(.convex, .concave)::after {
+  mix-blend-mode: multiply;
+  content: '';
+  z-index: -2;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right bottom, #ffffff 0%, #ffffff 48%,var(--bg-ooki) 50%,var(--bg-ooki) 100%);
+  border-radius: inherit;
+  top: calc( var(--offset));
+  left: calc( var(--offset));
+  filter: blur(calc( var(--offset) * 3));
+} */
+
+:is(.convex, .concave)::before {
+  mix-blend-mode: overlay;
+  content: '';
+  z-index: -1;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border-radius: inherit;
+  box-shadow: calc( 0px - var(--offset)) calc( 0px - var(--offset)) calc(2 * var(--offset)) 0 var(--white-100);
+}
+
+:is(.convex, .concave)::after {
+  mix-blend-mode: multiply;
+  content: '';
+  z-index: -2;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border-radius: inherit;
+  box-shadow: var(--offset) var(--offset) calc(2 * var(--offset)) 0 #D1D9E6;
 }
