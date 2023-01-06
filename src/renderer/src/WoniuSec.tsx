@@ -42,15 +42,26 @@ export default function GS(): JSX.Element {
     const createScene = function (engine): BABYLON.Scene {
       // 场景初始化
       const scene = new BABYLON.Scene(engine)
-      scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
+      scene.clearColor = new BABYLON.Color4(0, 0, 0, 0.2)
       scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.CannonJSPlugin(false))
 
       const init = (scene): void => {
         // 摄像机
-        const camera = new BABYLON.UniversalCamera('Camera', new BABYLON.Vector3(0, 0, -1), scene)
+        // const camera = new BABYLON.UniversalCamera('Camera', new BABYLON.Vector3(0, 0, -1), scene)
+
+        // 摄像机
+        const camera = new BABYLON.ArcRotateCamera(
+          'Camera',
+          Math.PI * (0 / 2),
+          Math.PI * (0 / 2),
+          1,
+          new BABYLON.Vector3(0, 0, 0),
+          scene
+        )
+
         camera.attachControl(canvas, true)
         camera.minZ = 0.1
-        camera.maxZ = 20
+        // camera.maxZ = 20
 
         // 主光源
         const mainLight = new BABYLON.PointLight('mainLight', new BABYLON.Vector3(0, 40, 0), scene)
@@ -67,11 +78,11 @@ export default function GS(): JSX.Element {
         const icosahedron = BABYLON.MeshBuilder.CreateGeodesic('icosahedron1', {
           m: 0,
           n: 0,
-          size: 0.1,
+          size: 0.3,
           updatable: true
         })
 
-        icosahedron.position = new BABYLON.Vector3(0, 0, 0)
+        // icosahedron.position = new BABYLON.Vector3(-0.135, 0, 0)
 
         //WONIU文字创建
         const Writer = MeshWriter(scene, {})
@@ -91,6 +102,17 @@ export default function GS(): JSX.Element {
         const text_mesh = textMesh.getMesh()
         text_mesh.name = 'woniu'
         text_mesh.id = 'woniu'
+
+        // //局部坐标系显示
+        const localAxes_shuidi = new BABYLON.AxesViewer(scene, 0.25)
+        localAxes_shuidi.xAxis.parent = text_mesh
+        localAxes_shuidi.yAxis.parent = text_mesh
+        localAxes_shuidi.zAxis.parent = text_mesh
+
+        //文字居中处理
+        const text_sizes = text_mesh.getHierarchyBoundingVectors()
+        const text_depth = text_sizes.max.z - text_sizes.min.z
+        text_mesh.locallyTranslate(new BABYLON.Vector3(0, -text_depth * (1 / 3)), 0)
 
         // 文字旋转
         text_mesh.addRotation(Math.PI * (3 / 2), Math.PI * 0, Math.PI * 0)
