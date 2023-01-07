@@ -170,17 +170,23 @@ export class PerlinNoise {
 /**/
 
 //canvas大小设置
-export function canvasResize(canvas: HTMLCanvasElement, width?: number, height?: number): void {
-  if (width) {
+export function canvasResize(
+  canvas: HTMLCanvasElement,
+  width?: number | string,
+  height?: number | string
+): void {
+  if (typeof width === 'number') {
     canvas.width = width
-  }
-  if (height) {
-    canvas.height = height
-  }
-  if (!width && !height) {
+  } else if (width === 'unset' || !width) {
     canvas.width = canvas.parentElement!.clientWidth
+  }
+
+  if (typeof height === 'number') {
+    canvas.height = height
+  } else if (height === 'unset' || !height) {
     canvas.height = canvas.parentElement!.clientHeight
   }
+  // console.log('canvas：' + canvas.id + '的尺寸设置完成！')
 }
 
 //判断对象是否为HTMLCanvasElement
@@ -189,5 +195,106 @@ export function isCanvas(obj: HTMLCanvasElement | HTMLElement | null): obj is HT
     return obj.tagName === 'CANVAS'
   } else {
     return false
+  }
+}
+
+export function rgb2hsv(rgb: { r: number; g: number; b: number }): {
+  h: number
+  s: number
+  v: number
+} {
+  const r = rgb.r
+  const g = rgb.g
+  const b = rgb.b
+
+  if (r > 255 || g > 255 || b > 255 || r < 0 || g < 0 || b < 0) {
+    console.log('输入值不符合实际，已返回hsv(0,0,0)')
+    return { h: 0, s: 0, v: 0 }
+  }
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+
+  // 计算H：色相
+  const getH = (): number => {
+    if (max === min) {
+      return 0 // rgb三值相等时色相不会影响展示出来的颜色，因为色彩范围在hsv锥形中央，颜色为黑白灰
+    } else if (max === r && g >= b) {
+      return 60 * ((g - b) / (max - min)) + 0
+    } else if (max === r && g < b) {
+      return 60 * ((g - b) / (max - min)) + 360
+    } else if (max === g) {
+      return 60 * ((b - r) / (max - min)) + 120
+    } else if (max === b) {
+      return 60 * ((r - g) / (max - min)) + 240
+    } else {
+      return 123456789
+    }
+  }
+
+  // 计算S：饱和度
+  const getS = (): number => {
+    if (max === 0) {
+      return 0
+    } else {
+      return 1 - min / max
+    }
+  }
+
+  // 计算V：明度
+  const getV = (): number => {
+    return max / 255
+  }
+
+  return {
+    h: getH() / 360,
+    s: getS(),
+    v: getV()
+  }
+}
+
+export function hsv2rgb(hsv: { h: number; s: number; v: number }): {
+  r: number
+  g: number
+  b: number
+} {
+  let h = hsv.h * 360
+  const s = hsv.s,
+    v = hsv.v
+  for (let i = 0; h > 360 || h < 0; i++) {
+    h < 0 ? (h += 360) : h > 360 ? (h -= 360) : {}
+  }
+  if (s > 1 || v > 1 || s < 0 || v < 0) {
+    console.log('输入值不符合实际，已返回rgb(0,0,0)')
+    return { r: 0, g: 0, b: 0 }
+  }
+  const hi = Math.floor(h / 60) % 6, // hi用于判断色相区间hi=0时为0~60°，hi=1时为60°~120°以此类推
+    f = h / 60 - hi, // f用于计算在该色相区间的偏转度
+    min = v * (1 - s), // 得出r、g、b中最小的值
+    max = v * (1 - f * s), // r、g、b中最大的值
+    med = v * (1 - (1 - f) * s) // r、g、b中中间的那个值
+
+  // 根据色相区间确定r、g、b顺序
+  switch (hi) {
+    case 0:
+      return { r: v * 255, g: med * 255, b: min * 255 }
+
+    case 1:
+      return { r: max * 255, g: v * 255, b: min * 255 }
+
+    case 2:
+      return { r: min * 255, g: v * 255, b: med * 255 }
+
+    case 3:
+      return { r: min * 255, g: max * 255, b: v * 255 }
+
+    case 4:
+      return { r: med * 255, g: min * 255, b: v * 255 }
+
+    case 5:
+      return { r: v * 255, g: min * 255, b: max * 255 }
+
+    default:
+      return { r: 999, g: 999, b: 999 }
   }
 }

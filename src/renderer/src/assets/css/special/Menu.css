@@ -1,0 +1,16 @@
+#Menu {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10%;
+  z-index: 2;
+  font-size: 1.5rem;
+  color: rgba(142, 211, 83, 1);
+  padding: 0.5rem 4rem;
+  background-color: var(--white-100);
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+  --smooth-corners: 12;
+  cursor: pointer;
+  transition: all var(--time-normal);
+}

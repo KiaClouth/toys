@@ -1,0 +1,188 @@
+#loadingPage {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(245, 209, 90);
+}
+
+#loadingBox {
+  --overallWidth: 20vw;
+  --overallHeight: 20vw;
+  position: fixed;
+  left: 40vw;
+  top: calc(50vh - 10vw);
+  width: var(--overallWidth);
+  height: var(--overallHeight);
+  mask-image: url(../img/page/loading/Union.svg);
+  -webkit-mask-image: url(../img/page/loading/Union.svg);
+  mask-position: 0 0;
+  -webkit-mask-position: 0 0;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+#maskElement2,
+#maskElement3 {
+  position: absolute;
+  width: calc(0.24 * var(--overallWidth));
+  height: calc(0.14 * var(--overallHeight));
+  clip-path: ellipse(50% 50% at 50% 50%);
+  background-color: rgb(83, 56, 195);
+  z-index: 2;
+}
+
+#maskElement2 {
+  top: 62%;
+  left: 16%;
+}
+#maskElement3 {
+  position: absolute;
+  top: 36%;
+  left: 59%;
+}
+
+#loadingBox .line,
+#loadingBox .shadow {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
+#loadingBox .line {
+  --startingDistance: 65%;
+  z-index: 3;
+}
+#loadingBox .shadow {
+  --startingDistance: 80%;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.3;
+}
+
+@keyframes moveLine {
+  0% {
+    offset-distance: var(--startingDistance);
+    opacity: 1;
+  }
+  100% {
+    offset-distance: calc(var(--startingDistance) + 100%);
+    opacity: 1;
+  }
+}
+@keyframes moveShadow {
+  0% {
+    offset-distance: var(--startingDistance);
+    opacity: 1;
+  }
+  100% {
+    offset-distance: calc(var(--startingDistance) + 100%);
+    opacity: 1;
+  }
+}
+
+#loadingBox .line .circle,
+#loadingBox .shadow .circle {
+  --animationTime: 1600ms;
+  --startTime: 750ms;
+  --intervalTime: 20ms;
+  transition: all 0.3s;
+  position: absolute;
+  width: calc(0.16 * var(--overallWidth));
+  height: calc(0.16 * var(--overallHeight));
+  /* width: calc(0.24 * var(--overallWidth));
+  height: calc(0.14 * var(--overallHeight));
+  clip-path: ellipse(50% 50% at 50% 50%); */
+  offset-rotate: 0deg;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+#loadingBox .line .circle {
+  margin: 22% 0 0 22%;
+  background-color: rgb(255, 73, 32);
+  offset-path: path(
+    'M135.855 8.78699C173.378 32.583 181.249 104.655 153.436 169.762C125.624 234.869 72.659 268.358 35.136 244.562C-2.38598 220.765 -10.258 148.694 17.555 83.586C45.368 18.479 98.333 -15.01 135.855 8.78699Z'
+  );
+  animation: moveLine var(--animationTime) infinite linear;
+}
+
+#loadingBox .shadow .circle {
+  /* display: none; */
+  margin: 34% 0 0 5%;
+  background-color: rgb(240, 168, 0);
+  offset-path: path(
+    'M31.603 22.489C80.11 -5.38799 168.044 -6.50599 228.01 19.992C287.975 46.49 297.264 90.57 248.758 118.447C200.251 146.325 112.316 147.443 52.351 120.945C-7.61499 94.446 -16.904 50.367 31.603 22.489Z'
+  );
+  animation: moveShadow var(--animationTime) infinite cubic-bezier(0.47, 0, 0.37, 1);
+}
+
+#loadingBox .line .circle:nth-child(-n + 8) {
+  background-color: rgb(255, 237, 216);
+}
+
+#loadingBox .line .circle:nth-child(1),
+#loadingBox .shadow .circle:nth-child(1) {
+  animation-delay: calc(var(--startTime) + 0 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(2),
+#loadingBox .shadow .circle:nth-child(2) {
+  animation-delay: calc(var(--startTime) + 1 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(3),
+#loadingBox .shadow .circle:nth-child(3) {
+  animation-delay: calc(var(--startTime) + 2 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(4),
+#loadingBox .shadow .circle:nth-child(4) {
+  animation-delay: calc(var(--startTime) + 3 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(5),
+#loadingBox .shadow .circle:nth-child(5) {
+  animation-delay: calc(var(--startTime) + 4 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(6),
+#loadingBox .shadow .circle:nth-child(6) {
+  animation-delay: calc(var(--startTime) + 5 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(7),
+#loadingBox .shadow .circle:nth-child(7) {
+  animation-delay: calc(var(--startTime) + 6 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(8),
+#loadingBox .shadow .circle:nth-child(8) {
+  animation-delay: calc(var(--startTime) + 7 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(9),
+#loadingBox .shadow .circle:nth-child(9) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 0 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(10),
+#loadingBox .shadow .circle:nth-child(10) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 1 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(11),
+#loadingBox .shadow .circle:nth-child(11) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 2 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(12),
+#loadingBox .shadow .circle:nth-child(12) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 3 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(13),
+#loadingBox .shadow .circle:nth-child(13) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 4 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(14),
+#loadingBox .shadow .circle:nth-child(14) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 5 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(15),
+#loadingBox .shadow .circle:nth-child(15) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 6 * var(--intervalTime));
+}
+#loadingBox .line .circle:nth-child(16),
+#loadingBox .shadow .circle:nth-child(16) {
+  animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 7 * var(--intervalTime));
+}
