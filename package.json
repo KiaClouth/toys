@@ -25,6 +25,7 @@
     "@electron-toolkit/preload": "^1.0.2",
     "@electron-toolkit/utils": "^1.0.2",
     "babylonjs": "^5.41.0",
+    "babylonjs-inspector": "^5.41.0",
     "babylonjs-loaders": "^5.21.0",
     "babylonjs-materials": "^5.41.0",
     "electron-updater": "^5.3.0"
