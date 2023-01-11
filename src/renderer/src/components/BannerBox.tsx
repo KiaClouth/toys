@@ -145,6 +145,7 @@ export default function BannerBox(): JSX.Element {
             }
           }
 
+          // 水滴与文字的循环生成
           for (let a = 0; a < campusArray.length - 2; a++) {
             // 值简化
             const shuidiPosition = new BABYLON.Vector3(
@@ -251,7 +252,7 @@ export default function BannerBox(): JSX.Element {
 
             // 水滴正面文字
             const Writer = MeshWriter(scene, { scale: 1.4 })
-            const textMesh = new Writer(time_array[1], {
+            const textMesh = new Writer(campusArray[a][0], {
               'font-family': 'PangMenZhengDao',
               'letter-height': 0.2,
               'letter-thickness': 0.05,
@@ -344,6 +345,7 @@ export default function BannerBox(): JSX.Element {
             shuidi_generator.addShadowCaster(text_mesh, true)
           }
 
+          // 环境构建
           // 主光源
           const mainLight = new BABYLON.DirectionalLight(
             'mainLight',
@@ -437,10 +439,6 @@ export default function BannerBox(): JSX.Element {
           generator.blurScale = 2
           generator.transparencyShadow = true
           generator.darkness = 0.5
-
-          // for (let i = 0; i < scene.lights.length; i++) {
-          //   console.log(i, scene.lights[i].name, scene.lights[i])
-          // }
 
           for (let i = 0; i < scene.meshes.length; i++) {
             // console.log(i, scene.meshes[i].name, scene.meshes[i])
