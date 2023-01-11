@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { canvasResize, hsv2rgb, isCanvas, rgb2hsv } from '../tool'
+import { canvasResize, hsv2rgb, isCanvas, rgb2hsv, root } from '../tool'
 import 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
@@ -10,74 +10,73 @@ import contrast_url from '../assets/img/banner/contrast.png?url'
 import top_nav_url from '../assets/img/banner/top_nav.svg?url'
 import banner_model_url from '../assets/model/banner.gltf?url'
 
-export default function BannerBox(): JSX.Element {
-  // const imgSize = [[1920, 650], [660, 330], [1110, 450]]
-  // const imgName = ['woniuxy.cn.pc', 'woniuxy.cn.mo', 'woniuxy.com.pc']
-  const campusArray = [
-    ['成都', '09·22'],
-    ['天府', '10·10'],
-    ['重庆', '09·19'],
-    ['西安', '09·19'],
-    ['上海', '09·26'],
-    ['武汉', '09·21'],
-    ['深圳', '10·10'],
-    ['南京', '10·24'],
-    ['杭州', '10·18'],
-    ['广州', '10·08'],
-    ['阿多比', '09·26'],
-    ['凡云', '09·28']
-  ]
+// const imgSize = [[1920, 650], [660, 330], [1110, 450]]
+// const imgName = ['woniuxy.cn.pc', 'woniuxy.cn.mo', 'woniuxy.com.pc']
+const campusArray = [
+  ['成都', '09·22'],
+  ['天府', '10·10'],
+  ['重庆', '09·19'],
+  ['西安', '09·19'],
+  ['上海', '09·26'],
+  ['武汉', '09·21'],
+  ['深圳', '10·10'],
+  ['南京', '10·24'],
+  ['杭州', '10·18'],
+  ['广州', '10·08'],
+  ['阿多比', '09·26'],
+  ['凡云', '09·28']
+]
 
-  const shuidiArray: BABYLON.AbstractMesh[] = []
-  const shuidiPositionArray = [
-    // eslint-disable-next-line prettier/prettier
-    [-0.750, -0.360, -0.080, +0.400, +0.770, +1.300, +1.860, +2.370, +2.870, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+0.700, +0.730, +1.020, +1.150, +1.250, +1.270, +1.400, +1.440, +1.600, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+11.60, +11.40, +9.000, +7.300, +6.800, +5.600, +4.000, +3.000, +2.000, 10, 11, 12, 13],
-  ]
-  const shuidiRotationArray = [
-    // eslint-disable-next-line prettier/prettier
-    [+1.950, +1.900, +0.001, +1.980, +0.001, +1.900, +1.980, +0.001, +0.001, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+0.150, +1.900, +1.900, +1.680, +0.100, +1.800, +0.001, +0.110, +1.800, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+0.001, +1.970, +1.970, +0.001, +1.980, +1.870, +0.001, +0.001, +0.001, 10, 11, 12, 13]
-  ]
-  const shuidiScaleArray = [
-    // eslint-disable-next-line prettier/prettier
-    [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13],
-    // eslint-disable-next-line prettier/prettier
-    [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13]
-  ]
-  const textMaterialColorArray = [
-    // eslint-disable-next-line prettier/prettier
-    [232, 255,   0, 232, 255,   0, 232, 255,   0, 232, 255,   0,],
-    // eslint-disable-next-line prettier/prettier
-    [ 54, 167, 137,  54, 167, 137,  54, 167, 137,  54, 167, 137,],
-    // eslint-disable-next-line prettier/prettier
-    [ 47,  46, 251,  47,  46, 251,  47,  46, 251,  47,  46, 251,]
-  ]
+const shuidiArray: BABYLON.AbstractMesh[] = []
+const shuidiPositionArray = [
+  // eslint-disable-next-line prettier/prettier
+  [-0.750, -0.360, -0.080, +0.400, +0.770, +1.300, +1.860, +2.370, +2.870, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+0.700, +0.730, +1.020, +1.150, +1.250, +1.270, +1.400, +1.440, +1.600, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+11.60, +11.40, +9.000, +7.300, +6.800, +5.600, +4.000, +3.000, +2.000, 10, 11, 12, 13],
+]
+const shuidiRotationArray = [
+  // eslint-disable-next-line prettier/prettier
+  [+1.950, +1.900, +0.001, +1.980, +0.001, +1.900, +1.980, +0.001, +0.001, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+0.150, +1.900, +1.900, +1.680, +0.100, +1.800, +0.001, +0.110, +1.800, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+0.001, +1.970, +1.970, +0.001, +1.980, +1.870, +0.001, +0.001, +0.001, 10, 11, 12, 13]
+]
+const shuidiScaleArray = [
+  // eslint-disable-next-line prettier/prettier
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13],
+  // eslint-disable-next-line prettier/prettier
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, 10, 11, 12, 13]
+]
+const textMaterialColorArray = [
+  // eslint-disable-next-line prettier/prettier
+  [232, 255, 0, 232, 255, 0, 232, 255, 0, 232, 255, 0,],
+  // eslint-disable-next-line prettier/prettier
+  [54, 167, 137, 54, 167, 137, 54, 167, 137, 54, 167, 137,],
+  // eslint-disable-next-line prettier/prettier
+  [47, 46, 251, 47, 46, 251, 47, 46, 251, 47, 46, 251,]
+]
 
-  // 按时间顺序对校区数组重排
-  for (let i = 0; i < campusArray.length - 1; i++) {
-    for (let j = 0; j < campusArray.length - 1 - i; j++) {
-      if (campusArray[j][1] > campusArray[j + 1][1]) {
-        const temp_array = campusArray[j]
-        campusArray[j] = campusArray[j + 1]
-        campusArray[j + 1] = temp_array
-      }
+// 按时间顺序对校区数组重排
+for (let i = 0; i < campusArray.length - 1; i++) {
+  for (let j = 0; j < campusArray.length - 1 - i; j++) {
+    if (campusArray[j][1] > campusArray[j + 1][1]) {
+      const temp_array = campusArray[j]
+      campusArray[j] = campusArray[j + 1]
+      campusArray[j + 1] = temp_array
     }
   }
+}
 
+export default function BannerBox(): JSX.Element {
   useEffect(() => {
-    const root = document.getElementById('root')!
     const canvas = document.getElementById('BannerCanvas')!
 
-    !root.classList.contains('fullScreen') ? root.classList.add('fullScreen') : {}
+    // !root.classList.contains('fullScreen') ? root.classList.add('fullScreen') : {}
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)
@@ -88,22 +87,24 @@ export default function BannerBox(): JSX.Element {
     return () => {}
   }, [])
 
+  // babylonjs引擎代码
   function createBabylonScene(canvas: HTMLCanvasElement): void {
-    //自定义加载动画
-    function customLoadingScreen(): BABYLON.ILoadingScreen {
-      return {
-        displayLoadingUI: (): void => {},
-        hideLoadingUI: (): void => {},
+    if (isCanvas(canvas)) {
+      const engine = new BABYLON.Engine(canvas, true)
+
+      //自定义加载动画
+      engine.loadingScreen = {
+        displayLoadingUI: (): void => {
+          console.log('display')
+        },
+        hideLoadingUI: (): void => {
+          console.log('hidden')
+        },
         loadingUIBackgroundColor: '#ffffff',
         loadingUIText: 'Loading...'
       }
-    }
 
-    if (isCanvas(canvas)) {
-      const engine = new BABYLON.Engine(canvas, true)
-      engine.loadingScreen = customLoadingScreen()
-
-      const createScene = function (): BABYLON.Scene {
+      const createScene = (): BABYLON.Scene => {
         const scene = new BABYLON.Scene(engine)
         scene.ambientColor = new BABYLON.Color3(1, 0, 1)
 
@@ -482,6 +483,7 @@ export default function BannerBox(): JSX.Element {
 
       const scene = createScene()
 
+      engine.displayLoadingUI()
       engine.runRenderLoop(function () {
         scene.render()
       })
