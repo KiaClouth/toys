@@ -12,7 +12,7 @@ const config = {
   relPathFrom: "./font/",
 
   //导出资源目录
-  relPathTo: "./dist/",
+  relPathTo: "./src/renderer/src/assets/js-plugin/meshwriter/dist/",
 
   //自定义字符区间
   customCoverage: {
@@ -23,6 +23,12 @@ const config = {
       "0","1","2","3","4","5","6","7","8","9",
     ],
     "Helvetica-Black-SemiBold"            : [
+      "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+      "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+      "0","1","2","3","4","5","6","7","8","9",
+    ],
+    "ZiHunMengQuRuanTangTi"            : [
+      "成", "都", "天", "府", "重", "庆", "西", "安", "上", "海", "武", "汉", "深", "圳", "南", "京", "杭", "广", "州", "阿", "多", "比", "凡", "云",
       "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
       "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
       "0","1","2","3","4","5","6","7","8","9",
@@ -43,13 +49,13 @@ global.PiP = PiP
 global.config_ = config
 
 for (let customCoverageChild in config.customCoverage) {
-  console.log(customCoverageChild)
   // const name = Object.keys(config)[4] //需要生成多个字体js时，逐次修改此参数
-  const name = customCoverageChild
+  const name = customCoverageChild.toString()
+  // console.log(customCoverageChild,config.customCoverage[`${customCoverageChild}`])
   coverage =
     typeof name === 'string'
-      ? typeof config[name.toLowerCase()] === 'object'
-        ? config[name.toLowerCase()]
+      ? typeof config.customCoverage[`${customCoverageChild}`] === 'object'
+        ? config.customCoverage[`${customCoverageChild}`]
         : typeof config['default-coverage'] === 'object'
         ? config['default-coverage']
         : ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']

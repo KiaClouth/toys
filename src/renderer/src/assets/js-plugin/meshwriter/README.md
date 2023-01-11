@@ -4,4 +4,4 @@
 修改index.js里的config对象
 最后修改meshwriter.ES.js
 
-根目录下运行指令：node index.js
+项目根目录下运行指令：npm run initialization

@@ -254,7 +254,7 @@ export default function BannerBox(): JSX.Element {
             // 水滴正面文字
             const Writer = MeshWriter(scene, { scale: 1.4 })
             const textMesh = new Writer(campusArray[a][0], {
-              'font-family': 'PangMenZhengDao',
+              'font-family': 'ZiHunMengQuRuanTangTi',
               'letter-height': 0.2,
               'letter-thickness': 0.05,
               color: '#0be1fd',
