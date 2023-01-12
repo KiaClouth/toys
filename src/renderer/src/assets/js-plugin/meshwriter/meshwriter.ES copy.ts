@@ -1,3 +1,4 @@
+// 上次处理到：799
 import PMZ from './dist/pangmenzhengdao'
 import HBSB from './dist/helvetica-black-semibold'
 import HNM from './helveticaneue-medium'
@@ -7,19 +8,31 @@ import earcut from 'earcut'
 const Γ = Math.floor
 let scene: BABYLON.Scene, debug
 let b128back, b128digits
-const B = {},
-  methodsList = [
-    'Vector2',
-    'Vector3',
-    'Path2',
-    'Curve3',
-    'Color3',
-    'SolidParticleSystem',
-    'PolygonMeshBuilder',
-    'CSG',
-    'StandardMaterial',
-    'Mesh'
-  ]
+const B = {
+  Vector2: BABYLON.Vector2,
+  Vector3: BABYLON.Vector3,
+  Path2: BABYLON.Path2,
+  Curve3: BABYLON.Curve3,
+  Color3: BABYLON.Color3,
+  SolidParticleSystem: BABYLON.SolidParticleSystem,
+  PolygonMeshBuilder: BABYLON.PolygonMeshBuilder,
+  CSG: BABYLON.CSG,
+  StandardMaterial: BABYLON.StandardMaterial,
+  Mesh: BABYLON.Mesh
+}
+
+const methodsList = [
+  'Vector2',
+  'Vector3',
+  'Path2',
+  'Curve3',
+  'Color3',
+  'SolidParticleSystem',
+  'PolygonMeshBuilder',
+  'CSG',
+  'StandardMaterial',
+  'Mesh'
+]
 prepArray()
 // >>>>>  STEP 2 <<<<<
 const pmz = PMZ(codeList)
@@ -43,10 +56,30 @@ const naturalLetterHeight = 1000
 //   ~ scene
 //   ~ preferences
 
-export default function Wrapper(...args): (lttrs: string, opt: object) => void {
+export default function Wrapper(
+  scene: BABYLON.Scene,
+  prenfrences: {
+    defaultFont?: string
+    meshOrigin?: string
+    scale?: number
+    debug?: boolean
+    methods?: {
+      Vector2?: BABYLON.Vector2
+      Vector3?: BABYLON.Vector3
+      Path2?: BABYLON.Path2
+      Curve3?: BABYLON.Curve3
+      Color3?: BABYLON.Color3
+      SolidParticleSystem?: BABYLON.SolidParticleSystem
+      PolygonMeshBuilder?: BABYLON.PolygonMeshBuilder
+      CSG?: BABYLON.CSG
+      StandardMaterial?: BABYLON.StandardMaterial
+      Mesh?: BABYLON.Mesh
+    }
+  }
+): (lttrs: string, opt: object) => void {
   let proto
 
-  const preferences = makePreferences(args)
+  const preferences = makePreferences(prenfrences)
 
   const defaultFont = isObject(FONTS[preferences.defaultFont])
     ? preferences.defaultFont
@@ -63,7 +96,7 @@ export default function Wrapper(...args): (lttrs: string, opt: object) => void {
   //   ~ letters
   //   ~ options
 
-  function MeshWriter(lttrs, opt) {
+  function MeshWriter(this: any, lttrs, opt) {
     let material, sps, mesh
 
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
@@ -149,32 +182,32 @@ export default function Wrapper(...args): (lttrs: string, opt: object) => void {
   proto = MeshWriter.prototype
 
   proto.setColor = function (color) {
-    let material = this.getMaterial()
+    const material = this.getMaterial()
     if (isString(color)) {
       material.emissiveColor = rgb2Bcolor3(this.color(color))
     }
   }
   proto.setAlpha = function (alpha) {
-    let material = this.getMaterial()
+    const material = this.getMaterial()
     if (isAmplitude(alpha)) {
       material.alpha = this.alpha(alpha)
     }
   }
   proto.overrideAlpha = function (alpha) {
-    let material = this.getMaterial()
+    const material = this.getMaterial()
     if (isAmplitude(alpha)) {
       material.alpha = alpha
     }
   }
   proto.resetAlpha = function () {
-    let material = this.getMaterial()
+    const material = this.getMaterial()
     material.alpha = this.alpha()
   }
   proto.getLetterCenter = function (ix) {
     return new B.Vector2(0, 0)
   }
   proto.dispose = function () {
-    let mesh = this.getMesh(),
+    const mesh = this.getMesh(),
       sps = this.getSPS(),
       material = this.getMaterial()
     if (sps) {
@@ -518,8 +551,8 @@ function constructLetterPolygons(
     let letterMeshes = [],
       j
     for (j = 0; j < shapesList.length; j++) {
-      let shape = shapesList[j]
-      let holes = holesList[j]
+      const shape = shapesList[j]
+      const holes = holesList[j]
       if (isArray(holes) && holes.length) {
         letterMeshes.push(punchHolesInShape(shape, holes, letter, i))
       } else {
@@ -541,7 +574,7 @@ function constructLetterPolygons(
 }
 
 function makeMaterial(scene, letters, emissive, ambient, specular, diffuse, opac) {
-  let cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
+  const cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
   cm0.diffuseColor = rgb2Bcolor3(diffuse)
   cm0.specularColor = rgb2Bcolor3(specular)
   cm0.ambientColor = rgb2Bcolor3(ambient)
@@ -559,7 +592,7 @@ function makeMaterial(scene, letters, emissive, ambient, specular, diffuse, opac
 // The compressed versions are placed in "sC" and "hC"
 // The *first* time a letter is used, if it was compressed, it is decompressed
 function makeLetterSpec(fontSpec, letter) {
-  let letterSpec = fontSpec[letter],
+  const letterSpec = fontSpec[letter],
     singleMap = (cmds) => decodeList(cmds),
     doubleMap = (cmdslists) => (isArray(cmdslists) ? cmdslists.map(singleMap) : cmdslists)
 
@@ -577,7 +610,7 @@ function makeLetterSpec(fontSpec, letter) {
 }
 
 function decodeList(str) {
-  let split = str.split(' '),
+  const split = str.split(' '),
     list = []
   split.forEach(function (cmds) {
     if (cmds.length === 12) {
@@ -697,58 +730,50 @@ function toB128(i): number {
 //     PARAMETER QUALIFYING AND DEFAULTING     PARAMETER QUALIFYING AND DEFAULTING
 //
 // Screening and defaulting functions for incoming parameters
-function makePreferences(args): {
+function makePreferences(prenfrences: {
+  defaultFont?: string
+  meshOrigin?: string
+  scale?: number
+  debug?: boolean
+  methods?: {
+    Vector2?: BABYLON.Vector2
+    Vector3?: BABYLON.Vector3
+    Path2?: BABYLON.Path2
+    Curve3?: BABYLON.Curve3
+    Color3?: BABYLON.Color3
+    SolidParticleSystem?: BABYLON.SolidParticleSystem
+    PolygonMeshBuilder?: BABYLON.PolygonMeshBuilder
+    CSG?: BABYLON.CSG
+    StandardMaterial?: BABYLON.StandardMaterial
+    Mesh?: BABYLON.Mesh
+  }
+}): {
   defaultFont: string
   meshOrigin: string
   scale: number
   debug: boolean
 } {
-  const prefs: {
-    defaultFont: string
-    meshOrigin: string
-    scale: 1
-    debug: boolean
-  } = {
+  const p = prenfrences
+  const prefs = {
     defaultFont: '',
-    meshOrigin: '',
+    meshOrigin: 'letterCenter',
     scale: 1,
     debug: false
   }
-  let p
-  if (isObject((p = args[1]))) {
-    if (p['default-font']) {
-      prefs.defaultFont = p['default-font']
-    } else {
-      if (p.defaultFont) {
-        prefs.defaultFont = p.defaultFont
-      }
-    }
-    if (p['mesh-origin']) {
-      prefs.meshOrigin = p['mesh-origin']
-    } else {
-      if (p.meshOrigin) {
-        prefs.meshOrigin = p.meshOrigin
-      }
-    }
-    if (p.scale) {
-      prefs.scale = p.scale
-    }
-    if (isBoolean(p.debug)) {
-      prefs.debug = p.debug
-    }
-    cacheMethods(p.methods)
-    return prefs
-  } else {
-    return {
-      defaultFont: 'HelveticaNeue-Medium',
-      meshOrigin: 'letterCenter',
-      scale: 1,
-      debug: false
-    }
-  }
+
+  if (isObject(p) && p.defaultFont) prefs.defaultFont = p.defaultFont
+  if (isObject(p) && p['default-font']) prefs.defaultFont = p['default-font']
+  if (isObject(p) && p.meshOrigin) prefs.meshOrigin = p.meshOrigin
+  if (isObject(p) && p['meshOrigin']) prefs.meshOrigin = p['meshOrigin']
+  if (isObject(p) && p.scale) prefs.scale = p.scale
+  if (isObject(p) && p.debug) prefs.debug = p.debug
+  if (isObject(p) && p.methods) cacheMethods(p.methods)
+
+  return prefs
 }
-function cacheMethods(src) {
-  let incomplete = false
+function cacheMethods(src): void {
+  let incomplete: boolean | string
+  incomplete = false
   if (isObject(src)) {
     methodsList.forEach(function (meth) {
       if (isObject(src[meth])) {
@@ -770,18 +795,18 @@ function cacheMethods(src) {
 // Needed for making font curves
 // Thanks Gijs, wherever you are
 //
-function supplementCurveFunctions() {
+function supplementCurveFunctions(): void {
   if (isObject(B.Path2)) {
-    if (!B.Path2.prototype.addQuadraticCurveTo) {
-      B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY) {
-        let points = this.getPoints()
-        let lastPoint = points[points.length - 1]
-        let origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-        let control = new B.Vector3(redX, redY, 0)
-        let destination = new B.Vector3(blueX, blueY, 0)
-        let nb_of_points = curveSampleSize
-        let curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
-        let curvePoints = curve.getPoints()
+    if (!Object.keys(B.Path2).includes('addQuadraticCurveTo')) {
+      B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
+        const points = this.getPoints()
+        const lastPoint = points[points.length - 1]
+        const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+        const control = new B.Vector3(redX, redY, 0)
+        const destination = new B.Vector3(blueX, blueY, 0)
+        const nb_of_points = curveSampleSize
+        const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
+        const curvePoints = curve.getPoints()
         for (let i = 1; i < curvePoints.length; i++) {
           this.addLineTo(curvePoints[i].x, curvePoints[i].y)
         }
@@ -789,21 +814,21 @@ function supplementCurveFunctions() {
     }
     if (!B.Path2.prototype.addCubicCurveTo) {
       B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY) {
-        let points = this.getPoints()
-        let lastPoint = points[points.length - 1]
-        let origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-        let control1 = new B.Vector3(redX, redY, 0)
-        let control2 = new B.Vector3(greenX, greenY, 0)
-        let destination = new B.Vector3(blueX, blueY, 0)
-        let nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
-        let curve = B.Curve3.CreateCubicBezier(
+        const points = this.getPoints()
+        const lastPoint = points[points.length - 1]
+        const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+        const control1 = new B.Vector3(redX, redY, 0)
+        const control2 = new B.Vector3(greenX, greenY, 0)
+        const destination = new B.Vector3(blueX, blueY, 0)
+        const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
+        const curve = B.Curve3.CreateCubicBezier(
           origin,
           control1,
           control2,
           destination,
           nb_of_points
         )
-        let curvePoints = curve.getPoints()
+        const curvePoints = curve.getPoints()
         for (let i = 1; i < curvePoints.length; i++) {
           this.addLineTo(curvePoints[i].x, curvePoints[i].y)
         }

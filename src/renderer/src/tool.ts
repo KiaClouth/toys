@@ -1,3 +1,5 @@
+import 'babylonjs'
+
 export const root = document.getElementById('root')!
 export const resize = new CustomEvent('resize', { detail: 'change' })
 
@@ -259,15 +261,13 @@ export function hsv2rgb(hsv: { h: number; s: number; v: number }): {
   b: number
 } {
   let h = hsv.h * 360
-  const s = hsv.s,
-    v = hsv.v
+  let s = hsv.s
+  let v = hsv.v
   for (let i = 0; h > 360 || h < 0; i++) {
-    h < 0 ? (h += 360) : h > 360 ? (h -= 360) : {}
+    h = h < 0 ? h + 360 : h > 360 ? h - 360 : h
   }
-  if (s > 1 || v > 1 || s < 0 || v < 0) {
-    console.log('输入值不符合实际，已返回rgb(0,0,0)')
-    return { r: 0, g: 0, b: 0 }
-  }
+  s = s > 1 ? 1 : s < 0 ? 0 : s
+  v = v > 1 ? 1 : v < 0 ? 0 : v
   const hi = Math.floor(h / 60) % 6, // hi用于判断色相区间hi=0时为0~60°，hi=1时为60°~120°以此类推
     f = h / 60 - hi, // f用于计算在该色相区间的偏转度
     min = v * (1 - s), // 得出r、g、b中最小的值
@@ -295,6 +295,31 @@ export function hsv2rgb(hsv: { h: number; s: number; v: number }): {
       return { r: v * 255, g: min * 255, b: max * 255 }
 
     default:
-      return { r: 999, g: 999, b: 999 }
+      return { r: 0, g: 0, b: 0 }
   }
+}
+
+// 给BABYLON.Color3添加按hsv调整色值方法
+BABYLON.Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth]): BABYLON.Color3 {
+  const hsv = rgb2hsv({ r: this.r * 255, g: this.g * 255, b: this.b * 255 })
+  // console.log('hsv:', hsv)
+
+  h = typeof hMeth !== 'undefined' ? (hMeth === 'add' ? hsv.h + h : hsv.h * h) : h
+  s = typeof sMeth !== 'undefined' ? (sMeth === 'add' ? hsv.s + s : hsv.s * s) : s
+  v = typeof vMeth !== 'undefined' ? (vMeth === 'add' ? hsv.v + v : hsv.v * v) : v
+
+  while (h < 0 || h > 1) {
+    h = h > 1 ? h - 1 : h < 0 ? h + 1 : h
+  }
+  while (s < 0 || s > 1) {
+    s = s > 1 ? 1 : s < 0 ? 0 : s
+  }
+  while (v < 0 || v > 1) {
+    v = v > 1 ? 1 : v < 0 ? 0 : v
+  }
+  // console.log(h, s, v)
+
+  const rgb = hsv2rgb({ h: h, s: s, v: v })
+  // console.log('rgb:', rgb)
+  return new BABYLON.Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
 }

@@ -1,4 +1,15 @@
 /// <reference types="vite/client" />
+
+declare namespace BABYLON {
+  declare interface Color3 {
+    hsvOffset(
+      hOffset: [number, 'add' | 'mul'] | [number],
+      sOffset: [number, 'add' | 'mul'] | [number],
+      vOffset: [number, 'add' | 'mul'] | [number]
+    ): BABYLON.Color3
+  }
+}
+
 declare namespace CSS {
   let paintWorklet: paintWorklet
 }

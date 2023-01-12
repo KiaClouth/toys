@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import PMZ from "./dist/pangmenzhengdao";
 import HBSB from "./dist/helvetica-black-semibold";
 import ZHMQRTT from "./dist/ZiHunMengQuRuanTangTi";

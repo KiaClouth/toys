@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { root, PerlinNoise, canvasResize, isCanvas } from './tool'
+import { PerlinNoise, canvasResize, isCanvas } from './tool'
 import * as BABYLON from 'babylonjs'
 import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES'
 import './assets/js-plugin/babylon/cannon.js'
@@ -10,9 +10,6 @@ export default function GS(): JSX.Element {
   useEffect(() => {
     const canvas = document.getElementById('WoniuSecBannerCanvas')
 
-    !root.classList.contains('fullScreen')
-      ? root.classList.add('fullScreen')
-      : root.classList.remove('fullScreen')
     window.dispatchEvent(new CustomEvent('ReactDomRender', { detail: 'base' }))
 
     if (isCanvas(canvas)) {
@@ -20,7 +17,7 @@ export default function GS(): JSX.Element {
       canvasResize(canvas)
       createBabylonScene(canvas)
       return () => {
-        root.removeEventListener('resize', () => canvasResize(canvas))
+        window.removeEventListener('resize', () => canvasResize(canvas))
       }
     } else {
       console.log('cannot find canvas')
