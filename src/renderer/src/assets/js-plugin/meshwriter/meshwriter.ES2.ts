@@ -1,7 +1,8 @@
-// 上次处理到：799
+// 上次处理到：854
 import PMZ from './dist/pangmenzhengdao'
 import HBSB from './dist/helvetica-black-semibold'
 import HNM from './helveticaneue-medium'
+import ZHMQRTT from './dist/ZiHunMengQuRuanTangTi'
 import earcut from 'earcut'
 
 // >>>>>  STEP 1 <<<<<
@@ -37,12 +38,14 @@ prepArray()
 // >>>>>  STEP 2 <<<<<
 const pmz = PMZ(codeList)
 const hbsb = HBSB(codeList)
+const zhmqrtt = ZHMQRTT(codeList)
 const hnm = HNM(codeList) // Do not remove
 // >>>>>  STEP 2 <<<<<
 const FONTS = {}
 // >>>>>  STEP 3 <<<<<
 FONTS['PangMenZhengDao'] = pmz
 FONTS['Helvetica-Black-SemiBold'] = hbsb
+FONTS['ZiHunMengQuRuanTangTi'] = zhmqrtt
 FONTS['HelveticaNeue-Medium'] = hnm // Do not remove
 // >>>>>  STEP 4 <<<<<
 const defaultColor = '#808080'
@@ -76,7 +79,7 @@ export default function Wrapper(
       Mesh?: BABYLON.Mesh
     }
   }
-): (lttrs: string, opt: object) => void {
+): (lttrs: string, opt: fontType) => void {
   let proto
 
   const preferences = makePreferences(prenfrences)
@@ -96,7 +99,7 @@ export default function Wrapper(
   //   ~ letters
   //   ~ options
 
-  function MeshWriter(this: any, lttrs, opt) {
+  function MeshWriter(this: MeshWriter, lttrs: string, opt: fontType): void {
     let material, sps, mesh
 
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
@@ -162,14 +165,14 @@ export default function Wrapper(
     mesh.position.y = scale * y
     mesh.position.z = scale * z
 
-    this.getSPS = () => sps
-    this.getMesh = () => mesh
-    this.getMaterial = () => material
-    this.getOffsetX = () => offsetX
-    this.getLettersBoxes = () => lettersBoxes
-    this.getLettersOrigins = () => lettersOrigins
-    this.color = (c) => (isString(c) ? (color = c) : color)
-    this.alpha = (o) => (isAmplitude(o) ? (opac = o) : opac)
+    this.getSPS = (): BABYLON.SolidParticleSystem => sps
+    this.getMesh = (): BABYLON.Mesh => mesh
+    this.getMaterial = (): BABYLON.Material => material
+    this.getOffsetX = (): number => offsetX
+    this.getLettersBoxes = (): number => lettersBoxes
+    this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
+    this.color = (c): BABYLON.SolidParticleSystem => (isString(c) ? (color = c) : color)
+    this.alpha = (o): BABYLON.SolidParticleSystem => (isAmplitude(o) ? (opac = o) : opac)
     this.clearall = function () {
       sps = null
       mesh = null
@@ -272,7 +275,7 @@ function makeSPS(scene, meshesAndBoxes, material) {
 //   ~ the boxes (to help with positions features)
 //   ~ the letter origins (providing offset for each letter)
 function constructLetterPolygons(
-  letters,
+  letters: string,
   fontSpec,
   xOffset,
   yOffset,
@@ -282,12 +285,13 @@ function constructLetterPolygons(
   material,
   meshOrigin
 ) {
+  console.log('letters: ', letters, typeof letters, letters.length)
   let letterOffsetX = 0,
     lettersOrigins = new Array(letters.length),
     lettersBoxes = new Array(letters.length),
     lettersMeshes = new Array(letters.length),
     ix = 0,
-    letter,
+    letter: string,
     letterSpec,
     lists,
     shapesList,
@@ -296,7 +300,7 @@ function constructLetterPolygons(
     letterBox,
     letterOrigins,
     meshesAndBoxes,
-    i
+    i: number
 
   for (i = 0; i < letters.length; i++) {
     letter = letters[i]
@@ -644,7 +648,7 @@ function decodeList(str) {
     return (frB128(s.substring(start, end)) - 4000) / 2
   }
 }
-function codeList(list): string {
+function codeList(list: [Array<number>]): string {
   let str = '',
     xtra = ''
   if (isArray(list)) {
@@ -813,7 +817,14 @@ function supplementCurveFunctions(): void {
       }
     }
     if (!B.Path2.prototype.addCubicCurveTo) {
-      B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY) {
+      B.Path2.prototype.addCubicCurveTo = function (
+        redX,
+        redY,
+        greenX,
+        greenY,
+        blueX,
+        blueY
+      ): void {
         const points = this.getPoints()
         const lastPoint = points[points.length - 1]
         const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
@@ -839,7 +850,7 @@ function supplementCurveFunctions(): void {
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // Applies a test to potential incoming parameters
 // If the test passes, the parameters are used, otherwise the default is used
-function setOption(opts, field, tst, defalt) {
+function setOption<T>(opts: fontType, field: string, tst: (arg0: T) => boolean, defalt: T): T {
   return tst(opts[field]) ? opts[field] : defalt
 }
 
@@ -848,21 +859,21 @@ function setOption(opts, field, tst, defalt) {
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 // Conversion functions
-function rgb2Bcolor3(rgb) {
+function rgb2Bcolor3(rgb): BABYLON.Color3 {
   rgb = rgb.replace('#', '')
   return new B.Color3(
     convert(rgb.substring(0, 2)),
     convert(rgb.substring(2, 4)),
     convert(rgb.substring(4, 6))
   )
-  function convert(x) {
+  function convert(x): number {
     return (
       Γ(1000 * Math.max(0, Math.min((isNumber(parseInt(x, 16)) ? parseInt(x, 16) : 0) / 255, 1))) /
       1000
     )
   }
 }
-function point2Vector(point) {
+function point2Vector(point): BABYLON.Vector2 {
   return new B.Vector2(round(point.x), round(point.y))
 }
 function merge(arrayOfMeshes) {
@@ -871,39 +882,39 @@ function merge(arrayOfMeshes) {
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 // Boolean test functions
-function isPositiveNumber(mn) {
+function isPositiveNumber(mn): boolean {
   return typeof mn === 'number' && !isNaN(mn) ? 0 < mn : false
 }
-function isNumber(mn) {
+function isNumber(mn): boolean {
   return typeof mn === 'number'
 }
-function isBoolean(mn) {
+function isBoolean(mn): boolean {
   return typeof mn === 'boolean'
 }
-function isAmplitude(ma) {
+function isAmplitude(ma): boolean {
   return typeof ma === 'number' && !isNaN(ma) ? 0 <= ma && ma <= 1 : false
 }
-function isObject(mo) {
+function isObject(mo): boolean {
   return (mo != null && typeof mo === 'object') || typeof mo === 'function'
 }
-function isArray(ma) {
+function isArray(ma): boolean {
   return ma != null && typeof ma === 'object' && ma.constructor === Array
 }
-function isString(ms) {
+function isString(ms): boolean {
   return typeof ms === 'string' ? ms.length > 0 : false
 }
-function isSupportedFont(ff) {
+function isSupportedFont(ff): boolean {
   return isObject(FONTS[ff])
 }
-function isSupportedAnchor(a) {
+function isSupportedAnchor(a): boolean {
   return a === 'left' || a === 'right' || a === 'center'
 }
-function isRelativeLength(l) {
+function isRelativeLength(l): boolean {
   return l === 3 || l === 5 || l === 7
 }
-function weeid() {
+function weeid(): number {
   return Math.floor(Math.random() * 1000000)
 }
-function round(n) {
+function round(n): number {
   return Γ(0.3 + n * 1000000) / 1000000
 }

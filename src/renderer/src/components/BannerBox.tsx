@@ -4,7 +4,7 @@ import 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import 'babylonjs-inspector'
-import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
+import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES2'
 
 import contrast_url from '../assets/img/banner/contrast.png?url'
 import top_nav_url from '../assets/img/banner/top_nav.svg?url'
@@ -95,10 +95,10 @@ export default function BannerBox(): JSX.Element {
       //自定义加载动画
       engine.loadingScreen = {
         displayLoadingUI: (): void => {
-          console.log('display')
+          // console.log('display')
         },
         hideLoadingUI: (): void => {
-          console.log('hidden')
+          // console.log('hidden')
         },
         loadingUIBackgroundColor: '#ffffff',
         loadingUIText: 'Loading...'

@@ -9,17 +9,6 @@ const chineseCoverage = [
   "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 ]
 
-const engilshCoverage = [
-  // eslint-disable-next-line prettier/prettier
-  "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-  // eslint-disable-next-line prettier/prettier
-  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-  // eslint-disable-next-line prettier/prettier
-  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "!", "|", '"', "'", "#", "$", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/",
-  // eslint-disable-next-line prettier/prettier
-  ":", ";", "<", "=", ">", "?", "@", "[", "]", "^", "_", " ", " "
-]
-
 const config = {
   //默认字符区间不可删除
   'default-coverage': [
@@ -57,6 +46,7 @@ let coverage = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] // 缺省值
 global.PiP = PiP
 global.config_ = config
 
+// 读取./font目录下的字体文件并在./dist下生成对应js文件
 fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
   if (err) {
     console.log('无法读取' + path.join(__dirname, config.relPathFrom))
@@ -81,19 +71,13 @@ fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
           )
           console.log(err)
         } else {
-          let fontName
           const fontArrayBuffer = convertBuff2AB(data)
           const nativeFont = opentype.parse(fontArrayBuffer, {
             lowMemory: false
           })
           const glyphin = new Glyphin(nativeFont, coverage)
           let fileText = glyphin.getMeshWriterSeries(compress)
-          try {
-            fontName = nativeFont.names.fontFamily.en
-          } catch (e) {
-            fontName = 'font'
-          }
-          fileText = filePre(fontName, nativeFont.outlinesFormat) + fileText + filePost(fontName)
+          fileText = filePre(name, nativeFont.outlinesFormat) + fileText + filePost(name)
           const fileBuffer = Buffer.from(fileText)
           fs.mkdir(config.relPathTo, { recursive: true }, (err) => {
             if (err) {
@@ -102,12 +86,12 @@ fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
               console.log('路径就绪' + config.relPathTo)
             }
           })
-          fs.writeFile(config.relPathTo + name.toLowerCase() + '.' + 'js', fileBuffer, (err) => {
+          fs.writeFile(config.relPathTo + name + '.' + 'js', fileBuffer, (err) => {
             if (err) {
               console.log('无法写入' + config.relPathTo + name + '.' + 'js')
               console.log(err)
             } else {
-              console.log('成功写入' + config.relPathTo + name.toLowerCase() + '.' + 'js')
+              console.log('成功写入' + config.relPathTo + name + '.' + 'js')
             }
           })
         }
@@ -129,15 +113,30 @@ function filePre(fontName, format) {
   if (format === 'cff') {
     return (
       line1 +
-      "export default function font(codeList){\n\n      var font={reverseHoles:true,reverseShapes:false},nbsp='\u00A0';\n\n"
+      `export default function ${fontName.replace(
+        /-/g,
+        ''
+      )}(codeList){\n\n      var font={reverseHoles:true,reverseShapes:false},nbsp='\u00A0';\n\n`
     )
   } else {
     return (
       line1 +
-      "export default function font(codeList){\n\n      var font={reverseHoles:false,reverseShapes:true},nbsp='\u00A0';\n\n"
+      `export default function ${fontName.replace(
+        /-/g,
+        ''
+      )} (codeList){\n\n      var font={reverseHoles:false,reverseShapes:true},nbsp='\u00A0';\n\n`
     )
   }
 }
 function filePost() {
   return '\n      return font;\n    }'
 }
+
+// 生成meshwriter.ES.js提供给浏览器环境使用
+fs.readFile(path.join(__dirname, './meshwriterTemplate.ES.js'), (err, data) => {
+  if (err) {
+    console.log(err)
+  } else {
+    console.log(data)
+  }
+})

@@ -1,4 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
+type fontType = {
+  position?: { x?: number; y?: number; z?: number }
+  colors?: {
+    diffuse?: string
+    specular?: string
+    ambient?: string
+    emissive?: string
+  }
+  'font-family'?: string
+  anchor?: 'left' | 'center' | 'rignt'
+  'letter-height'?: number
+  'letter-thickness'?: number
+  color?: string
+  alpha?: number
+}
+
+interface MeshWriter {
+  getSPS: () => BABYLON.SolidParticleSystem
+  getMesh: () => BABYLON.Mesh
+  getMaterial: () => BABYLON.Material
+  getOffsetX: () => number
+  getLettersBoxes: () => number
+  // getLettersOrigins: () =>
+  //   this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
+  //   this.color = (c): BABYLON.SolidParticleSystem => (isString(c) ? (color = c) : color)
+  //   this.alpha = (o): BABYLON.SolidParticleSystem => (isAmplitude(o) ? (opac = o) : opac)
+  //   this.clearall = function () {
+  //     sps = null
+  //     mesh = null
+  //     material = null
+  //   }
+}
 
 declare namespace BABYLON {
   declare interface Color3 {
@@ -7,6 +40,17 @@ declare namespace BABYLON {
       sOffset: [number, 'add' | 'mul'] | [number],
       vOffset: [number, 'add' | 'mul'] | [number]
     ): BABYLON.Color3
+  }
+  declare interface Path2 {
+    addQuadraticCurveTo: (redX: number, redY: number, blueX: number, blueY: number) => void
+    addCubicCurveTo: (
+      redX: number,
+      redY: number,
+      greenX: number,
+      greenY: number,
+      blueX: number,
+      blueY: number
+    ) => void
   }
 }
 
