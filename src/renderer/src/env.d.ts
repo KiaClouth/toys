@@ -1,15 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
+
+// meshwriter部分
+type fontData = {
+  sC: [string] | null
+  shapeCmds?: number[][][]
+  hC?: [[string]] | null
+  holeCmds?: (string[] | number[][][])[]
+  xMin: number
+  xMax: number
+  yMin: number
+  yMax: number
+  wdth: number
+}
+
 type fontType = {
-  position?: { x?: number; y?: number; z?: number }
-  colors?: {
-    diffuse?: string
-    specular?: string
-    ambient?: string
-    emissive?: string
-  }
+  [key: string]: fontData | boolean
+  reverseHoles: boolean
+  reverseShapes: boolean
+}
+
+type fontsType = {
+  [key: string]: fontType
+}
+
+type mrPosition = { x?: number; y?: number; z?: number }
+type mrColors = {
+  diffuse?: string
+  specular?: string
+  ambient?: string
+  emissive?: string
+}
+type mrAnchor = 'left' | 'center' | 'right'
+
+type fonOptions = {
+  position?: mrPosition
+  colors?: mrColors
   'font-family'?: string
-  anchor?: 'left' | 'center' | 'rignt'
+  anchor?: mrAnchor
   'letter-height'?: number
   'letter-thickness'?: number
   color?: string
@@ -24,13 +52,9 @@ interface MeshWriter {
   getLettersBoxes: () => number
   // getLettersOrigins: () =>
   //   this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
-  //   this.color = (c): BABYLON.SolidParticleSystem => (isString(c) ? (color = c) : color)
-  //   this.alpha = (o): BABYLON.SolidParticleSystem => (isAmplitude(o) ? (opac = o) : opac)
-  //   this.clearall = function () {
-  //     sps = null
-  //     mesh = null
-  //     material = null
-  //   }
+  color: (c) => string
+  alpha: (o) => number
+  clearall: () => void
 }
 
 declare namespace BABYLON {
@@ -53,6 +77,8 @@ declare namespace BABYLON {
     ) => void
   }
 }
+
+// paintAPI部分
 
 declare namespace CSS {
   let paintWorklet: paintWorklet

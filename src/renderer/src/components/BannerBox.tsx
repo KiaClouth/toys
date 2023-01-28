@@ -261,6 +261,7 @@ export default function BannerBox(): JSX.Element {
                 z: 0
               }
             })
+            // console.log(textWriter)
             const textMesh = textWriter.getMesh()
             textMesh.name = 'textMesh'
             textMesh.id = 'textMesh' + a

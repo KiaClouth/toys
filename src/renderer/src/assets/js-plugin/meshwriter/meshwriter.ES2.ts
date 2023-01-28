@@ -41,7 +41,8 @@ const hbsb = HBSB(codeList)
 const zhmqrtt = ZHMQRTT(codeList)
 const hnm = HNM(codeList) // Do not remove
 // >>>>>  STEP 2 <<<<<
-const FONTS = {}
+
+const FONTS: fontsType = {}
 // >>>>>  STEP 3 <<<<<
 FONTS['PangMenZhengDao'] = pmz
 FONTS['Helvetica-Black-SemiBold'] = hbsb
@@ -79,9 +80,7 @@ export default function Wrapper(
       Mesh?: BABYLON.Mesh
     }
   }
-): (lttrs: string, opt: fontType) => void {
-  let proto
-
+): (lttrs: string, opt: fonOptions) => void {
   const preferences = makePreferences(prenfrences)
 
   const defaultFont = isObject(FONTS[preferences.defaultFont])
@@ -99,29 +98,29 @@ export default function Wrapper(
   //   ~ letters
   //   ~ options
 
-  function MeshWriter(this: MeshWriter, lttrs: string, opt: fontType): void {
-    let material, sps, mesh
+  function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
+    let material, color, sps, mesh
 
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // Here we set ALL parameters with incoming value or a default
     // setOption:  applies a test to potential incoming parameters
     //             if the test passes, the parameters are used, else the default is used
     const options = isObject(opt) ? opt : {},
-      position = setOption(options, 'position', isObject, {}),
-      colors = setOption(options, 'colors', isObject, {}),
-      fontFamily = setOption(options, 'font-family', isSupportedFont, defaultFont),
-      anchor = setOption(options, 'anchor', isSupportedAnchor, 'left'),
-      rawheight = setOption(options, 'letter-height', isPositiveNumber, 100),
-      rawThickness = setOption(options, 'letter-thickness', isPositiveNumber, 1),
-      basicColor = setOption(options, 'color', isString, defaultColor),
-      opac = setOption(options, 'alpha', isAmplitude, defaultOpac),
-      y = setOption(position, 'y', isNumber, 0),
-      x = setOption(position, 'x', isNumber, 0),
-      z = setOption(position, 'z', isNumber, 0),
-      diffuse = setOption(colors, 'diffuse', isString, '#F0F0F0'),
-      specular = setOption(colors, 'specular', isString, '#000000'),
-      ambient = setOption(colors, 'ambient', isString, '#F0F0F0'),
-      emissive = setOption(colors, 'emissive', isString, basicColor),
+      position = setOption<mrPosition>(options, 'position', isObject, {}),
+      colors = setOption<mrColors>(options, 'colors', isObject, {}),
+      fontFamily = setOption<string>(options, 'font-family', isSupportedFont, defaultFont),
+      anchor = setOption<mrAnchor>(options, 'anchor', isSupportedAnchor, 'left'),
+      rawheight = setOption<number>(options, 'letter-height', isPositiveNumber, 100),
+      rawThickness = setOption<number>(options, 'letter-thickness', isPositiveNumber, 1),
+      basicColor = setOption<string>(options, 'color', isString, defaultColor)
+    let opac = setOption<number>(options, 'alpha', isAmplitude, defaultOpac)
+    const y = setOption<number>(position, 'y', isNumber, 0),
+      x = setOption<number>(position, 'x', isNumber, 0),
+      z = setOption<number>(position, 'z', isNumber, 0),
+      diffuse = setOption<string>(colors, 'diffuse', isString, '#F0F0F0'),
+      specular = setOption<string>(colors, 'specular', isString, '#000000'),
+      ambient = setOption<string>(colors, 'ambient', isString, '#F0F0F0'),
+      emissive = setOption<string>(colors, 'emissive', isString, basicColor),
       fontSpec = FONTS[fontFamily],
       letterScale = round((scale * rawheight) / naturalLetterHeight),
       thickness = round(scale * rawThickness),
@@ -167,13 +166,13 @@ export default function Wrapper(
 
     this.getSPS = (): BABYLON.SolidParticleSystem => sps
     this.getMesh = (): BABYLON.Mesh => mesh
-    this.getMaterial = (): BABYLON.Material => material
+    this.getMaterial = (): BABYLON.StandardMaterial => material
     this.getOffsetX = (): number => offsetX
     this.getLettersBoxes = (): number => lettersBoxes
     this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
-    this.color = (c): BABYLON.SolidParticleSystem => (isString(c) ? (color = c) : color)
-    this.alpha = (o): BABYLON.SolidParticleSystem => (isAmplitude(o) ? (opac = o) : opac)
-    this.clearall = function () {
+    this.color = (c): string => (isString(c) ? (color = c) : basicColor)
+    this.alpha = (o): number => (isAmplitude(o) ? (opac = o) : opac)
+    this.clearall = function (): void {
       sps = null
       mesh = null
       material = null
@@ -182,7 +181,7 @@ export default function Wrapper(
   //  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR
   // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 
-  proto = MeshWriter.prototype
+  const proto = MeshWriter.prototype
 
   proto.setColor = function (color) {
     const material = this.getMaterial()
@@ -276,23 +275,21 @@ function makeSPS(scene, meshesAndBoxes, material) {
 //   ~ the letter origins (providing offset for each letter)
 function constructLetterPolygons(
   letters: string,
-  fontSpec,
-  xOffset,
-  yOffset,
-  zOffset,
-  letterScale,
-  thickness,
+  fontSpec: fontType,
+  xOffset: number,
+  yOffset: number,
+  zOffset: number,
+  letterScale: number,
+  thickness: number,
   material,
-  meshOrigin
+  meshOrigin: 'fontOrigin' | 'letterCenter'
 ) {
-  console.log('letters: ', letters, typeof letters, letters.length)
-  let letterOffsetX = 0,
-    lettersOrigins = new Array(letters.length),
-    lettersBoxes = new Array(letters.length),
-    lettersMeshes = new Array(letters.length),
-    ix = 0,
-    letter: string,
-    letterSpec,
+  // console.log('letters: ', letters, typeof letters, letters.length)
+  let letterOffsetX = 0
+  const lettersOrigins = new Array(letters.length)
+  const lettersBoxes = new Array(letters.length)
+  const lettersMeshes = new Array(letters.length)
+  let ix = 0,
     lists,
     shapesList,
     holesList,
@@ -303,8 +300,8 @@ function constructLetterPolygons(
     i: number
 
   for (i = 0; i < letters.length; i++) {
-    letter = letters[i]
-    letterSpec = makeLetterSpec(fontSpec, letter)
+    const letter = letters[i]
+    const letterSpec = makeLetterSpec(fontSpec, letter)
     if (isObject(letterSpec)) {
       lists = buildLetterMeshes(
         letter,
@@ -334,6 +331,7 @@ function constructLetterPolygons(
   meshesAndBoxes = [lettersMeshes, lettersBoxes, lettersOrigins]
   meshesAndBoxes.xWidth = round(letterOffsetX)
   meshesAndBoxes.count = ix
+  console.log(meshesAndBoxes)
   return meshesAndBoxes
 
   //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
@@ -358,18 +356,25 @@ function constructLetterPolygons(
   // *WARNING*                                                         *WARNING*
   //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 
-  function buildLetterMeshes(letter, index, spec, reverseShapes, reverseHoles) {
+  function buildLetterMeshes(
+    letter: string,
+    index: number,
+    spec: fontData,
+    reverseShapes: boolean,
+    reverseHoles: boolean
+  ) {
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // A large number of offsets are created, per warning
-    let balanced = meshOrigin === 'letterCenter',
+    const balanced = meshOrigin === 'letterCenter',
       centerX = (spec.xMin + spec.xMax) / 2,
       centerZ = (spec.yMin + spec.yMax) / 2,
-      xFactor = isNumber(spec.xFactor) ? spec.xFactor : 1,
-      zFactor = isNumber(spec.yFactor) ? spec.yFactor : 1,
-      xShift = isNumber(spec.xShift) ? spec.xShift : 0,
-      zShift = isNumber(spec.yShift) ? spec.yShift : 0,
-      reverseShape = isBoolean(spec.reverseShape) ? spec.reverseShape : reverseShapes,
-      reverseHole = isBoolean(spec.reverseHole) ? spec.reverseHole : reverseHoles,
+      xFactor = 'xFactor' in spec && isNumber(spec.xFactor) ? spec.xFactor : 1,
+      zFactor = 'yFactor' in spec && isNumber(spec.yFactor) ? spec.yFactor : 1,
+      xShift = 'xShift' in spec && isNumber(spec.xShift) ? spec.xShift : 0,
+      zShift = 'yShift' in spec && isNumber(spec.yShift) ? spec.yShift : 0,
+      reverseShape = 'reverseShape' in spec && isBoolean(spec.reverseShape) ? spec.reverseShape : reverseShapes,
+      reverseHole =
+        'reverseHole' in spec && isBoolean(spec.reverseHole) ? spec.reverseHole : reverseHoles,
       offX = xOffset - (balanced ? centerX : 0),
       offZ = zOffset - (balanced ? centerZ : 0),
       shapeCmdsLists = isArray(spec.shapeCmds) ? spec.shapeCmds : [],
@@ -577,7 +582,14 @@ function constructLetterPolygons(
   }
 }
 
-function makeMaterial(scene, letters, emissive, ambient, specular, diffuse, opac) {
+function makeMaterial(
+  scene: BABYLON.Scene,
+  letters,
+  emissive,
+  ambient,
+  specular,
+  diffuse,
+  opac): BABYLON.StandardMaterial {
   const cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
   cm0.diffuseColor = rgb2Bcolor3(diffuse)
   cm0.specularColor = rgb2Bcolor3(specular)
@@ -595,17 +607,23 @@ function makeMaterial(scene, letters, emissive, ambient, specular, diffuse, opac
 // These may be optionally compressed during construction of the file
 // The compressed versions are placed in "sC" and "hC"
 // The *first* time a letter is used, if it was compressed, it is decompressed
-function makeLetterSpec(fontSpec, letter) {
-  const letterSpec = fontSpec[letter],
-    singleMap = (cmds) => decodeList(cmds),
-    doubleMap = (cmdslists) => (isArray(cmdslists) ? cmdslists.map(singleMap) : cmdslists)
+function makeLetterSpec(fontSpec: fontType, letter: string): fontData {
+  const letterSpec = fontSpec[letter] as fontData,
+    singleMap = (cmds: string): number[][] => decodeList(cmds),
+    doubleMap = (cmdslists: [string]): string[] | number[][][] =>
+      isArray(cmdslists) ? cmdslists.map(singleMap) : cmdslists
 
   if (isObject(letterSpec)) {
-    if (!isArray(letterSpec.shapeCmds) && isArray(letterSpec.sC)) {
+    if (!isArray(letterSpec.shapeCmds) && isArray(letterSpec.sC) && letterSpec.sC !== null) {
       letterSpec.shapeCmds = letterSpec.sC.map(singleMap)
       letterSpec.sC = null
     }
-    if (!isArray(letterSpec.holeCmds) && isArray(letterSpec.hC)) {
+    if (
+      !isArray(letterSpec.holeCmds) &&
+      isArray(letterSpec.hC) &&
+      letterSpec.hC !== null &&
+      letterSpec.hC !== undefined
+    ) {
       letterSpec.holeCmds = letterSpec.hC.map(doubleMap)
       letterSpec.hC = null
     }
@@ -613,9 +631,9 @@ function makeLetterSpec(fontSpec, letter) {
   return letterSpec
 }
 
-function decodeList(str) {
-  const split = str.split(' '),
-    list = []
+function decodeList(str: string): number[][] {
+  const split = str.split(' ')
+  const list: number[][] = [[]]
   split.forEach(function (cmds) {
     if (cmds.length === 12) {
       list.push(decode6(cmds))
@@ -628,7 +646,7 @@ function decodeList(str) {
     }
   })
   return list
-  function decode6(s) {
+  function decode6(s: string): [number, number, number, number, number, number] {
     return [
       decode1(s, 0, 2),
       decode1(s, 2, 4),
@@ -638,13 +656,13 @@ function decodeList(str) {
       decode1(s, 10, 12)
     ]
   }
-  function decode4(s) {
+  function decode4(s: string): [number, number, number, number] {
     return [decode1(s, 0, 2), decode1(s, 2, 4), decode1(s, 4, 6), decode1(s, 6, 8)]
   }
-  function decode2(s) {
+  function decode2(s: string): [number, number] {
     return [decode1(s, 0, 2), decode1(s, 2, 4)]
   }
-  function decode1(s, start, end) {
+  function decode1(s: string, start: number, end: number): number {
     return (frB128(s.substring(start, end)) - 4000) / 2
   }
 }
@@ -709,7 +727,7 @@ function prepArray(): void {
     }
   }
 }
-function frB128(s): number {
+function frB128(s: string): number {
   let result = 0,
     i = -1
   const l = s.length - 1
@@ -850,7 +868,12 @@ function supplementCurveFunctions(): void {
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // Applies a test to potential incoming parameters
 // If the test passes, the parameters are used, otherwise the default is used
-function setOption<T>(opts: fontType, field: string, tst: (arg0: T) => boolean, defalt: T): T {
+function setOption<T>(
+  opts: fonOptions | mrPosition | mrColors,
+  field: string,
+  tst: (opt: T) => boolean,
+  defalt: T
+): T {
   return tst(opts[field]) ? opts[field] : defalt
 }
 
