@@ -2,12 +2,13 @@
 import PMZ from "./dist/pangmenzhengdao";
 import HBSB from "./dist/helvetica-black-semibold";
 import ZHMQRTT from "./dist/ZiHunMengQuRuanTangTi";
+import YSBTH from './dist/YouSheBiaoTiHei-2';
 import HNM from "./helveticaneue-medium";
 import earcut from "earcut";
 
 // >>>>>  STEP 1 <<<<<
 
-var scene, FONTS, defaultColor, defaultOpac, naturalLetterHeight, curveSampleSize, Γ = Math.floor, pmz, hnm, hbsb, zhmqrtt, debug;
+var scene, FONTS, defaultColor, defaultOpac, naturalLetterHeight, curveSampleSize, Γ = Math.floor, pmz, hnm, hbsb, zhmqrtt, ysbth, debug;
 var b128back, b128digits;
 var B = {}, methodsList = [  "Vector2", "Vector3", "Path2", "Curve3", "Color3", "SolidParticleSystem", "PolygonMeshBuilder", "CSG", "StandardMaterial", "Mesh", ];
 prepArray();
@@ -15,6 +16,7 @@ prepArray();
 pmz = PMZ(codeList);
 hbsb = HBSB(codeList);
 zhmqrtt = ZHMQRTT(codeList)
+ysbth = YSBTH(codeList)
 hnm = HNM(codeList); // Do not remove
 // >>>>>  STEP 2 <<<<<
 FONTS = {};
@@ -22,6 +24,7 @@ FONTS = {};
 FONTS["PangMenZhengDao"] = pmz;
 FONTS["Helvetica-Black-SemiBold"] = hbsb;
 FONTS["ZiHunMengQuRuanTangTi"] = zhmqrtt;
+FONTS["YouSheBiaoTiHei-2"] = ysbth
 FONTS["HelveticaNeue-Medium"] = hnm; // Do not remove
 // >>>>>  STEP 4 <<<<<
 defaultColor = "#808080";
@@ -905,6 +908,9 @@ function point2Vector(point) {
   return new B.Vector2(round(point.x), round(point.y));
 }
 function merge(arrayOfMeshes) {
+  // for (let i = 0; i < arrayOfMeshes.length; i++) {
+  //   console.log(arrayOfMeshes[i])
+  // }
   return arrayOfMeshes.length === 1
     ? arrayOfMeshes[0]
     : B.Mesh.MergeMeshes(arrayOfMeshes, true);

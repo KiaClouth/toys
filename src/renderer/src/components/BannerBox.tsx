@@ -4,14 +4,19 @@ import 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import 'babylonjs-inspector'
-import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES2'
+import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
 
-import contrast_url from '../assets/img/banner/contrast.png?url'
+import contrast_url from '../assets/img/banner/contrast.jpg?url'
 import top_nav_url from '../assets/img/banner/top_nav.svg?url'
 import banner_model_url from '../assets/model/banner.gltf?url'
 
-// const imgSize = [[1920, 650], [660, 330], [1110, 450]]
-// const imgName = ['woniuxy.cn.pc', 'woniuxy.cn.mo', 'woniuxy.com.pc']
+const imgSize = [
+  [1920, 650],
+  [660, 330],
+  [1110, 450],
+  [900, 300]
+]
+const imgName = ['opening_timr_banner.cn.pc', 'opening_timr_banner.cn.mo', 'opening_timr_banner.com.pc, opening_timr_banner.com.mo']
 const campusArray = [
   ['成都', '01·22'],
   ['天府', '07·10'],
@@ -109,14 +114,7 @@ export default function BannerBox(): JSX.Element {
         scene.ambientColor = new BABYLON.Color3(1, 0, 1)
 
         // 摄像机
-        const camera = new BABYLON.ArcRotateCamera(
-          'Camera',
-          Math.PI / 2,
-          Math.PI / 1.97,
-          12.7,
-          new BABYLON.Vector3(0, 0.66, 3),
-          scene
-        )
+        const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
         camera.attachControl(canvas, true)
         camera.minZ = 0.1
         camera.fov = 0.26
@@ -129,26 +127,32 @@ export default function BannerBox(): JSX.Element {
           scene,
           function (event) {
             // 加载进度计算
-            const percentage = event.lengthComputable
-              ? ' ' + Math.floor((event.loaded / event.total) * 100) + '%'
-              : ''
+            const percentage = event.lengthComputable ? ' ' + Math.floor((event.loaded / event.total) * 100) + '%' : ''
             document.getElementsByClassName('LoadingProgress')[0]
               ? (document.getElementsByClassName('LoadingProgress')[0].innerHTML = percentage)
               : console.log('没找到.LoadingProgress元素')
           }
         ).then(() => {
           // 加载完成之后
+          const Writer = MeshWriter(scene, { scale: 1 })
           // ----------------------------定义静态材质----------------------------------
           // 水滴PBR材质
           const shuidiPbrMaterial = new BABYLON.PBRMaterial('shuidiPbrMaterial', scene)
           shuidiPbrMaterial.albedoColor = new BABYLON.Color3(192 / 255, 178 / 255, 211 / 255)
           shuidiPbrMaterial.metallic = 1
           shuidiPbrMaterial.roughness = 0.9
-          shuidiPbrMaterial.emissiveColor = new BABYLON.Color3(
-            192 / 255,
-            178 / 255,
-            211 / 255
-          ).multiply(new BABYLON.Color3(0.7, 0.7, 0.7))
+          shuidiPbrMaterial.emissiveColor = new BABYLON.Color3(192 / 255, 178 / 255, 211 / 255).multiply(new BABYLON.Color3(0.7, 0.7, 0.7))
+
+          // 功能型信息PBR材质
+          const infoPbrMaterial = new BABYLON.PBRMaterial('infoPbrMaterial', scene)
+          infoPbrMaterial.albedoColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
+          infoPbrMaterial.metallic = 1
+          infoPbrMaterial.roughness = 0.9
+          infoPbrMaterial.emissiveColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
+
+          // 水滴间距计算值
+          let total_width_of_all_dateMesh = 0
+
           // -----------------------------网格构建-------------------------------------
           let shuidi = scene.meshes[0]
           for (const mesh of scene.meshes) {
@@ -159,24 +163,17 @@ export default function BannerBox(): JSX.Element {
           }
 
           // 水滴与文字的循环生成
-          for (let a = 0; a < campusArray.length - 2; a++) {
+          const number_of_campus_displayed = campusArray.length - 2
+          for (let a = 0; a < number_of_campus_displayed; a++) {
             if (campusArray[0][a] === ('阿多比' || '凡云')) break
             // 值简化
-            const shuidiPosition = new BABYLON.Vector3(
-              shuidiPositionArray[0][a],
-              shuidiPositionArray[1][a],
-              shuidiPositionArray[2][a]
-            )
+            const shuidiPosition = new BABYLON.Vector3(shuidiPositionArray[0][a], shuidiPositionArray[1][a], shuidiPositionArray[2][a])
             const shuidiRotation = new BABYLON.Vector3(
               Math.PI * shuidiRotationArray[0][a],
               Math.PI * shuidiRotationArray[1][a],
               Math.PI * shuidiRotationArray[2][a]
             )
-            const shuidiScaling = new BABYLON.Vector3(
-              shuidiScaleArray[0][a],
-              shuidiScaleArray[1][a],
-              shuidiScaleArray[2][a]
-            )
+            const shuidiScaling = new BABYLON.Vector3(shuidiScaleArray[0][a], shuidiScaleArray[1][a], shuidiScaleArray[2][a])
             const text_material_color = new BABYLON.Color3(
               textMaterialColorArray[0][a % 3] / 255,
               textMaterialColorArray[1][a % 3] / 255,
@@ -190,27 +187,15 @@ export default function BannerBox(): JSX.Element {
             textPbrMaterial.albedoColor = text_material_color.toLinearSpace()
             switch (a % 3) {
               case 0:
-                textPbrMaterial.emissiveColor = text_material_color.hsvOffset(
-                  [0, 'add'],
-                  [1],
-                  [0.5, 'mul']
-                )
+                textPbrMaterial.emissiveColor = text_material_color.hsvOffset([0, 'add'], [1], [0.5, 'mul'])
                 break
 
               case 1:
-                textPbrMaterial.emissiveColor = text_material_color.hsvOffset(
-                  [-0.07, 'add'],
-                  [1],
-                  [0.5, 'mul']
-                )
+                textPbrMaterial.emissiveColor = text_material_color.hsvOffset([-0.07, 'add'], [1], [0.5, 'mul'])
                 break
 
               case 2:
-                textPbrMaterial.emissiveColor = text_material_color.hsvOffset(
-                  [0.05, 'add'],
-                  [1],
-                  [0.5, 'mul']
-                )
+                textPbrMaterial.emissiveColor = text_material_color.hsvOffset([0.05, 'add'], [1], [0.5, 'mul'])
                 break
 
               default:
@@ -228,10 +213,6 @@ export default function BannerBox(): JSX.Element {
             //   new BABYLON.Color3(0.1, 0.1, 0.1)
             // )
 
-            // 开班日期拆分：暂未使用
-            const time_array = campusArray[a][1].replace(' ', ':').replace(/:/g, '·').split('·') // 从“·”号处将时间拆分为[月，日]
-            time_array[0] = time_array[0].replace(/\b(0+)/gi, '') //去掉月前面的0
-
             // ---------------------------动态网格生成------------------------
             // 水滴
             const shuidiClone = shuidi.clone('shuidi', null, false)!
@@ -242,8 +223,7 @@ export default function BannerBox(): JSX.Element {
             shuidiArray.push(shuidiClone)
 
             // 水滴正面文字
-            const Writer = MeshWriter(scene, { scale: 1 })
-            const textWriter = new Writer(campusArray[a][0], {
+            const shuidi_textWriter = new Writer(campusArray[a][0], {
               'font-family': 'ZiHunMengQuRuanTangTi', // 名称注意大小写
               'letter-height': 0.2,
               'letter-thickness': 0.05,
@@ -261,20 +241,17 @@ export default function BannerBox(): JSX.Element {
                 z: 0
               }
             })
-            // console.log(textWriter)
-            const textMesh = textWriter.getMesh()
-            textMesh.name = 'textMesh'
-            textMesh.id = 'textMesh' + a
-            // textMesh.showBoundingBox = true
-            textMesh.material = textPbrMaterial
-            textMesh.parent = shuidiClone
+            const shuidi_textMesh = shuidi_textWriter.getMesh()
+            shuidi_textMesh.name = 'shuidi_textMesh'
+            shuidi_textMesh.id = 'shuidi_textMesh' + a
+            // shuidi_textMesh.showBoundingBox = true
+            shuidi_textMesh.material = textPbrMaterial
+            shuidi_textMesh.parent = shuidiClone
 
             // x轴居中处理
-            textMesh.locallyTranslate(
-              new BABYLON.Vector3(-textMesh.getBoundingInfo().boundingBox.center.x, -0.09, 0.03)
-            )
+            shuidi_textMesh.locallyTranslate(new BABYLON.Vector3(-shuidi_textMesh.getBoundingInfo().boundingBox.center.x, -0.09, 0.03))
 
-            textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+            shuidi_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
 
             shuidiClone.position = shuidiPosition
             shuidiClone.scaling = shuidiScaling
@@ -291,7 +268,7 @@ export default function BannerBox(): JSX.Element {
               scene
             )
             shuidi_spotLight.id = 'shuidi_spotLight' + a
-            shuidi_spotLight.includedOnlyMeshes = [shuidiClone, textMesh]
+            shuidi_spotLight.includedOnlyMeshes = [shuidiClone, shuidi_textMesh]
             // shuidi_spotLight.diffuse = text_material_color.multiply(new BABYLON.Color3(0.8, 0.8, 0.8))
             shuidi_spotLight.intensity = 40
             shuidi_spotLight.radius = 10
@@ -304,7 +281,7 @@ export default function BannerBox(): JSX.Element {
             shuidi_generator.blurScale = 1
             shuidi_generator.transparencyShadow = true
             shuidi_generator.darkness = 0
-            shuidi_generator.addShadowCaster(textMesh, true)
+            shuidi_generator.addShadowCaster(shuidi_textMesh, true)
 
             // 设置锥形光产生渐变
             const text_spotLight = new BABYLON.SpotLight(
@@ -316,7 +293,7 @@ export default function BannerBox(): JSX.Element {
               scene
             )
             text_spotLight.id = 'text_spotLight' + a
-            text_spotLight.includedOnlyMeshes = [textMesh]
+            text_spotLight.includedOnlyMeshes = [shuidi_textMesh]
             text_spotLight.intensity = 500
             text_spotLight.radius = 3
             text_spotLight.diffuse =
@@ -324,6 +301,38 @@ export default function BannerBox(): JSX.Element {
                 ? text_material_color.hsvOffset([0.1, 'add'], [1], [0.1, 'mul'])
                 : text_material_color.hsvOffset([0.1, 'add'], [1], [1])
             text_spotLight.parent = shuidiClone
+
+            // 功能型信息绘制
+
+            // 校区文字生成
+            // 时间文字生成
+            const time_array = campusArray[a][1].replace(' ', ':').replace(/:/g, '·').split('·') // 从“·”号处将时间拆分为[月，日]
+            time_array[0] = time_array[0].replace(/\b(0+)/gi, '') //去掉月前面的0
+            // 日期 = 月 + ‘月’ + 日 + ‘日’
+            const date = time_array[0] + '月' + time_array[1] + '日'
+            const date_textWriter = new Writer(date, {
+              'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+              'letter-height': 0.02,
+              'letter-thickness': 0.001
+            })
+            const date_textMesh = date_textWriter.getMesh()
+            date_textMesh.id = 'date_textMesh' + a
+            date_textMesh.name = 'date_textMesh'
+            date_textMesh.material = infoPbrMaterial
+            date_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+            total_width_of_all_dateMesh = total_width_of_all_dateMesh + date_textMesh.getBoundingInfo().boundingBox.center.x * 2
+
+            // 校区名称字体
+            const campus_textWriter = new Writer(campusArray[a][0] + '校区', {
+              'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+              'letter-height': 0.02,
+              'letter-thickness': 0.001
+            })
+            const campus_name_textMesh = campus_textWriter.getMesh()
+            campus_name_textMesh.id = 'campus_name_textMesh' + a
+            campus_name_textMesh.name = 'campus_name_textMesh'
+            campus_name_textMesh.material = infoPbrMaterial
+            campus_name_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
 
             // 世界坐标轴显示
             // new BABYLON.AxesViewer(scene, 1)
@@ -333,100 +342,107 @@ export default function BannerBox(): JSX.Element {
             // localAxes_shuidi.xAxis.parent = shuidiArray[a]
             // localAxes_shuidi.yAxis.parent = shuidiArray[a]
             // localAxes_shuidi.zAxis.parent = shuidiArray[a]
+          }
+          // 网格构建循环结束
+          const contianer_width = 1.68
+          const contianer = BABYLON.MeshBuilder.CreateBox('contianer', { width: contianer_width, height: 0.0005, depth: 0.01 })
+          contianer.id = 'contianer'
+          contianer.parent = scene.meshes[0]
+          contianer.position = new BABYLON.Vector3(0, 0.24, 13)
+          contianer.material = infoPbrMaterial
+          // contianer.material.alpha = 0.1
 
-            // const localAxes_text = new BABYLON.AxesViewer(scene, 0.25)
-            // localAxes_text.xAxis.parent = textMesh
-            // localAxes_text.yAxis.parent = textMesh
-            // localAxes_text.zAxis.parent = textMesh
+          // 标题设置
+          const title_cn_textWriter = new Writer('最新开班时间', {
+            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'letter-height': 0.05,
+            'letter-thickness': 0.001
+          })
+          const title_cn_textMesh = title_cn_textWriter.getMesh()
+          title_cn_textMesh.id = 'title_cn_textMesh'
+          title_cn_textMesh.name = 'title_cn_textMesh'
+          title_cn_textMesh.material = infoPbrMaterial
+          title_cn_textMesh.parent = contianer
+          title_cn_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+          title_cn_textMesh.position = new BABYLON.Vector3(0.195, 0.095, 0)
 
-            // const localAxes_shuidi_light = new BABYLON.AxesViewer(scene, 0.25)
-            // localAxes_shuidi_light.xAxis.parent = shuidi_light
-            // localAxes_shuidi_light.yAxis.parent = shuidi_light
-            // localAxes_shuidi_light.zAxis.parent = shuidi_light
+          const title_en_textWriter = new Writer('Lastest opening time', {
+            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'letter-height': 0.026,
+            'letter-thickness': 0.001
+          })
+          const title_en_textMesh = title_en_textWriter.getMesh()
+          title_en_textMesh.id = 'title_en_textMesh'
+          title_en_textMesh.name = 'title_en_textMesh'
+          title_en_textMesh.material = infoPbrMaterial
+          title_en_textMesh.parent = contianer
+          title_en_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+          title_en_textMesh.position = new BABYLON.Vector3(0.197, 0.063, 0)
+
+          // date信息等距排列
+          const spacing = (contianer_width - total_width_of_all_dateMesh) / (number_of_campus_displayed - 1)
+
+          // 等间距分布设置
+          let offsteX = 0
+          for (let b = 0; b < number_of_campus_displayed; b++) {
+            const preMesh = scene.getMeshById('date_textMesh' + (b - 1))
+            const mesh = scene.getMeshById('date_textMesh' + b)
+            const campus_mesh = scene.getMeshById('campus_name_textMesh' + b)
+            if (preMesh !== null) {
+              offsteX = offsteX + preMesh.getBoundingInfo().boundingBox.center.x * 2 + spacing
+            }
+            if (mesh !== null) {
+              mesh.parent = contianer
+              mesh.position = new BABYLON.Vector3(-contianer_width / 2 + offsteX, -0.055, 0)
+            }
+            if (campus_mesh !== null) {
+              campus_mesh.parent = contianer
+              campus_mesh.position = new BABYLON.Vector3(-contianer_width / 2 + offsteX, -0.03, 0)
+            }
           }
 
           // --------------------------------------环境构建----------------------------------
           // 主光源
-          const mainLight = new BABYLON.DirectionalLight(
-            'mainLight',
-            new BABYLON.Vector3(0, -10, 0),
-            scene
-          )
-          mainLight.includedOnlyMeshes = [
-            scene.meshes[1],
-            scene.meshes[2],
-            scene.meshes[3],
-            scene.meshes[4],
-            scene.meshes[5]
-          ]
+          const mainLight = new BABYLON.DirectionalLight('mainLight', new BABYLON.Vector3(0, -10, 0), scene)
+          mainLight.includedOnlyMeshes = [scene.meshes[1], scene.meshes[2], scene.meshes[3], scene.meshes[4], scene.meshes[5]]
           mainLight.intensity = 4
           mainLight.radius = 10
 
           // 正面光
-          const positiveLight = new BABYLON.DirectionalLight(
-            'positiveLight',
-            new BABYLON.Vector3(0, 0, -10),
-            scene
-          )
-          positiveLight.includedOnlyMeshes = [
-            scene.meshes[1],
-            scene.meshes[2],
-            scene.meshes[3],
-            scene.meshes[4],
-            scene.meshes[5]
-          ]
+          const positiveLight = new BABYLON.DirectionalLight('positiveLight', new BABYLON.Vector3(0, 0, -10), scene)
+          positiveLight.includedOnlyMeshes = [scene.meshes[1], scene.meshes[2], scene.meshes[3], scene.meshes[4], scene.meshes[5]]
           positiveLight.intensity = 2
           positiveLight.radius = 10
 
           // 公路色彩增强光
 
           // 公路色相偏移
-          const highwayLight01 = new BABYLON.DirectionalLight(
-            'highwayLight01',
-            new BABYLON.Vector3(0, -10, 0),
-            scene
-          )
+          const highwayLight01 = new BABYLON.DirectionalLight('highwayLight01', new BABYLON.Vector3(0, -10, 0), scene)
           highwayLight01.includedOnlyMeshes = [scene.meshes[3]]
           highwayLight01.diffuse = new BABYLON.Color3(3, 0, 255)
           highwayLight01.intensity = 1
           highwayLight01.radius = 10
 
           // 黄线饱和度提高
-          const highwayLight1 = new BABYLON.DirectionalLight(
-            'highwayLight1',
-            new BABYLON.Vector3(0, -10, 0),
-            scene
-          )
+          const highwayLight1 = new BABYLON.DirectionalLight('highwayLight1', new BABYLON.Vector3(0, -10, 0), scene)
           highwayLight1.includedOnlyMeshes = [scene.meshes[4]]
           highwayLight1.diffuse = new BABYLON.Color3(0, 255, 255)
           highwayLight1.intensity = 0.01
           highwayLight1.radius = 10
 
           // 正面红色
-          const highwayLight2 = new BABYLON.PointLight(
-            'highwayLight2',
-            new BABYLON.Vector3(0, 1, 15),
-            scene
-          )
+          const highwayLight2 = new BABYLON.PointLight('highwayLight2', new BABYLON.Vector3(0, 1, 15), scene)
           highwayLight2.includedOnlyMeshes = [scene.meshes[3], scene.meshes[4], scene.meshes[5]]
           highwayLight2.diffuse = new BABYLON.Color3(1, 0, 0)
           highwayLight2.intensity = 100
 
-          const highwayLight3 = new BABYLON.DirectionalLight(
-            'highwayLight3',
-            new BABYLON.Vector3(0, 0, -10),
-            scene
-          )
+          const highwayLight3 = new BABYLON.DirectionalLight('highwayLight3', new BABYLON.Vector3(0, 0, -10), scene)
           highwayLight3.includedOnlyMeshes = [scene.meshes[3], scene.meshes[5]]
           highwayLight3.diffuse = new BABYLON.Color3(0, 1, 0)
           highwayLight3.intensity = 10
 
           // 水滴环境色补足
-          const shuidiLight = new BABYLON.HemisphericLight(
-            'shuidiLight',
-            new BABYLON.Vector3(0, -10, 0),
-            scene
-          )
+          const shuidiLight = new BABYLON.HemisphericLight('shuidiLight', new BABYLON.Vector3(0, -10, 0), scene)
           shuidiLight.includedOnlyMeshes = shuidiArray
           // shuidiLight.diffuse = new BABYLON.Color3(0.99, 0.7, 0.97)
           shuidiLight.diffuse = new BABYLON.Color3(0.8, 0.7, 0.97)
@@ -447,26 +463,14 @@ export default function BannerBox(): JSX.Element {
             generator.addShadowCaster(scene.meshes[i], true)
             scene.meshes[i].receiveShadows = true
 
-            if (
-              scene.meshes[i].name === '公路' ||
-              scene.meshes[i].name === '黄线' ||
-              scene.meshes[i].name === '白线'
-            ) {
+            if (scene.meshes[i].name === '公路' || scene.meshes[i].name === '黄线' || scene.meshes[i].name === '白线') {
               // scene.meshes[i].isVisible = false
               scene.meshes[i].position.y += -0.45
-              scene.meshes[i].rotation = new BABYLON.Vector3(
-                Math.PI * (-1 / 512),
-                Math.PI * (0 / 6),
-                Math.PI * (0 / 6)
-              )
+              scene.meshes[i].rotation = new BABYLON.Vector3(Math.PI * (-1 / 512), Math.PI * (0 / 6), Math.PI * (0 / 6))
             }
 
             if (scene.meshes[i].name === '地面') {
-              scene.meshes[i].rotation = new BABYLON.Vector3(
-                Math.PI * (1.25 / 256),
-                Math.PI * (0 / 6),
-                Math.PI * (0 / 6)
-              )
+              scene.meshes[i].rotation = new BABYLON.Vector3(Math.PI * (1.25 / 256), Math.PI * (0 / 6), Math.PI * (0 / 6))
               scene.meshes[i].position.y += -0.2
               // scene.meshes[i].isVisible = false
             }

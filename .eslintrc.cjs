@@ -16,7 +16,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   extends: [
-    'eslint:recommended',
+    // 'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:@typescript-eslint/recommended',

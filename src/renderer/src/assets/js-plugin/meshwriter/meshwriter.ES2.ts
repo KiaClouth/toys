@@ -1,4 +1,3 @@
-// 上次处理到：854
 import PMZ from './dist/pangmenzhengdao'
 import HBSB from './dist/helvetica-black-semibold'
 import HNM from './helveticaneue-medium'
@@ -82,12 +81,8 @@ export default function Wrapper(
   }
 ): (lttrs: string, opt: fonOptions) => void {
   const preferences = makePreferences(prenfrences)
-
-  const defaultFont = isObject(FONTS[preferences.defaultFont])
-    ? preferences.defaultFont
-    : 'HelveticaNeue-Medium'
-  const meshOrigin =
-    preferences.meshOrigin === 'fontOrigin' ? preferences.meshOrigin : 'letterCenter'
+  const defaultFont = isObject(FONTS[preferences.defaultFont]) ? preferences.defaultFont : 'HelveticaNeue-Medium'
+  const meshOrigin = preferences.meshOrigin === 'fontOrigin' ? preferences.meshOrigin : 'letterCenter'
   const scale = isNumber(preferences.scale) ? preferences.scale : 1
   debug = isBoolean(preferences.debug) ? preferences.debug : false
 
@@ -99,7 +94,7 @@ export default function Wrapper(
   //   ~ options
 
   function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
-    let material, color, sps, mesh
+    let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null, color
 
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // Here we set ALL parameters with incoming value or a default
@@ -135,21 +130,12 @@ export default function Wrapper(
     // Next, create the meshes
     // This creates an array of meshes, one for each letter
     // It also creates two other arrays, which are used for letter positioning
-    const meshesAndBoxes = constructLetterPolygons(
-      letters,
-      fontSpec,
-      0,
-      0,
-      0,
-      letterScale,
-      thickness,
-      material,
-      meshOrigin
-    )
+    const meshesAndBoxes = constructLetterPolygons(letters, fontSpec, 0, 0, 0, letterScale, thickness, material, meshOrigin)
     const meshes = meshesAndBoxes[0]
     const lettersBoxes = meshesAndBoxes[1]
     const lettersOrigins = meshesAndBoxes[2]
-    const xWidth = meshesAndBoxes.xWidth
+    // 下标为3的值是ix
+    const xWidth = meshesAndBoxes[4]
 
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // The meshes are converted into particles of an SPS
@@ -164,12 +150,12 @@ export default function Wrapper(
     mesh.position.y = scale * y
     mesh.position.z = scale * z
 
-    this.getSPS = (): BABYLON.SolidParticleSystem => sps
-    this.getMesh = (): BABYLON.Mesh => mesh
-    this.getMaterial = (): BABYLON.StandardMaterial => material
+    this.getSPS = (): BABYLON.SolidParticleSystem | null => sps
+    this.getMesh = (): BABYLON.Mesh | null => mesh
+    this.getMaterial = (): BABYLON.StandardMaterial | null => material
     this.getOffsetX = (): number => offsetX
-    this.getLettersBoxes = (): number => lettersBoxes
-    this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
+    this.getLettersBoxes = (): number[][] => lettersBoxes
+    this.getLettersOrigins = (): number[][] => lettersOrigins
     this.color = (c): string => (isString(c) ? (color = c) : basicColor)
     this.alpha = (o): number => (isAmplitude(o) ? (opac = o) : opac)
     this.clearall = function (): void {
@@ -183,37 +169,43 @@ export default function Wrapper(
 
   const proto = MeshWriter.prototype
 
-  proto.setColor = function (color) {
+  proto.setColor = function (this: MeshWriter, color: string): void {
     const material = this.getMaterial()
     if (isString(color)) {
       material.emissiveColor = rgb2Bcolor3(this.color(color))
     }
   }
-  proto.setAlpha = function (alpha) {
+  proto.setAlpha = function (this: MeshWriter, alpha): void {
     const material = this.getMaterial()
     if (isAmplitude(alpha)) {
       material.alpha = this.alpha(alpha)
     }
   }
-  proto.overrideAlpha = function (alpha) {
+  proto.overrideAlpha = function (this: MeshWriter, alpha): void {
     const material = this.getMaterial()
     if (isAmplitude(alpha)) {
       material.alpha = alpha
     }
   }
-  proto.resetAlpha = function () {
+  proto.resetAlpha = function (this: MeshWriter): void {
     const material = this.getMaterial()
-    material.alpha = this.alpha()
+    material.alpha = this.alpha(1)
   }
-  proto.getLetterCenter = function (ix) {
+  proto.getLetterCenter = function (): BABYLON.Vector2 {
     return new B.Vector2(0, 0)
   }
-  proto.dispose = function () {
+  proto.dispose = function (this: MeshWriter): void {
     const mesh = this.getMesh(),
       sps = this.getSPS(),
       material = this.getMaterial()
+    if (mesh) {
+      mesh.dispose()
+    }
     if (sps) {
       sps.dispose()
+    }
+    if (material) {
+      material.dispose()
     }
     this.clearall()
   }
@@ -223,15 +215,15 @@ export default function Wrapper(
   return MeshWriter
 }
 if (typeof window !== 'undefined') {
-  window.TYPE = Wrapper
-  window.MeshWriter = Wrapper
+  window['TYPE'] = Wrapper
+  window['MeshWriter'] = Wrapper
 }
 if (typeof global !== 'undefined') {
   global.MeshWriter = Wrapper
 }
 if (typeof BABYLON === 'object') {
   cacheMethods(BABYLON)
-  BABYLON.MeshWriter = Wrapper
+  BABYLON['MeshWriter'] = Wrapper
 }
 if (typeof module === 'object' && module.exports) {
   module.exports = Wrapper
@@ -240,27 +232,27 @@ if (typeof module === 'object' && module.exports) {
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // MakeSPS turns the output of constructLetterPolygons into an SPS
 // with the whole string, with appropriate offsets
-function makeSPS(scene, meshesAndBoxes, material) {
-  let meshes = meshesAndBoxes[0],
-    lettersOrigins = meshesAndBoxes[2],
-    sps,
-    spsMesh
-  if (meshes.length) {
-    sps = new B.SolidParticleSystem('sps' + 'test', scene, {})
-    meshes.forEach(function (mesh, ix) {
-      sps.addShape(mesh, 1, {
-        positionFunction: makePositionParticle(lettersOrigins[ix])
-      })
-      mesh.dispose()
+function makeSPS(
+  scene: BABYLON.Scene,
+  meshesAndBoxes: meshesAndBoxes,
+  material: BABYLON.StandardMaterial
+): [BABYLON.SolidParticleSystem, BABYLON.Mesh] {
+  const meshes = meshesAndBoxes[0]
+  const lettersOrigins = meshesAndBoxes[2]
+  const sps = new B.SolidParticleSystem('sps' + 'test', scene, {})
+  meshes.forEach(function (mesh, ix) {
+    sps.addShape(mesh, 1, {
+      positionFunction: makePositionParticle(lettersOrigins[ix])
     })
-    spsMesh = sps.buildMesh()
-    spsMesh.material = material
-    sps.setParticles()
-  }
+    mesh.dispose()
+  })
+  const spsMesh = sps.buildMesh()
+  spsMesh.material = material
+  sps.setParticles()
   return [sps, spsMesh]
 
-  function makePositionParticle(letterOrigins) {
-    return function positionParticle(particle, ix, s) {
+  function makePositionParticle(letterOrigins: number[]) {
+    return function positionParticle(particle: { position: { x: number; z: number } }, ix: any, s: any): void {
       particle.position.x = letterOrigins[0] + letterOrigins[1]
       particle.position.z = letterOrigins[2]
     }
@@ -283,43 +275,28 @@ function constructLetterPolygons(
   thickness: number,
   material,
   meshOrigin: 'fontOrigin' | 'letterCenter'
-) {
-  // console.log('letters: ', letters, typeof letters, letters.length)
+): meshesAndBoxes {
   let letterOffsetX = 0
-  const lettersOrigins = new Array(letters.length)
-  const lettersBoxes = new Array(letters.length)
-  const lettersMeshes = new Array(letters.length)
-  let ix = 0,
-    lists,
-    shapesList,
-    holesList,
-    letterMeshes,
-    letterBox,
-    letterOrigins,
-    meshesAndBoxes,
-    i: number
+  const lettersOrigins: number[][] = new Array(letters.length)
+  const lettersBoxes: number[][] = new Array(letters.length)
+  const lettersMeshes: BABYLON.Mesh[] = new Array(letters.length)
+  let ix = 0
 
-  for (i = 0; i < letters.length; i++) {
+  for (let i = 0; i < letters.length; i++) {
     const letter = letters[i]
     const letterSpec = makeLetterSpec(fontSpec, letter)
     if (isObject(letterSpec)) {
-      lists = buildLetterMeshes(
-        letter,
-        i,
-        letterSpec,
-        fontSpec.reverseShapes,
-        fontSpec.reverseHoles
-      )
-      shapesList = lists[0]
-      holesList = lists[1]
-      letterBox = lists[2]
-      letterOrigins = lists[3]
+      const lists = buildLetterMeshes(letter, i, letterSpec, fontSpec.reverseShapes, fontSpec.reverseHoles)
+      const shapesList = lists[0]
+      const holesList = lists[1]
+      const letterBox = lists[2]
+      const letterOrigins = lists[3]
 
       // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
       // This subtracts the holes, if any, from the shapes and merges the shapes
       // (Many glyphs - 'i', '%' - have multiple shapes)
       // At the end, there is one mesh per glyph, as God intended
-      letterMeshes = punchHolesInShapes(shapesList, holesList)
+      const letterMeshes = punchHolesInShapes(shapesList, holesList, letter, i)
       if (letterMeshes.length) {
         lettersMeshes[ix] = merge(letterMeshes)
         lettersOrigins[ix] = letterOrigins
@@ -328,10 +305,13 @@ function constructLetterPolygons(
       }
     }
   }
-  meshesAndBoxes = [lettersMeshes, lettersBoxes, lettersOrigins]
-  meshesAndBoxes.xWidth = round(letterOffsetX)
-  meshesAndBoxes.count = ix
-  console.log(meshesAndBoxes)
+  const meshesAndBoxes: [BABYLON.Mesh[], number[][], number[][], number, number] = [
+    lettersMeshes,
+    lettersBoxes,
+    lettersOrigins,
+    ix,
+    round(letterOffsetX)
+  ]
   return meshesAndBoxes
 
   //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
@@ -362,7 +342,7 @@ function constructLetterPolygons(
     spec: fontData,
     reverseShapes: boolean,
     reverseHoles: boolean
-  ) {
+  ): [BABYLON.Mesh[], BABYLON.Mesh[][], number[], number[]] {
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // A large number of offsets are created, per warning
     const balanced = meshOrigin === 'letterCenter',
@@ -372,25 +352,23 @@ function constructLetterPolygons(
       zFactor = 'yFactor' in spec && isNumber(spec.yFactor) ? spec.yFactor : 1,
       xShift = 'xShift' in spec && isNumber(spec.xShift) ? spec.xShift : 0,
       zShift = 'yShift' in spec && isNumber(spec.yShift) ? spec.yShift : 0,
-      reverseShape = 'reverseShape' in spec && isBoolean(spec.reverseShape) ? spec.reverseShape : reverseShapes,
-      reverseHole =
-        'reverseHole' in spec && isBoolean(spec.reverseHole) ? spec.reverseHole : reverseHoles,
+      reverseShape = 'reverseShape' in spec && isBoolean(spec.reverseShape) ? (spec.reverseShape as boolean) : reverseShapes,
+      reverseHole = 'reverseHole' in spec && isBoolean(spec.reverseHole) ? (spec.reverseHole as boolean) : reverseHoles,
       offX = xOffset - (balanced ? centerX : 0),
       offZ = zOffset - (balanced ? centerZ : 0),
-      shapeCmdsLists = isArray(spec.shapeCmds) ? spec.shapeCmds : [],
-      holeCmdsListsArray = isArray(spec.holeCmds) ? spec.holeCmds : [],
-      letterBox,
-      letterOrigins
+      shapeCmdsLists = (isArray(spec.shapeCmds) ? spec.shapeCmds : [[[]]]) as number[][][],
+      holeCmdsListsArray = (isArray(spec.holeCmds) ? spec.holeCmds : []) as number[][][][]
 
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // Several scaling functions are created too, per warning
-    let adjX = makeAdjust(letterScale, xFactor, offX, 0, false, true), // no shift
+    const adjX = makeAdjust(letterScale, xFactor, offX, 0, false, true), // no shift
       adjZ = makeAdjust(letterScale, zFactor, offZ, 0, false, false),
       adjXfix = makeAdjust(letterScale, xFactor, offX, xShift, false, true), // shifted / fixed
       adjZfix = makeAdjust(letterScale, zFactor, offZ, zShift, false, false),
       adjXrel = makeAdjust(letterScale, xFactor, offX, xShift, true, true), // shifted / relative
-      adjZrel = makeAdjust(letterScale, zFactor, offZ, zShift, true, false),
-      thisX,
+      adjZrel = makeAdjust(letterScale, zFactor, offZ, zShift, true, false)
+
+    let thisX,
       lastX,
       thisZ,
       lastZ,
@@ -403,45 +381,36 @@ function constructLetterPolygons(
       minZadj = NaN,
       maxZadj = NaN
 
-    letterBox = [adjX(spec.xMin), adjX(spec.xMax), adjZ(spec.yMin), adjZ(spec.yMax)]
-    letterOrigins = [round(letterOffsetX), -1 * adjX(0), -1 * adjZ(0)]
+    const letterBox = [adjX(spec.xMin), adjX(spec.xMax), adjZ(spec.yMin), adjZ(spec.yMax)]
+    const letterOrigins = [round(letterOffsetX), -1 * adjX(0), -1 * adjZ(0)]
 
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // Scope warning:  letterOffsetX belongs to an outer closure
     // and persists through multiple characters
     letterOffsetX = letterOffsetX + spec.wdth * letterScale
 
-    if (debug && spec.show) {
+    if (debug && 'show' in spec) {
       console.log([minX, maxX, minZ, maxZ])
       console.log([minXadj, maxXadj, minZadj, maxZadj])
     }
 
-    return [
-      shapeCmdsLists.map(makeCmdsToMesh(reverseShape)),
-      holeCmdsListsArray.map(meshesFromCmdsListArray),
-      letterBox,
-      letterOrigins
-    ]
+    return [shapeCmdsLists.map(makeCmdsToMesh(reverseShape)), holeCmdsListsArray.map(meshesFromCmdsListArray), letterBox, letterOrigins]
 
-    function meshesFromCmdsListArray(cmdsListArray) {
+    function meshesFromCmdsListArray(cmdsListArray: number[][][]): BABYLON.Mesh[] {
       return cmdsListArray.map(makeCmdsToMesh(reverseHole))
     }
-    function makeCmdsToMesh(reverse) {
-      return function cmdsToMesh(cmdsList) {
-        let cmd = getCmd(cmdsList, 0),
-          path = new B.Path2(adjXfix(cmd[0]), adjZfix(cmd[1])),
-          array,
-          meshBuilder,
-          j,
-          last,
-          first = 0
+    function makeCmdsToMesh(reverse: boolean) {
+      return function cmdsToMesh(cmdsList: number[][]): BABYLON.Mesh {
+        let cmd = getCmd(cmdsList, 0)
+        const path = new B.Path2(adjXfix(cmd[0]), adjZfix(cmd[1]))
+        const first = 0
 
         // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
         // Array length is used to determine curve type in the 'TheLeftover Font Format'  (TLFF)
         //
         // IDIOCYNCRACY:  Odd-length arrays indicate relative coordinates; the first digit is discarded
 
-        for (j = 1; j < cmdsList.length; j++) {
+        for (let j = 1; j < cmdsList.length; j++) {
           cmd = getCmd(cmdsList, j)
 
           // ~  ~  ~  ~  ~  ~  ~  ~
@@ -456,51 +425,27 @@ function constructLetterPolygons(
           // ~  ~  ~  ~  ~  ~  ~  ~
           // Quadratic curve
           if (cmd.length === 4) {
-            path.addQuadraticCurveTo(
-              adjXfix(cmd[0]),
-              adjZfix(cmd[1]),
-              adjXfix(cmd[2]),
-              adjZfix(cmd[3])
-            )
+            path.addQuadraticCurveTo(adjXfix(cmd[0]), adjZfix(cmd[1]), adjXfix(cmd[2]), adjZfix(cmd[3]))
           }
           if (cmd.length === 5) {
-            path.addQuadraticCurveTo(
-              adjXrel(cmd[1]),
-              adjZrel(cmd[2]),
-              adjXrel(cmd[3]),
-              adjZrel(cmd[4])
-            )
+            path.addQuadraticCurveTo(adjXrel(cmd[1]), adjZrel(cmd[2]), adjXrel(cmd[3]), adjZrel(cmd[4]))
           }
 
           // ~  ~  ~  ~  ~  ~  ~  ~
           // Cubic curve
           if (cmd.length === 6) {
-            path.addCubicCurveTo(
-              adjXfix(cmd[0]),
-              adjZfix(cmd[1]),
-              adjXfix(cmd[2]),
-              adjZfix(cmd[3]),
-              adjXfix(cmd[4]),
-              adjZfix(cmd[5])
-            )
+            path.addCubicCurveTo(adjXfix(cmd[0]), adjZfix(cmd[1]), adjXfix(cmd[2]), adjZfix(cmd[3]), adjXfix(cmd[4]), adjZfix(cmd[5]))
           }
           if (cmd.length === 7) {
-            path.addCubicCurveTo(
-              adjXrel(cmd[1]),
-              adjZrel(cmd[2]),
-              adjXrel(cmd[3]),
-              adjZrel(cmd[4]),
-              adjXrel(cmd[5]),
-              adjZrel(cmd[6])
-            )
+            path.addCubicCurveTo(adjXrel(cmd[1]), adjZrel(cmd[2]), adjXrel(cmd[3]), adjZrel(cmd[4]), adjXrel(cmd[5]), adjZrel(cmd[6]))
           }
         }
         // Having created a Path2 instance with BABYLON utilities,
         // we turn it into an array and discard it
-        array = path.getPoints().map(point2Vector)
+        let array = path.getPoints().map(point2Vector)
 
         // Sometimes redundant coordinates will cause artifacts - delete them!
-        last = array.length - 1
+        const last = array.length - 1
         if (array[first].x === array[last].x && array[first].y === array[last].y) {
           array = array.slice(1)
         }
@@ -508,27 +453,17 @@ function constructLetterPolygons(
           array.reverse()
         }
 
-        meshBuilder = new B.PolygonMeshBuilder(
-          'MeshWriter-' + letter + index + '-' + weeid(),
-          array,
-          scene,
-          earcut
-        )
+        const meshBuilder = new B.PolygonMeshBuilder('MeshWriter-' + letter + index + '-' + weeid(), array, scene, earcut)
         return meshBuilder.build(true, thickness)
       }
     }
-    function getCmd(list, ix) {
-      let cmd, len
+    function getCmd(list: number[][], ix: number): number[] {
       lastX = thisX
       lastZ = thisZ
-      cmd = list[ix]
-      len = cmd.length
-      thisX = isRelativeLength(len)
-        ? round(cmd[len - 2] * xFactor + thisX)
-        : round(cmd[len - 2] * xFactor)
-      thisZ = isRelativeLength(len)
-        ? round(cmd[len - 1] * zFactor + thisZ)
-        : round(cmd[len - 1] * zFactor)
+      const cmd = list[ix]
+      const len = cmd.length
+      thisX = isRelativeLength(len) ? round(cmd[len - 2] * xFactor + thisX) : round(cmd[len - 2] * xFactor)
+      thisZ = isRelativeLength(len) ? round(cmd[len - 1] * zFactor + thisZ) : round(cmd[len - 1] * zFactor)
       minX = thisX > minX ? minX : thisX
       maxX = thisX < maxX ? maxX : thisX
       minXadj = thisX + xShift > minXadj ? minXadj : thisX + xShift
@@ -542,24 +477,30 @@ function constructLetterPolygons(
 
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // Returns the a scaling function, based on incoming parameters
-    function makeAdjust(letterScale, factor, off, shift, relative, xAxis) {
+    function makeAdjust(
+      letterScale: number,
+      factor: number,
+      off: number,
+      shift: number,
+      relative: boolean,
+      xAxis: boolean
+    ): (val: number) => number {
       if (relative) {
         if (xAxis) {
-          return (val) => round(letterScale * (val * factor + shift + lastX + off))
+          return (val: number): number => round(letterScale * (val * factor + shift + lastX + off))
         } else {
-          return (val) => round(letterScale * (val * factor + shift + lastZ + off))
+          return (val: number): number => round(letterScale * (val * factor + shift + lastZ + off))
         }
       } else {
-        return (val) => round(letterScale * (val * factor + shift + off))
+        return (val: number): number => round(letterScale * (val * factor + shift + off))
       }
     }
   }
 
   // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
-  function punchHolesInShapes(shapesList, holesList) {
-    let letterMeshes = [],
-      j
-    for (j = 0; j < shapesList.length; j++) {
+  function punchHolesInShapes(shapesList: BABYLON.Mesh[], holesList: BABYLON.Mesh[][], letter: string, i: number): BABYLON.Mesh[] {
+    const letterMeshes: BABYLON.Mesh[] = []
+    for (let j = 0; j < shapesList.length; j++) {
       const shape = shapesList[j]
       const holes = holesList[j]
       if (isArray(holes) && holes.length) {
@@ -570,7 +511,7 @@ function constructLetterPolygons(
     }
     return letterMeshes
   }
-  function punchHolesInShape(shape, holes, letter, i) {
+  function punchHolesInShape(shape: BABYLON.Mesh, holes: BABYLON.Mesh[], letter: string, i: number): BABYLON.Mesh {
     let csgShape = B.CSG.FromMesh(shape),
       k
     for (k = 0; k < holes.length; k++) {
@@ -582,14 +523,7 @@ function constructLetterPolygons(
   }
 }
 
-function makeMaterial(
-  scene: BABYLON.Scene,
-  letters,
-  emissive,
-  ambient,
-  specular,
-  diffuse,
-  opac): BABYLON.StandardMaterial {
+function makeMaterial(scene: BABYLON.Scene, letters, emissive, ambient, specular, diffuse, opac): BABYLON.StandardMaterial {
   const cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
   cm0.diffuseColor = rgb2Bcolor3(diffuse)
   cm0.specularColor = rgb2Bcolor3(specular)
@@ -610,20 +544,14 @@ function makeMaterial(
 function makeLetterSpec(fontSpec: fontType, letter: string): fontData {
   const letterSpec = fontSpec[letter] as fontData,
     singleMap = (cmds: string): number[][] => decodeList(cmds),
-    doubleMap = (cmdslists: [string]): string[] | number[][][] =>
-      isArray(cmdslists) ? cmdslists.map(singleMap) : cmdslists
+    doubleMap = (cmdslists: string[]): number[][][] => cmdslists.map(singleMap)
 
   if (isObject(letterSpec)) {
     if (!isArray(letterSpec.shapeCmds) && isArray(letterSpec.sC) && letterSpec.sC !== null) {
       letterSpec.shapeCmds = letterSpec.sC.map(singleMap)
       letterSpec.sC = null
     }
-    if (
-      !isArray(letterSpec.holeCmds) &&
-      isArray(letterSpec.hC) &&
-      letterSpec.hC !== null &&
-      letterSpec.hC !== undefined
-    ) {
+    if (!isArray(letterSpec.holeCmds) && isArray(letterSpec.hC) && letterSpec.hC !== null && letterSpec.hC !== undefined) {
       letterSpec.holeCmds = letterSpec.hC.map(doubleMap)
       letterSpec.hC = null
     }
@@ -647,14 +575,7 @@ function decodeList(str: string): number[][] {
   })
   return list
   function decode6(s: string): [number, number, number, number, number, number] {
-    return [
-      decode1(s, 0, 2),
-      decode1(s, 2, 4),
-      decode1(s, 4, 6),
-      decode1(s, 6, 8),
-      decode1(s, 8, 10),
-      decode1(s, 10, 12)
-    ]
+    return [decode1(s, 0, 2), decode1(s, 2, 4), decode1(s, 4, 6), decode1(s, 6, 8), decode1(s, 8, 10), decode1(s, 10, 12)]
   }
   function decode4(s: string): [number, number, number, number] {
     return [decode1(s, 0, 2), decode1(s, 2, 4), decode1(s, 4, 6), decode1(s, 6, 8)]
@@ -835,14 +756,7 @@ function supplementCurveFunctions(): void {
       }
     }
     if (!B.Path2.prototype.addCubicCurveTo) {
-      B.Path2.prototype.addCubicCurveTo = function (
-        redX,
-        redY,
-        greenX,
-        greenY,
-        blueX,
-        blueY
-      ): void {
+      B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY): void {
         const points = this.getPoints()
         const lastPoint = points[points.length - 1]
         const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
@@ -850,13 +764,7 @@ function supplementCurveFunctions(): void {
         const control2 = new B.Vector3(greenX, greenY, 0)
         const destination = new B.Vector3(blueX, blueY, 0)
         const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
-        const curve = B.Curve3.CreateCubicBezier(
-          origin,
-          control1,
-          control2,
-          destination,
-          nb_of_points
-        )
+        const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
         const curvePoints = curve.getPoints()
         for (let i = 1; i < curvePoints.length; i++) {
           this.addLineTo(curvePoints[i].x, curvePoints[i].y)
@@ -868,12 +776,7 @@ function supplementCurveFunctions(): void {
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // Applies a test to potential incoming parameters
 // If the test passes, the parameters are used, otherwise the default is used
-function setOption<T>(
-  opts: fonOptions | mrPosition | mrColors,
-  field: string,
-  tst: (opt: T) => boolean,
-  defalt: T
-): T {
+function setOption<T>(opts: fonOptions | mrPosition | mrColors, field: string, tst: (opt: T) => boolean, defalt: T): T {
   return tst(opts[field]) ? opts[field] : defalt
 }
 
@@ -882,42 +785,39 @@ function setOption<T>(
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 // Conversion functions
-function rgb2Bcolor3(rgb): BABYLON.Color3 {
+function rgb2Bcolor3(rgb: string): BABYLON.Color3 {
   rgb = rgb.replace('#', '')
-  return new B.Color3(
-    convert(rgb.substring(0, 2)),
-    convert(rgb.substring(2, 4)),
-    convert(rgb.substring(4, 6))
-  )
+  return new B.Color3(convert(rgb.substring(0, 2)), convert(rgb.substring(2, 4)), convert(rgb.substring(4, 6)))
   function convert(x): number {
-    return (
-      Γ(1000 * Math.max(0, Math.min((isNumber(parseInt(x, 16)) ? parseInt(x, 16) : 0) / 255, 1))) /
-      1000
-    )
+    return Γ(1000 * Math.max(0, Math.min((isNumber(parseInt(x, 16)) ? parseInt(x, 16) : 0) / 255, 1))) / 1000
   }
 }
-function point2Vector(point): BABYLON.Vector2 {
+function point2Vector(point: { x: number; y: number }): BABYLON.Vector2 {
   return new B.Vector2(round(point.x), round(point.y))
 }
-function merge(arrayOfMeshes) {
-  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : B.Mesh.MergeMeshes(arrayOfMeshes, true)
+function merge(arrayOfMeshes: BABYLON.Mesh[]): BABYLON.Mesh {
+  for (let i = 0; i < arrayOfMeshes.length; i++) {
+    console.log(arrayOfMeshes[i])
+  }
+  // debugger
+  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
 }
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 // Boolean test functions
-function isPositiveNumber(mn): boolean {
+function isPositiveNumber(mn): mn is number {
   return typeof mn === 'number' && !isNaN(mn) ? 0 < mn : false
 }
-function isNumber(mn): boolean {
+function isNumber(mn): mn is number {
   return typeof mn === 'number'
 }
 function isBoolean(mn): boolean {
   return typeof mn === 'boolean'
 }
-function isAmplitude(ma): boolean {
+function isAmplitude(ma): ma is number {
   return typeof ma === 'number' && !isNaN(ma) ? 0 <= ma && ma <= 1 : false
 }
-function isObject(mo): boolean {
+function isObject(mo): mo is object {
   return (mo != null && typeof mo === 'object') || typeof mo === 'function'
 }
 function isArray(ma): boolean {
@@ -929,15 +829,15 @@ function isString(ms): boolean {
 function isSupportedFont(ff): boolean {
   return isObject(FONTS[ff])
 }
-function isSupportedAnchor(a): boolean {
+function isSupportedAnchor(a): a is string {
   return a === 'left' || a === 'right' || a === 'center'
 }
-function isRelativeLength(l): boolean {
+function isRelativeLength(l): l is number {
   return l === 3 || l === 5 || l === 7
 }
 function weeid(): number {
   return Math.floor(Math.random() * 1000000)
 }
-function round(n): number {
+function round(n: number): number {
   return Γ(0.3 + n * 1000000) / 1000000
 }

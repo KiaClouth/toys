@@ -2,11 +2,14 @@
 /// <reference types="vite/client" />
 
 // meshwriter部分
+type numberTree = (numberTree | number)[]
+type meshesAndBoxes = [BABYLON.Mesh[], number[][], number[][], number, number]
+
 type fontData = {
-  sC: [string] | null
+  sC: string[] | null
   shapeCmds?: number[][][]
-  hC?: [[string]] | null
-  holeCmds?: (string[] | number[][][])[]
+  hC?: string[][] | null
+  holeCmds?: number[][][][]
   xMin: number
   xMax: number
   yMin: number
@@ -45,16 +48,16 @@ type fonOptions = {
 }
 
 interface MeshWriter {
-  getSPS: () => BABYLON.SolidParticleSystem
-  getMesh: () => BABYLON.Mesh
-  getMaterial: () => BABYLON.Material
+  getSPS: () => BABYLON.SolidParticleSystem | null
+  getMesh: () => BABYLON.Mesh | null
+  getMaterial: () => BABYLON.StandardMaterial | null
   getOffsetX: () => number
-  getLettersBoxes: () => number
-  // getLettersOrigins: () =>
-  //   this.getLettersOrigins = (): BABYLON.SolidParticleSystem => lettersOrigins
+  getLettersBoxes: () => number[][]
+  getLettersOrigins: () => number[][]
   color: (c) => string
   alpha: (o) => number
   clearall: () => void
+  setColor: () => void
 }
 
 declare namespace BABYLON {

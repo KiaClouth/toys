@@ -1,5 +1,7 @@
 const chineseCoverage = [
   // eslint-disable-next-line prettier/prettier
+  "最", "新", "开", "班", "时", "间", "日", "月","校","区",
+  // eslint-disable-next-line prettier/prettier
   "成", "都", "天", "府", "重", "庆", "西", "安", "上", "海", "武", "汉", "深", "圳", "南", "京", "杭", "广", "州", "阿", "多", "比", "凡", "云",
   // eslint-disable-next-line prettier/prettier
   "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
