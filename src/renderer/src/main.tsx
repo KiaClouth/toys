@@ -3,11 +3,6 @@ import { root, resize } from './tool'
 import SmoothCorners from './assets/js-plugin/houdini/smooth-corners.worklet.js?url'
 import ReactDOM from 'react-dom/client'
 
-const ss = ['sss', 'aaa', 'vvv']
-ss['ster'] = 'ssswww'
-ss['css'] = 'ssswww'
-console.log(ss)
-
 // 启用监听
 window.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.code == 'F11') {
