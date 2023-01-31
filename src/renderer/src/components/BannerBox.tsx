@@ -110,6 +110,7 @@ export default function BannerBox(): JSX.Element {
 
       const scene = new BABYLON.Scene(engine)
       scene.ambientColor = new BABYLON.Color3(1, 0, 1)
+      // 是否开启inspector
       // scene.debugLayer.show({
       //   // embedMode: true
       // })
@@ -337,7 +338,6 @@ export default function BannerBox(): JSX.Element {
         contianer.parent = scene.meshes[0]
         contianer.position = new BABYLON.Vector3(0, 0.24, 13)
         contianer.material = infoPbrMaterial
-        // contianer.material.alpha = 0.1
 
         // 标题设置
         const title_cn_textWriter = new Writer('最新开班时间', {
@@ -351,7 +351,7 @@ export default function BannerBox(): JSX.Element {
         title_cn_textMesh.material = infoPbrMaterial
         title_cn_textMesh.parent = contianer
         title_cn_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
-        title_cn_textMesh.position = new BABYLON.Vector3(0.195, 0.095, 0)
+        title_cn_textMesh.position = new BABYLON.Vector3(0.34, 0.095, 0)
 
         const title_en_textWriter = new Writer('Lastest opening time', {
           'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
@@ -364,7 +364,7 @@ export default function BannerBox(): JSX.Element {
         title_en_textMesh.material = infoPbrMaterial
         title_en_textMesh.parent = contianer
         title_en_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
-        title_en_textMesh.position = new BABYLON.Vector3(0.197, 0.063, 0)
+        title_en_textMesh.position = new BABYLON.Vector3(0.34, 0.063, 0)
 
         // date信息等距排列
         const spacing = (contianer_width - total_width_of_all_dateMesh) / (number_of_campus_displayed - 1)
