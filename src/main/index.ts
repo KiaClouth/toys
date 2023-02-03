@@ -3,71 +3,71 @@ import * as path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 function createWindow(): void {
-  // const { width, height } = screen.getPrimaryDisplay().workAreaSize
-  // const mainWindow = new BrowserWindow({
-  //   width: width,
-  //   height: height,
-  //   title: 'Toys of KiaClouth',
-  //   icon: path.join(__dirname, '../main/icon/256.ico'),
-  //   frame: false,
-  //   show: false,
-  //   resizable: false,
-  //   transparent: true,
-  //   backgroundColor: '#00000000',
-  //   maximizable: false,
-  //   webPreferences: {
-  //     // webSecurity: false,
-  //     preload: path.join(__dirname, '../preload/index'),
-  //     sandbox: false,
-  //     accessibleTitle: 'Toys of KiaClouth',
-  //     // contextIsolation: false,
-  //     nodeIntegration: true
-  //     // nodeIntegrationInWorker: true,
-  //   },
-  //   autoHideMenuBar: true,
-  //   ...(process.platform === 'linux'
-  //     ? {
-  //         icon: path.join(__dirname, '../../build/icon.png')
-  //       }
-  //     : {})
-  // })
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const mainWindow = new BrowserWindow({
+    width: width,
+    height: height,
+    title: 'Toys of KiaClouth',
+    icon: path.join(__dirname, '../main/icon/256.ico'),
+    frame: false,
+    show: false,
+    resizable: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    maximizable: false,
+    webPreferences: {
+      // webSecurity: false,
+      preload: path.join(__dirname, '../preload/index'),
+      sandbox: false,
+      accessibleTitle: 'Toys of KiaClouth',
+      // contextIsolation: false,
+      nodeIntegration: true
+      // nodeIntegrationInWorker: true,
+    },
+    autoHideMenuBar: true,
+    ...(process.platform === 'linux'
+      ? {
+          icon: path.join(__dirname, '../../build/icon.png')
+        }
+      : {})
+  })
 
-  // mainWindow.on('ready-to-show', () => {
-  //   mainWindow.show()
-  // })
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
+  })
 
-  // mainWindow.webContents.setWindowOpenHandler((details) => {
-  //   shell.openExternal(details.url)
-  //   return { action: 'deny' }
-  // })
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url)
+    return { action: 'deny' }
+  })
 
-  // // HMR for renderer base on electron-vite cli.
-  // // Load the remote URL for development or the local html file for production.
-  // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-  //   mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  // } else {
-  //   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
-  // }
+  // HMR for renderer base on electron-vite cli.
+  // Load the remote URL for development or the local html file for production.
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+  }
 
-  // //ipc模块
-  // const ipcMain = require('electron').ipcMain
+  //ipc模块
+  const ipcMain = require('electron').ipcMain
 
-  // //接收最小化命令
-  // ipcMain.on('window-min', function () {
-  //   mainWindow.minimize()
-  // })
+  //接收最小化命令
+  ipcMain.on('window-min', function () {
+    mainWindow.minimize()
+  })
 
-  // ipcMain.on('chuantou', function () {
-  //   console.log('chuantou')
-  //   mainWindow.setIgnoreMouseEvents(true, {
-  //     forward: true
-  //   })
-  // })
+  ipcMain.on('chuantou', function () {
+    console.log('chuantou')
+    mainWindow.setIgnoreMouseEvents(true, {
+      forward: true
+    })
+  })
 
-  // ipcMain.on('huanyuan', function () {
-  //   console.log('huanyuan')
-  //   mainWindow.setIgnoreMouseEvents(false)
-  // })
+  ipcMain.on('huanyuan', function () {
+    console.log('huanyuan')
+    mainWindow.setIgnoreMouseEvents(false)
+  })
 }
 
 // This method will be called when Electron has finished
@@ -84,7 +84,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  createWindow()
+  // createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

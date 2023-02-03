@@ -1,26 +1,26 @@
 /* 外部字体引入 */
 @font-face {
   font-family: 'DINpro';
-  src: url('../font/DINpro-black.woff2') format('woff2'), url('../font/DINpro-black.woff') format('woff');
+  src: url(../../public/font/DINpro-black.woff2) format('woff2'), url(../../public/font/DINpro-black.woff) format('woff');
   font-weight: 900;
 }
 @font-face {
   font-family: 'DINpro';
-  src: url('../font/DINpro-bold.woff2') format('woff2'), url('../font/DINpro-bold.woff') format('woff');
+  src: url(../../public/font/DINpro-bold.woff2) format('woff2'), url(../../public/font/DINpro-bold.woff2) format('woff');
   font-weight: 700;
 }
 @font-face {
   font-family: 'DINpro';
-  src: url('../font/DINpro-medium.woff2') format('woff2'), url('../font/DINpro-medium.woff') format('woff');
+  src: url(../../public/font/DINpro-medium.woff2) format('woff2'), url(../../public/font/DINpro-medium.woff) format('woff');
   font-weight: 500;
 }
 @font-face {
   font-family: 'DINpro';
-  src: url('../font/DINpro-regular.woff2') format('woff2'), url('../font/DINpro-regular.woff') format('woff');
+  src: url(../../public/font/DINpro-regular.woff2) format('woff2'), url(../../public/font/DINpro-regular.woff) format('woff');
   font-weight: 300;
 }
 @font-face {
   font-family: 'DINpro';
-  src: url('../font/DINpro-light.woff2') format('woff2'), url('../font/DINpro-light.woff') format('woff');
+  src: url(../../public/font/DINpro-light.woff2) format('woff2'), url(../../public/font/DINpro-light.woff) format('woff');
   font-weight: 100;
 }

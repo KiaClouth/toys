@@ -3,12 +3,12 @@ import 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import 'babylonjs-inspector'
-import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
+import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES2'
 
 import { canvasResize, isCanvas } from '../tool'
-import contrast_url from '../assets/img/banner/contrast.jpg?url'
-import top_nav_url from '../assets/img/banner/top_nav.svg?url'
-import banner_model_url from '../assets/model/banner.gltf?url'
+import contrast_url from '../public/img/banner/contrast.jpg?url'
+import top_nav_url from '../public/img/banner/top_nav.svg?url'
+import banner_model_url from '../public/model/banner.gltf?url'
 
 // const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 // const exportSets: [string, [number, number], number][] = [

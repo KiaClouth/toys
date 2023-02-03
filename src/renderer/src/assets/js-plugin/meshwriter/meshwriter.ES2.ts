@@ -2,6 +2,8 @@ import PMZ from './dist/pangmenzhengdao'
 import HBSB from './dist/helvetica-black-semibold'
 import HNM from './helveticaneue-medium'
 import ZHMQRTT from './dist/ZiHunMengQuRuanTangTi'
+import YSBTH from './dist/YouSheBiaoTiHei-2'
+import YSBTY from './dist/YSbiaotiyuan'
 import earcut from 'earcut'
 
 // >>>>>  STEP 1 <<<<<
@@ -38,6 +40,8 @@ prepArray()
 const pmz = PMZ(codeList)
 const hbsb = HBSB(codeList)
 const zhmqrtt = ZHMQRTT(codeList)
+const ysbth = YSBTH(codeList)
+const ysbty = YSBTY(codeList)
 const hnm = HNM(codeList) // Do not remove
 // >>>>>  STEP 2 <<<<<
 
@@ -46,6 +50,8 @@ const FONTS: fontsType = {}
 FONTS['PangMenZhengDao'] = pmz
 FONTS['Helvetica-Black-SemiBold'] = hbsb
 FONTS['ZiHunMengQuRuanTangTi'] = zhmqrtt
+FONTS['YouSheBiaoTiHei-2'] = ysbth
+FONTS['YSbiaotiyuan'] = ysbty
 FONTS['HelveticaNeue-Medium'] = hnm // Do not remove
 // >>>>>  STEP 4 <<<<<
 const defaultColor = '#808080'
@@ -171,25 +177,41 @@ export default function Wrapper(
 
   proto.setColor = function (this: MeshWriter, color: string): void {
     const material = this.getMaterial()
-    if (isString(color)) {
-      material.emissiveColor = rgb2Bcolor3(this.color(color))
+    if (material !== null) {
+      if (isString(color)) {
+        material.emissiveColor = rgb2Bcolor3(this.color(color))
+      }
+    } else {
+      throw 'material is null'
     }
   }
   proto.setAlpha = function (this: MeshWriter, alpha): void {
     const material = this.getMaterial()
-    if (isAmplitude(alpha)) {
-      material.alpha = this.alpha(alpha)
+    if (material !== null) {
+      if (isAmplitude(alpha)) {
+        material.alpha = this.alpha(alpha)
+      }
+    } else {
+      throw 'material is null'
     }
   }
   proto.overrideAlpha = function (this: MeshWriter, alpha): void {
     const material = this.getMaterial()
-    if (isAmplitude(alpha)) {
-      material.alpha = alpha
+    if (material !== null) {
+      if (isAmplitude(alpha)) {
+        material.alpha = alpha
+      }
+    } else {
+      throw 'material is null'
     }
   }
   proto.resetAlpha = function (this: MeshWriter): void {
     const material = this.getMaterial()
-    material.alpha = this.alpha(1)
+    if (material !== null) {
+      material.alpha = this.alpha(1)
+    } else {
+      throw 'material is null'
+    }
   }
   proto.getLetterCenter = function (): BABYLON.Vector2 {
     return new B.Vector2(0, 0)
@@ -252,7 +274,7 @@ function makeSPS(
   return [sps, spsMesh]
 
   function makePositionParticle(letterOrigins: number[]) {
-    return function positionParticle(particle: { position: { x: number; z: number } }, ix: any, s: any): void {
+    return function positionParticle(particle: { position: { x: number; z: number } }): void {
       particle.position.x = letterOrigins[0] + letterOrigins[1]
       particle.position.z = letterOrigins[2]
     }
@@ -504,6 +526,7 @@ function constructLetterPolygons(
       const shape = shapesList[j]
       const holes = holesList[j]
       if (isArray(holes) && holes.length) {
+        console.log(shape, holes, letter, i, punchHolesInShape(shape, holes, letter, i))
         letterMeshes.push(punchHolesInShape(shape, holes, letter, i))
       } else {
         letterMeshes.push(shape)
@@ -512,9 +535,8 @@ function constructLetterPolygons(
     return letterMeshes
   }
   function punchHolesInShape(shape: BABYLON.Mesh, holes: BABYLON.Mesh[], letter: string, i: number): BABYLON.Mesh {
-    let csgShape = B.CSG.FromMesh(shape),
-      k
-    for (k = 0; k < holes.length; k++) {
+    let csgShape = B.CSG.FromMesh(shape)
+    for (let k = 0; k < holes.length; k++) {
       csgShape = csgShape.subtract(B.CSG.FromMesh(holes[k]))
     }
     holes.forEach((h) => h.dispose())
@@ -796,10 +818,10 @@ function point2Vector(point: { x: number; y: number }): BABYLON.Vector2 {
   return new B.Vector2(round(point.x), round(point.y))
 }
 function merge(arrayOfMeshes: BABYLON.Mesh[]): BABYLON.Mesh {
-  for (let i = 0; i < arrayOfMeshes.length; i++) {
-    console.log(arrayOfMeshes[i])
-  }
-  // debugger
+  // for (let i = 0; i < arrayOfMeshes.length; i++) {
+  //   console.log(arrayOfMeshes[i])
+  // }
+  debugger
   return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
 }
 

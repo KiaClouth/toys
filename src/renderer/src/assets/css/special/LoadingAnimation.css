@@ -12,8 +12,8 @@
   top: calc(50vh - 10vw);
   width: var(--overallWidth);
   height: var(--overallHeight);
-  mask-image: url(../img/page/loading/Union.svg);
-  -webkit-mask-image: url(../img/page/loading/Union.svg);
+  mask-image: url(../../../public/img/page/loading/Union.svg);
+  -webkit-mask-image: url(../../../public/img/page/loading/Union.svg);
   mask-position: 0 0;
   -webkit-mask-position: 0 0;
   mask-repeat: no-repeat;
