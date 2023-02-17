@@ -821,7 +821,7 @@ function merge(arrayOfMeshes: BABYLON.Mesh[]): BABYLON.Mesh {
   // for (let i = 0; i < arrayOfMeshes.length; i++) {
   //   console.log(arrayOfMeshes[i])
   // }
-  debugger
+  // debugger
   return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
 }
 

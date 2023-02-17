@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { PerlinNoise, canvasResize, isCanvas } from './tool'
 import * as BABYLON from 'babylonjs'
-import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES'
+import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES2'
 import './assets/js-plugin/babylon/cannon.js'
 
-import topNavUrl from './assets/img/WoniuSec/topNav.svg?url'
+import topNavUrl from './public/img/WoniuSec/topNav.svg?url'
 
 export default function GS(): JSX.Element {
   useEffect(() => {
@@ -47,14 +47,7 @@ export default function GS(): JSX.Element {
         // const camera = new BABYLON.UniversalCamera('Camera', new BABYLON.Vector3(0, 0, -1), scene)
 
         // 摄像机
-        const camera = new BABYLON.ArcRotateCamera(
-          'Camera',
-          Math.PI * (0 / 2),
-          Math.PI * (0 / 2),
-          1,
-          new BABYLON.Vector3(0, 0, 0),
-          scene
-        )
+        const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI * (0 / 2), Math.PI * (0 / 2), 1, new BABYLON.Vector3(0, 0, 0), scene)
 
         camera.attachControl(canvas, true)
         camera.minZ = 0.1
@@ -72,12 +65,12 @@ export default function GS(): JSX.Element {
         mainLightGenerator.darkness = 0.6
 
         // 二十面体---------------------
-        const icosahedron = BABYLON.MeshBuilder.CreateGeodesic('icosahedron1', {
-          m: 0,
-          n: 0,
-          size: 0.3,
-          updatable: true
-        })
+        // const icosahedron = BABYLON.MeshBuilder.CreateGeodesic('icosahedron1', {
+        //   m: 0,
+        //   n: 0,
+        //   size: 0.3,
+        //   updatable: true
+        // })
 
         // icosahedron.position = new BABYLON.Vector3(-0.135, 0, 0)
 
@@ -115,7 +108,7 @@ export default function GS(): JSX.Element {
         text_mesh.addRotation(Math.PI * (3 / 2), Math.PI * 0, Math.PI * 0)
 
         for (let i = 0; i < scene.meshes.length; i++) {
-          console.log(i, scene.meshes[i].name, scene.meshes[i])
+          // console.log(i, scene.meshes[i].name, scene.meshes[i])
 
           // 将所有网格都纳入主光源的阴影计算列表
           mainLightGenerator.addShadowCaster(scene.meshes[i], true)
