@@ -9,6 +9,7 @@ import { canvasResize, isCanvas } from '../tool'
 import contrast_url from '../public/img/banner/contrast.jpg?url'
 import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
+import { float } from 'babylonjs'
 
 const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const exportSets: { name: string; size: { w: number; h: number }; containerWidth: number; containerHeight: number; rowCount: number }[] = [
@@ -22,18 +23,18 @@ const defaultContainerWidth = exportSets[0].containerWidth * camaraScale
 const defaultContainerHeight = exportSets[0].containerHeight * camaraScale
 
 const campusArray = [
-  ['成都', '02.20'],
+  ['成都', '03.13'],
   ['天府', '03.06'],
   ['重庆', '02.27'],
-  ['西安', '02.20'],
-  ['上海', '02.20'],
-  ['武汉', '02.20'],
-  ['深圳', '02.20'],
+  ['西安', '03.06'],
+  ['上海', '03.15'],
+  ['武汉', '03.13'],
+  ['深圳', '03.13'],
   ['南京', '03.06'],
   ['杭州', '03.13'],
   ['广州', '03.06'],
   ['凡云', '03.01'],
-  ['阿多比', '02.20']
+  ['阿多比', '03.08']
 ]
 
 const campus_displayed_count = campusArray.length - 2
@@ -52,27 +53,27 @@ for (let i = 0; i < campusArray.length - 3; i++) {
 const shuidiArray: BABYLON.AbstractMesh[] = []
 const shuidiPositionArray = [
   // eslint-disable-next-line prettier/prettier
-  [-0.750, -0.360, -0.080, +0.400, +0.770, +1.300, +1.860, +2.370, +2.870, +3.350, 11, 12, 13],
+  [-0.75, -0.36, -0.08, +0.4, +0.77, +1.3, +1.86, +2.37, +2.87, +3.35, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+0.700, +0.730, +1.020, +1.150, +1.250, +1.270, +1.400, +1.440, +1.600, +0.965, 11, 12, 13],
+  [+0.7, +0.73, +1.02, +1.15, +1.25, +1.27, +1.4, +1.44, +1.6, +0.965, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+11.60, +11.40, +9.000, +7.300, +6.800, +5.600, +4.000, +3.000, +2.000, +1.000, 11, 12, 13],
+  [+11.6, +11.4, +9.0, +7.3, +6.8, +5.6, +4.0, +3.0, +2.0, +1.0, 11, 12, 13]
 ]
 const shuidiRotationArray = [
   // eslint-disable-next-line prettier/prettier
-  [+1.950, +1.900, +0.001, +1.980, +0.001, +1.900, +1.980, +0.001, +0.001, -0.100, 11, 12, 13],
+  [+1.95, +1.9, +0.001, +1.98, +0.001, +1.9, +1.98, +0.001, +0.001, -0.1, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+0.150, +1.900, +1.900, +1.680, +0.100, +1.800, +0.001, +0.110, +1.800, -0.320, 11, 12, 13],
+  [+0.15, +1.9, +1.9, +1.68, +0.1, +1.8, +0.001, +0.11, +1.8, -0.32, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+0.001, +1.970, +1.970, +0.001, +1.980, +1.870, +0.001, +0.001, +0.001, -0.015, 11, 12, 13]
+  [+0.001, +1.97, +1.97, +0.001, +1.98, +1.87, +0.001, +0.001, +0.001, -0.015, 11, 12, 13]
 ]
 const shuidiScaleArray = [
   // eslint-disable-next-line prettier/prettier
-  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, +0.670, 11, 12, 13],
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.67, +0.67, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, +0.670, 11, 12, 13],
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.67, +0.67, 11, 12, 13],
   // eslint-disable-next-line prettier/prettier
-  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.670, +0.670, 11, 12, 13]
+  [+0.816, +0.735, +0.816, +0.816, +0.792, +0.816, +0.716, +0.701, +0.67, +0.67, 11, 12, 13]
 ]
 const textMaterialColorArray = [
   // eslint-disable-next-line prettier/prettier
@@ -106,9 +107,9 @@ export default function BannerBox(): JSX.Element {
       const scene = new BABYLON.Scene(engine)
       scene.ambientColor = new BABYLON.Color3(1, 0, 1)
       // 是否开启inspector
-      scene.debugLayer.show({
-        // embedMode: true
-      })
+      // scene.debugLayer.show({
+      //   // embedMode: true
+      // })
 
       // 文字模型创建器
       const Writer = MeshWriter(scene, { scale: 1 })
@@ -375,7 +376,11 @@ export default function BannerBox(): JSX.Element {
 
       // 复制原始顶点数据
       const containerVertexData = container.getVerticesData(BABYLON.VertexBuffer.PositionKind)!
-      const containerPositionsDefault = new Float32Array(containerVertexData.slice())
+      const containerPositionsDefault: float[] = []
+      for (let i = 0; i < containerVertexData.length; i++) {
+        containerPositionsDefault.push(containerVertexData[i])
+      }
+      console.log(containerPositionsDefault)
 
       // //局部坐标轴显示
       // const campus_name_textMesh_a = new BABYLON.AxesViewer(scene, 0.25)
@@ -485,12 +490,12 @@ export default function BannerBox(): JSX.Element {
 
       const screenshot = (shot: boolean): void => {
         const containerPositions = containerPositionsDefault
-        console.log(containerPositionsDefault)
         // 更新场景中的对象
         for (let i = 0; i < containerPositions.length; i += 3) {
           containerPositions[i] *= (exportSets[k].containerWidth * camaraScale) / defaultContainerWidth
           containerPositions[i + 1] *= (exportSets[k].containerHeight * camaraScale) / defaultContainerHeight
         }
+        console.log(containerPositions)
 
         // 更新顶点坐标数据
         container.setVerticesData(BABYLON.VertexBuffer.PositionKind, containerPositions)
@@ -501,13 +506,6 @@ export default function BannerBox(): JSX.Element {
 
         // 更新相机
         // camera.target = camera.target.multiply(new BABYLON.Vector3(1, 1, 0.5))
-
-        // 更新container子级的缩放以抵消container缩放带来的影响
-        // container.scaling = new BABYLON.Vector3(
-        //   (exportSets[k].containerWidth * camaraScale) / defaultContainerWidth,
-        //   (exportSets[k].containerHeight * camaraScale) / defaultContainerHeight,
-        //   1
-        // )
 
         // 移动端特殊处理
         if (exportSets[k].name.split('.')[1] === 'mo') {
@@ -548,7 +546,7 @@ export default function BannerBox(): JSX.Element {
         //   BABYLON.Tools.CreateScreenshotUsingRenderTarget(
         //     engine,
         //     camera,
-        //     { width: exportSets[k].size.w, height: exportSets[k].size.h, precision: 1 },
+        //     { width: exportSets[k].size.w, height: exportSets[k].size.h, precision: 4 },
         //     undefined,
         //     'image/png',
         //     1,
@@ -559,8 +557,6 @@ export default function BannerBox(): JSX.Element {
 
       const screenshotLoop = (): void => {
         screenshot(true)
-        const timeId = setTimeout(screenshotLoop, 5000)
-        timerIdArray.push(timeId)
 
         if (++k === exportSets.length) {
           screenshot(false)
@@ -570,19 +566,10 @@ export default function BannerBox(): JSX.Element {
           }
           return
         }
+
+        const timeId = setTimeout(screenshotLoop, 5000)
+        timerIdArray.push(timeId)
       }
-      // setTimeout(() => {
-      //   BABYLON.Tools.CreateScreenshotUsingRenderTarget(
-      //     engine,
-      //     camera,
-      //     { width: exportSets[0].size.w, height: exportSets[0].size.h, precision: 4 },
-      //     undefined,
-      //     'image/png',
-      //     1,
-      //     true,
-      //     'opening' + exportSets[0].name + '.png'
-      //   )
-      // }, 2000)
 
       engine.displayLoadingUI()
 
