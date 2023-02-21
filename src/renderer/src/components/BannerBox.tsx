@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import 'babylonjs'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
@@ -6,21 +6,24 @@ import 'babylonjs-inspector'
 import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
 
 import { canvasResize, isCanvas } from '../tool'
-import contrast_url from '../public/img/banner/contrast.jpg?url'
 import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
-import { float } from 'babylonjs'
 
 const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
-const exportSets: { name: string; size: { w: number; h: number }; containerWidth: number; containerHeight: number; rowCount: number }[] = [
-  { name: 'cn.pc', size: { w: 1920, h: 650 }, containerWidth: 1500, containerHeight: 58, rowCount: 1 },
-  { name: 'cn.mo', size: { w: 660, h: 330 }, containerWidth: 570, containerHeight: 164, rowCount: 2 },
-  { name: 'com.pc', size: { w: 1110, h: 450 }, containerWidth: 1200, containerHeight: 58, rowCount: 1 },
-  { name: 'com.mo', size: { w: 900, h: 300 }, containerWidth: 660, containerHeight: 158, rowCount: 2 }
+const exportSets: {
+  name: string
+  exportSize: { w: number; h: number }
+  container: { w: number; h: number }
+  rowCount: number
+}[] = [
+  { name: 'cn.pc', exportSize: { w: 1920, h: 650 }, container: { w: 1500, h: 58 }, rowCount: 1 },
+  { name: 'cn.mo', exportSize: { w: 660, h: 330 }, container: { w: 570, h: 105 }, rowCount: 2 },
+  { name: 'com.pc', exportSize: { w: 1110, h: 450 }, container: { w: 1200, h: 58 }, rowCount: 1 },
+  { name: 'com.mo', exportSize: { w: 900, h: 300 }, container: { w: 660, h: 158 }, rowCount: 2 }
 ]
 
-const defaultContainerWidth = exportSets[0].containerWidth * camaraScale
-const defaultContainerHeight = exportSets[0].containerHeight * camaraScale
+const defaultContainerWidth = exportSets[0].container.w * camaraScale
+const defaultContainerHeight = exportSets[0].container.h * camaraScale
 
 const campusArray = [
   ['成都', '03.13'],
@@ -85,6 +88,8 @@ const textMaterialColorArray = [
 ]
 
 export default function BannerBox(): JSX.Element {
+  const [imgUrl, setImgUrl] = useState('/src/public/img/banner/opneing.' + exportSets[0].name + '.jpg')
+
   useEffect(() => {
     const canvas = document.getElementById('BannerCanvas')!
 
@@ -107,9 +112,9 @@ export default function BannerBox(): JSX.Element {
       const scene = new BABYLON.Scene(engine)
       scene.ambientColor = new BABYLON.Color3(1, 0, 1)
       // 是否开启inspector
-      // scene.debugLayer.show({
-      //   // embedMode: true
-      // })
+      scene.debugLayer.show({
+        // embedMode: true
+      })
 
       // 文字模型创建器
       const Writer = MeshWriter(scene, { scale: 1 })
@@ -375,12 +380,7 @@ export default function BannerBox(): JSX.Element {
       container.showBoundingBox = true
 
       // 复制原始顶点数据
-      const containerVertexData = container.getVerticesData(BABYLON.VertexBuffer.PositionKind)!
-      const containerPositionsDefault: float[] = []
-      for (let i = 0; i < containerVertexData.length; i++) {
-        containerPositionsDefault.push(containerVertexData[i])
-      }
-      console.log(containerPositionsDefault)
+      const containerPositionsDefault = new Float32Array(container.getVerticesData(BABYLON.VertexBuffer.PositionKind)!)
 
       // //局部坐标轴显示
       // const campus_name_textMesh_a = new BABYLON.AxesViewer(scene, 0.25)
@@ -469,7 +469,7 @@ export default function BannerBox(): JSX.Element {
           const meshHeight = meshArray[0].getBoundingInfo().boundingBox.center.z * 2
           const totalHeight = rowCount * meshHeight
           const vSpacing = (boxHeight - totalHeight) / (rowCount - 1)
-          const y = rowCount <= 1 ? 0 : i * (meshHeight + vSpacing)
+          const y = rowCount <= 1 ? 0 : i * (meshHeight + vSpacing) - boxHeight / 2
           let x = 0
           let totalWidth = 0
           let hSpacing = 0
@@ -487,15 +487,13 @@ export default function BannerBox(): JSX.Element {
         }
         return positons
       }
-
       const screenshot = (shot: boolean): void => {
-        const containerPositions = containerPositionsDefault
+        const containerPositions = containerPositionsDefault.slice(0)
         // 更新场景中的对象
         for (let i = 0; i < containerPositions.length; i += 3) {
-          containerPositions[i] *= (exportSets[k].containerWidth * camaraScale) / defaultContainerWidth
-          containerPositions[i + 1] *= (exportSets[k].containerHeight * camaraScale) / defaultContainerHeight
+          containerPositions[i] *= (exportSets[k].container.w * camaraScale) / defaultContainerWidth
+          containerPositions[i + 1] *= (exportSets[k].container.h * camaraScale) / defaultContainerHeight
         }
-        console.log(containerPositions)
 
         // 更新顶点坐标数据
         container.setVerticesData(BABYLON.VertexBuffer.PositionKind, containerPositions)
@@ -524,6 +522,7 @@ export default function BannerBox(): JSX.Element {
           }
           // 标题居中
           title_cn_textMesh.position.x = containerSize.x - title_cn_textMesh.getBoundingInfo().boundingBox.center.x
+          container.position.y = 0.383
         } else {
           // 桌面端显示背景
           for (const mesh of scene.meshes) {
@@ -531,6 +530,7 @@ export default function BannerBox(): JSX.Element {
           }
           // 标题靠右
           title_cn_textMesh.position = new BABYLON.Vector3(0.185, 0.12, 0)
+          container.position.y = 0.22
         }
 
         // 更新校区网格坐标
@@ -546,13 +546,16 @@ export default function BannerBox(): JSX.Element {
         //   BABYLON.Tools.CreateScreenshotUsingRenderTarget(
         //     engine,
         //     camera,
-        //     { width: exportSets[k].size.w, height: exportSets[k].size.h, precision: 4 },
+        //     { width: exportSets[k]. exportSize.w, height: exportSets[k]. exportSize.h, precision: 4 },
         //     undefined,
         //     'image/png',
         //     1,
         //     true,
         //     'opening' + exportSets[k].name + '.png'
         //   )
+
+        // 替换背景图
+        setImgUrl('/src/public/img/banner/opneing.' + exportSets[k].name + '.jpg')
       }
 
       const screenshotLoop = (): void => {
@@ -615,7 +618,7 @@ export default function BannerBox(): JSX.Element {
         <img src={top_nav_url} />
       </div>
       <div className="banner_area">
-        <img className="contrast" src={contrast_url} />
+        <img className="contrast" src={imgUrl} />
         <canvas id="BannerCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       </div>
       <div className="loading_progress">
