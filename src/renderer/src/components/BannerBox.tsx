@@ -28,7 +28,7 @@ const defaultContainerHeight = exportSets[0].container.h * camaraScale
 const campusArray = [
   ['成都', '03.13'],
   ['天府', '03.06'],
-  ['重庆', '02.27'],
+  ['重庆', '03.06'],
   ['西安', '03.06'],
   ['上海', '03.15'],
   ['武汉', '03.13'],
