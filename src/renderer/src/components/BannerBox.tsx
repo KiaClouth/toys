@@ -376,7 +376,7 @@ export default function BannerBox(): JSX.Element {
       container.addRotation(Math.PI * (0 / 2), Math.PI * (2 / 2), Math.PI * (0 / 2))
       container.material = infoPbrMaterial
       container.isVisible = false
-      container.visibility = 0.1
+      container.visibility = 0
       container.showBoundingBox = true
 
       // 复制原始顶点数据
@@ -527,6 +527,16 @@ export default function BannerBox(): JSX.Element {
           // 桌面端显示背景
           for (const mesh of scene.meshes) {
             mesh.isVisible = true
+            // 只需要背景图时使用以下代码
+            if (
+              mesh.name === 'container' ||
+              mesh.name === 'campus_name_textMesh' ||
+              mesh.name === 'date_textMesh' ||
+              mesh.name === 'title_cn_textMesh' ||
+              mesh.name === 'title_en_textMesh'
+            ) {
+              mesh.isVisible = false
+            }
           }
           // 标题靠右
           title_cn_textMesh.position = new BABYLON.Vector3(0.185, 0.12, 0)
@@ -542,17 +552,17 @@ export default function BannerBox(): JSX.Element {
         }
 
         // 截图
-        // shot === true &&
-        //   BABYLON.Tools.CreateScreenshotUsingRenderTarget(
-        //     engine,
-        //     camera,
-        //     { width: exportSets[k]. exportSize.w, height: exportSets[k]. exportSize.h, precision: 4 },
-        //     undefined,
-        //     'image/png',
-        //     1,
-        //     true,
-        //     'opening' + exportSets[k].name + '.png'
-        //   )
+        shot === true &&
+          BABYLON.Tools.CreateScreenshotUsingRenderTarget(
+            engine,
+            camera,
+            { width: exportSets[k].exportSize.w, height: exportSets[k].exportSize.h, precision: 4 },
+            undefined,
+            'image/png',
+            1,
+            true,
+            'opening' + exportSets[k].name + '.png'
+          )
 
         // 替换背景图
         setImgUrl('/src/public/img/banner/opneing.' + exportSets[k].name + '.jpg')
@@ -561,7 +571,7 @@ export default function BannerBox(): JSX.Element {
       const screenshotLoop = (): void => {
         screenshot(true)
 
-        if (++k === exportSets.length) {
+        if (++k === 1) {
           screenshot(false)
           console.log('已循环完所有导出配置')
           for (const timerId of timerIdArray) {
