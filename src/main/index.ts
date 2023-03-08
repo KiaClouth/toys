@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, screen } from 'electron'
+import { ipcMain, app, shell, BrowserWindow, screen } from 'electron'
 import * as path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
@@ -21,8 +21,8 @@ function createWindow(): void {
       sandbox: false,
       accessibleTitle: 'Toys of KiaClouth',
       // contextIsolation: false,
+      nodeIntegrationInWorker: true,
       nodeIntegration: true
-      // nodeIntegrationInWorker: true,
     },
     autoHideMenuBar: true,
     ...(process.platform === 'linux'
@@ -48,9 +48,6 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
-
-  //ipc模块
-  const ipcMain = require('electron').ipcMain
 
   //接收最小化命令
   ipcMain.on('window-min', function () {
