@@ -37,7 +37,7 @@ const campusArray = [
   ['杭州', '03.13'],
   ['广州', '03.27'],
   ['凡云', '03.22'],
-  ['阿多比', '03.08']
+  ['阿多比', '03.22']
 ]
 
 const campus_displayed_count = campusArray.length - 2

@@ -24,8 +24,7 @@ class SmoothCorners {
     //   记录x,y正方向象限的坐标值
     for (let i = 0; i < w + 1; i++) {
       const x = i
-      const y =
-        Math.pow(Math.abs(Math.pow(h, m) * (1 - Math.pow(i, m) / Math.pow(w, m))), 1 / m) + h
+      const y = Math.pow(Math.abs(Math.pow(h, m) * (1 - Math.pow(i, m) / Math.pow(w, m))), 1 / m) + h
       coordinate[0].push(x)
       coordinate[1].push(y)
     }
