@@ -10,41 +10,21 @@ export default function BabylonBox(): JSX.Element {
     if (isCanvas(canvas)) {
       window.addEventListener('resize', () => canvasResize(canvas))
       canvasResize(canvas)
-      createBabylonScene(canvas)
-      return () => {
-        root.removeEventListener('resize', () => canvasResize(canvas))
-      }
-    } else {
-      console.log('cannot find canvas')
-      return () => {}
-    }
-  }, [])
 
-  function createBabylonScene(canvas: HTMLCanvasElement): void {
-    const startTime = new Date().getTime() //记录场景开始时间
-    const engine = new BABYLON.Engine(canvas, true) // 初始化 BABYLON 3D engine
-
-    if (document.getElementById('FPS')) {
-      const fps = document.getElementById('FPS')!
-      fps.innerHTML = engine.getFps().toFixed() + ' fps'
-    }
-
-    /******* 定义场景函数 ******/
-    const createScene = function (): BABYLON.Scene {
       const perlinNosie = new PerlinNoise()
+      const fps = document.getElementById('FPS')
+      const startTime = new Date().getTime() //记录场景开始时间
+      const engine = new BABYLON.Engine(canvas, true) // 初始化 BABYLON 3D engine
       const scene = new BABYLON.Scene(engine)
+
+      fps !== null && (fps.innerHTML = engine.getFps().toFixed() + ' fps')
+
+      /******* 定义场景函数 ******/
       scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
       scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.CannonJSPlugin(false))
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera(
-        'Camera',
-        -Math.PI / 4,
-        Math.PI / 2.5,
-        10,
-        BABYLON.Vector3.Zero(),
-        scene
-      )
+      const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 4, Math.PI / 2.5, 10, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
 
@@ -129,19 +109,25 @@ export default function BabylonBox(): JSX.Element {
       })
 
       //将场景内网格添加到阴影渲染队列
-      for (let i = 0; i < scene.meshes.length; i++) {
-        // console.log(i, scene.meshes[i].name);
-        scene.meshes[i].receiveShadows = true
+      // for (let i = 0; i < scene.meshes.length; i++) {
+      //   // console.log(i, scene.meshes[i].name);
+      //   scene.meshes[i].receiveShadows = true
+      // }
+
+      engine.runRenderLoop(function () {
+        scene.render()
+      })
+      return () => {
+        // 销毁场景和引擎
+        scene.dispose()
+        engine.dispose()
+        root.removeEventListener('resize', () => canvasResize(canvas))
       }
-
-      return scene
+    } else {
+      console.log('cannot find canvas')
+      return () => {}
     }
-
-    const scene = createScene()
-    engine.runRenderLoop(function () {
-      scene.render()
-    })
-  }
+  }, [])
 
   return (
     <div id="BabylonBox">
