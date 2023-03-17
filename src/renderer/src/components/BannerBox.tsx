@@ -26,15 +26,15 @@ const defaultContainerWidth = exportSets[0].container.w * camaraScale
 const defaultContainerHeight = exportSets[0].container.h * camaraScale
 
 const campusArray = [
-  ['成都', '03.13'],
+  ['成都', '03.20'],
   ['天府', '03.27'],
   ['重庆', '03.27'],
-  ['西安', '03.13'],
-  ['上海', '03.15'],
-  ['武汉', '03.13'],
-  ['深圳', '03.13'],
+  ['西安', '03.27'],
+  ['上海', '03.29'],
+  ['武汉', '03.27'],
+  ['深圳', '03.20'],
   ['南京', '04.10'],
-  ['杭州', '03.13'],
+  ['杭州', '04.23'],
   ['广州', '03.27'],
   ['凡云', '03.22'],
   ['阿多比', '03.22']
@@ -91,7 +91,7 @@ export default function BannerBox(): JSX.Element {
   const [imgUrl, setImgUrl] = useState('/src/public/img/banner/opneing.' + exportSets[0].name + '.jpg')
 
   useEffect(() => {
-    const canvas = document.getElementById('BannerCanvas')!
+    const canvas = document.getElementById('BannerCanvas')
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)

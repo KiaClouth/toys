@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 // import * as d3 from 'd3'
-// import functionPlot from 'function-plot'
+import functionPlot from 'function-plot'
 
 import Versions from './components/Versions'
 
@@ -12,23 +12,23 @@ export default function GS(): JSX.Element {
     window.dispatchEvent(new CustomEvent('ReactDomRender', { detail: 'base' }))
     const container = document.getElementById('container')!
 
-    // functionPlot({
-    //   target: container,
-    //   width: 1280,
-    //   height: 720,
-    //   xAxis: { domain: [-1, 9] },
-    //   yAxis: { domain: [-1, 9] },
-    //   grid: true,
-    //   data: [
-    //     {
-    //       fn: 'x^2',
-    //       derivative: {
-    //         fn: '2 * x',
-    //         updateOnMouseMove: true
-    //       }
-    //     }
-    //   ]
-    // })
+    functionPlot({
+      target: container,
+      width: 1280,
+      height: 720,
+      xAxis: { domain: [-1, 9] },
+      yAxis: { domain: [-1, 9] },
+      grid: true,
+      data: [
+        {
+          fn: 'x^2',
+          derivative: {
+            fn: '2 * x',
+            updateOnMouseMove: true
+          }
+        }
+      ]
+    })
 
     return () => {
       // 组件卸载时需要做的事
