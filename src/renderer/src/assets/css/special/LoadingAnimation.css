@@ -84,9 +84,9 @@
 
 #loadingBox .line .circle,
 #loadingBox .shadow .circle {
-  --animationTime: 1600ms;
+  --animationTime: 2600ms;
   --startTime: 750ms;
-  --intervalTime: 20ms;
+  --intervalTime: 30ms;
   transition: all 0.3s;
   position: absolute;
   width: calc(0.16 * var(--overallWidth));
