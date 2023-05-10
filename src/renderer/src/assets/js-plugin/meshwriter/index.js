@@ -68,9 +68,7 @@ fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
 
       fs.readFile(path.join(__dirname, config.relPathFrom + name + '.' + suffix), (err, data) => {
         if (err) {
-          console.log(
-            "无法读取 '" + path.join(__dirname, config.relPathFrom + name + '.' + suffix) + "'"
-          )
+          console.log("无法读取 '" + path.join(__dirname, config.relPathFrom + name + '.' + suffix) + "'")
           console.log(err)
         } else {
           const fontArrayBuffer = convertBuff2AB(data)

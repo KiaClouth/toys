@@ -70,14 +70,7 @@ declare namespace BABYLON {
   }
   declare interface Path2 {
     addQuadraticCurveTo: (redX: number, redY: number, blueX: number, blueY: number) => void
-    addCubicCurveTo: (
-      redX: number,
-      redY: number,
-      greenX: number,
-      greenY: number,
-      blueX: number,
-      blueY: number
-    ) => void
+    addCubicCurveTo: (redX: number, redY: number, greenX: number, greenY: number, blueX: number, blueY: number) => void
   }
 }
 
@@ -128,10 +121,7 @@ declare class StylePropertyMapReadOnly {
   entries(): IterableIterator<[string, CSSStyleValue[]]>
   keys(): IterableIterator<string>
   values(): IterableIterator<CSSStyleValue[]>
-  forEach(
-    callbackfn: (value: CSSStyleValue[], key: string, iterable: StylePropertyMapReadOnly) => void,
-    thisArg?: any
-  ): void
+  forEach(callbackfn: (value: CSSStyleValue[], key: string, iterable: StylePropertyMapReadOnly) => void, thisArg?: any): void
   get(property: string): any
   getAll(property: string): CSSStyleValue[]
   has(property: string): boolean
@@ -163,10 +153,7 @@ declare class CSSUnparsedValue extends CSSStyleValue {
   entries(): IterableIterator<[number, CSSUnparsedSegment]>
   keys(): IterableIterator<number>
   values(): IterableIterator<CSSUnparsedSegment>
-  forEach(
-    callbackfn: (value: CSSUnparsedSegment, index: number, array: CSSUnparsedSegment[]) => void,
-    thisArg?: any
-  ): void
+  forEach(callbackfn: (value: CSSUnparsedSegment, index: number, array: CSSUnparsedSegment[]) => void, thisArg?: any): void
   readonly length: number;
   [index: number]: CSSUnparsedSegment
 }
@@ -186,14 +173,7 @@ declare class CSSKeywordValue extends CSSStyleValue {
 
 type CSSKeywordish = string | CSSKeywordValue
 
-type CSSNumericBaseType =
-  | 'length'
-  | 'angle'
-  | 'time'
-  | 'frequency'
-  | 'resolution'
-  | 'flex'
-  | 'percent'
+type CSSNumericBaseType = 'length' | 'angle' | 'time' | 'frequency' | 'resolution' | 'flex' | 'percent'
 
 interface CSSNumericType {
   length?: number
@@ -272,10 +252,7 @@ declare class CSSNumericArray {
   entries(): IterableIterator<[number, CSSNumericValue]>
   keys(): IterableIterator<number>
   values(): IterableIterator<CSSNumericValue>
-  forEach(
-    callbackfn: (value: CSSNumericValue, index: number, array: CSSNumericValue[]) => void,
-    thisArg?: any
-  ): void
+  forEach(callbackfn: (value: CSSNumericValue, index: number, array: CSSNumericValue[]) => void, thisArg?: any): void
   readonly length: number;
   readonly [index: number]: CSSNumericValue
 }
@@ -365,14 +342,7 @@ declare class CSSTransformValue extends CSSStyleValue {
   entries(): IterableIterator<[number, CSSTransformComponent]>
   keys(): IterableIterator<number>
   values(): IterableIterator<CSSTransformComponent>
-  forEach(
-    callbackfn: (
-      value: CSSTransformComponent,
-      index: number,
-      array: CSSTransformComponent[]
-    ) => void,
-    thisArg?: any
-  ): void
+  forEach(callbackfn: (value: CSSTransformComponent, index: number, array: CSSTransformComponent[]) => void, thisArg?: any): void
   readonly length: number;
   [index: number]: CSSTransformComponent
   readonly is2D: boolean

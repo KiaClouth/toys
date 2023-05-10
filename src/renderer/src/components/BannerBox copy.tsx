@@ -9,6 +9,7 @@ import { canvasResize, isCanvas } from '../tool'
 import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
 
+const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const exportSets: {
   name: string
   exportSize: { w: number; h: number }
@@ -41,7 +42,6 @@ const exportSets: {
   }
 ]
 
-const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const defaultContainerWidth = exportSets[0].container.w * camaraScale
 const defaultContainerHeight = exportSets[0].container.h * camaraScale
 
@@ -60,9 +60,11 @@ const campusArray = [
   ['阿多比', '05.15']
 ]
 
+const campus_displayed_count = campusArray.length - 2
+
 // 按时间顺序对校区数组重排,不包括末尾的‘凡云’和‘阿多比’
-for (let i = 0; i < campusArray.length - 1; i++) {
-  for (let j = 0; j < campusArray.length - 1 - i; j++) {
+for (let i = 0; i < campusArray.length - 3; i++) {
+  for (let j = 0; j < campusArray.length - 3 - i; j++) {
     if (campusArray[j][1] > campusArray[j + 1][1]) {
       const temp_array = campusArray[j]
       campusArray[j] = campusArray[j + 1]
@@ -176,7 +178,7 @@ export default function BannerBox(): JSX.Element {
         }
 
         // ------------------------依赖model内容循环构建的内容------------------------------
-        for (let a = 0; a < campusArray.length - 2; a++) {
+        for (let a = 0; a < campus_displayed_count; a++) {
           // 值简化
           const shuidiPosition = new BABYLON.Vector3(shuidiPositionArray[0][a], shuidiPositionArray[1][a], shuidiPositionArray[2][a])
           const shuidiRotation = new BABYLON.Vector3(
@@ -448,46 +450,7 @@ export default function BannerBox(): JSX.Element {
       // 动态布局
       let k = 0
       const timerIdArray: NodeJS.Timeout[] = []
-      const campusMeshArray: BABYLON.AbstractMesh[] = []
-      let campus_name_textMesh: BABYLON.AbstractMesh
-
       const screenshot = (shot: boolean): void => {
-        // 与model无关的循环创建项
-        for (let a = 0; a < campusArray.length; a++) {
-          let campusName = campusArray[a][0] + '校区'
-          if (exportSets[k].name.split('.')[1] === 'mo') {
-            campusName = campusArray[a][0]
-          }
-          // 校区名称字体
-          const campus_textWriter = new Writer(campusName, {
-            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-            'letter-height': 0.02,
-            'letter-thickness': 0.001
-          })
-          campus_name_textMesh = campus_textWriter.getMesh()
-          campus_name_textMesh.id = 'campus_name_textMesh' + a
-          campus_name_textMesh.name = 'campus_name_textMesh'
-          campus_name_textMesh.material = infoPbrMaterial
-          campus_name_textMesh.parent = container
-          campus_name_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
-          campusMeshArray.push(campus_name_textMesh)
-
-          // 时间文字生成
-          const time_array = campusArray[a][1].split('.') // 从“·”号处将时间拆分为[月，日]
-          time_array[0] = time_array[0].replace(/\b(0+)/gi, '') //去掉月前面的0
-          const date = time_array[0] + '月' + time_array[1] + '日'
-          const date_textWriter = new Writer(date, {
-            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-            'letter-height': 0.02,
-            'letter-thickness': 0.001
-          })
-          const date_textMesh = date_textWriter.getMesh()
-          date_textMesh.id = 'date_textMesh' + a
-          date_textMesh.name = 'date_textMesh'
-          date_textMesh.material = infoPbrMaterial
-          date_textMesh.parent = campus_name_textMesh
-          date_textMesh.position = new BABYLON.Vector3(0, 0, -0.025)
-        }
         // 分尺寸对应处理
         if (exportSets[k].name.split('.')[1] === 'mo') {
           // 当导出设置为移动端时，隐藏除开以下元素以外的网格
@@ -526,6 +489,39 @@ export default function BannerBox(): JSX.Element {
           title_cn_textMesh.position = new BABYLON.Vector3(0.185, 0.12, 0)
           container.position.y = 0.22
         }
+        // 与model无关的循环创建项
+        const campusMeshArray: BABYLON.AbstractMesh[] = []
+        for (let a = 0; a < campus_displayed_count; a++) {
+          // 校区名称字体
+          const campus_textWriter = new Writer(campusArray[a][0] + '校区', {
+            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'letter-height': 0.02,
+            'letter-thickness': 0.001
+          })
+          const campus_name_textMesh = campus_textWriter.getMesh()
+          campus_name_textMesh.id = 'campus_name_textMesh' + a
+          campus_name_textMesh.name = 'campus_name_textMesh'
+          campus_name_textMesh.material = infoPbrMaterial
+          campus_name_textMesh.parent = container
+          campus_name_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+          campusMeshArray.push(campus_name_textMesh)
+
+          // 时间文字生成
+          const time_array = campusArray[a][1].split('.') // 从“·”号处将时间拆分为[月，日]
+          time_array[0] = time_array[0].replace(/\b(0+)/gi, '') //去掉月前面的0
+          const date = time_array[0] + '月' + time_array[1] + '日'
+          const date_textWriter = new Writer(date, {
+            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'letter-height': 0.02,
+            'letter-thickness': 0.001
+          })
+          const date_textMesh = date_textWriter.getMesh()
+          date_textMesh.id = 'date_textMesh' + a
+          date_textMesh.name = 'date_textMesh'
+          date_textMesh.material = infoPbrMaterial
+          date_textMesh.parent = campus_name_textMesh
+          date_textMesh.position = new BABYLON.Vector3(0, 0, -0.025)
+        }
         const containerPositions = containerPositionsDefault.slice(0)
         // 更新场景中的对象
         for (let i = 0; i < containerPositions.length; i += 3) {
@@ -553,7 +549,7 @@ export default function BannerBox(): JSX.Element {
         line.scaling._x = container.getBoundingInfo().boundingBox.maximum._x / line.getBoundingInfo().boundingBox.maximum._x
 
         // 更新校区网格坐标
-        for (let b = 0; b < campusArray.length; b++) {
+        for (let b = 0; b < campus_displayed_count; b++) {
           const mesh = scene.getMeshById('campus_name_textMesh' + b)
           if (mesh !== null) {
             mesh.position = new BABYLON.Vector3(dateMeshPositionsArray[b].x, dateMeshPositionsArray[b].y, 0)

@@ -1,9 +1,9 @@
 import PMZ from './dist/pangmenzhengdao'
 import HBSB from './dist/helvetica-black-semibold'
-import HNM from './helveticaneue-medium'
 import ZHMQRTT from './dist/ZiHunMengQuRuanTangTi'
 import YSBTH from './dist/YouSheBiaoTiHei-2'
 import YSBTY from './dist/YSbiaotiyuan'
+import HNM from './helveticaneue-medium'
 import earcut from 'earcut'
 
 // >>>>>  STEP 1 <<<<<
@@ -44,7 +44,6 @@ const ysbth = YSBTH(codeList)
 const ysbty = YSBTY(codeList)
 const hnm = HNM(codeList) // Do not remove
 // >>>>>  STEP 2 <<<<<
-
 const FONTS: fontsType = {}
 // >>>>>  STEP 3 <<<<<
 FONTS['PangMenZhengDao'] = pmz
@@ -67,7 +66,7 @@ const naturalLetterHeight = 1000
 
 export default function Wrapper(
   scene: BABYLON.Scene,
-  prenfrences: {
+  prenferences: {
     defaultFont?: string
     meshOrigin?: string
     scale?: number
@@ -86,10 +85,50 @@ export default function Wrapper(
     }
   }
 ): (lttrs: string, opt: fonOptions) => void {
-  const preferences = makePreferences(prenfrences)
+  // {
+  //   material: BABYLON.StandardMaterial | null
+  //   sps: BABYLON.SolidParticleSystem | null
+  //   mesh: BABYLON.Mesh | null
+  //   position: mrPosition
+  //   colors: mrColors
+  //   fontFamily: string
+  //   anchor: mrAnchor
+  //   rawheight: number
+  //   rawThickness: number
+  //   basicColor: string
+  //   opac: number
+  //   x: number
+  //   y: number
+  //   z: number
+  //   diffuse: string
+  //   specular: string
+  //   ambient: string
+  //   fontSpec: fontType
+  //   letterScale: number
+  //   thickness: number
+  //   letters: string
+  //   meshesAndBoxes: meshesAndBoxes
+  //   meshes: BABYLON.Mesh[]
+  //   lettersBoxes: number[][]
+  //   lettersOrigins: number[][]
+  //   xWidth: number
+  //   combo: [BABYLON.SolidParticleSystem, BABYLON.Mesh]
+  //   offsetX: number
+  //   getSPS: () => BABYLON.SolidParticleSystem | null
+  //   getMesh: () => BABYLON.Mesh | null
+  //   getMaterial: () => BABYLON.StandardMaterial | null
+  //   getOffsetX: () => number
+  //   getLettersBoxes: () => number[][]
+  //   getLettersOrigins: () => number[][]
+  //   color: () => string
+  //   alpha: () => number
+  //   clearall: () => void
+  // }
+  const preferences = makePreferences(prenferences)
   const defaultFont = isObject(FONTS[preferences.defaultFont]) ? preferences.defaultFont : 'HelveticaNeue-Medium'
   const meshOrigin = preferences.meshOrigin === 'fontOrigin' ? preferences.meshOrigin : 'letterCenter'
   const scale = isNumber(preferences.scale) ? preferences.scale : 1
+
   debug = isBoolean(preferences.debug) ? preferences.debug : false
 
   // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
@@ -101,7 +140,6 @@ export default function Wrapper(
 
   function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
     let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null, color
-
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // Here we set ALL parameters with incoming value or a default
     // setOption:  applies a test to potential incoming parameters
@@ -172,7 +210,6 @@ export default function Wrapper(
   }
   //  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR
   // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
-
   const proto = MeshWriter.prototype
 
   proto.setColor = function (this: MeshWriter, color: string): void {
@@ -303,9 +340,10 @@ function constructLetterPolygons(
   const lettersBoxes: number[][] = new Array(letters.length)
   const lettersMeshes: BABYLON.Mesh[] = new Array(letters.length)
   let ix = 0
+  let letter
 
   for (let i = 0; i < letters.length; i++) {
-    const letter = letters[i]
+    letter = letters[i]
     const letterSpec = makeLetterSpec(fontSpec, letter)
     if (isObject(letterSpec)) {
       const lists = buildLetterMeshes(letter, i, letterSpec, fontSpec.reverseShapes, fontSpec.reverseHoles)
@@ -421,8 +459,8 @@ function constructLetterPolygons(
     function meshesFromCmdsListArray(cmdsListArray: number[][][]): BABYLON.Mesh[] {
       return cmdsListArray.map(makeCmdsToMesh(reverseHole))
     }
-    function makeCmdsToMesh(reverse: boolean) {
-      return function cmdsToMesh(cmdsList: number[][]): BABYLON.Mesh {
+    function makeCmdsToMesh(reverse) {
+      return function cmdsToMesh(cmdsList) {
         let cmd = getCmd(cmdsList, 0)
         const path = new B.Path2(adjXfix(cmd[0]), adjZfix(cmd[1]))
         const first = 0
@@ -526,7 +564,6 @@ function constructLetterPolygons(
       const shape = shapesList[j]
       const holes = holesList[j]
       if (isArray(holes) && holes.length) {
-        console.log(shape, holes, letter, i, punchHolesInShape(shape, holes, letter, i))
         letterMeshes.push(punchHolesInShape(shape, holes, letter, i))
       } else {
         letterMeshes.push(shape)
@@ -582,8 +619,8 @@ function makeLetterSpec(fontSpec: fontType, letter: string): fontData {
 }
 
 function decodeList(str: string): number[][] {
-  const split = str.split(' ')
-  const list: number[][] = [[]]
+  const split = str.split(' '),
+    list: number[][] = []
   split.forEach(function (cmds) {
     if (cmds.length === 12) {
       list.push(decode6(cmds))
