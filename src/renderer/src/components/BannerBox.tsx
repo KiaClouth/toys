@@ -9,12 +9,7 @@ import { canvasResize, isCanvas } from '../tool'
 import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
 
-const exportSets: {
-  name: string
-  exportSize: { w: number; h: number }
-  container: { w: number; h: number }
-  layout: { rowCount: number; titlePosition: string }
-}[] = [
+const exportSets = [
   {
     name: 'cn.pc',
     exportSize: { w: 1920, h: 650 },
@@ -40,27 +35,25 @@ const exportSets: {
     layout: { rowCount: 2, titlePosition: 'center' }
   }
 ]
-
 const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const defaultContainerWidth = exportSets[0].container.w * camaraScale
 const defaultContainerHeight = exportSets[0].container.h * camaraScale
-
 const campusArray = [
   ['成都', '05.22'],
-  ['天府', '05.10'],
+  ['天府', '05.22'],
   ['重庆', '05.29'],
-  ['西安', '05.10'],
+  ['西安', '05.31'],
   ['上海', '05.22'],
   ['武汉', '05.25'],
   ['深圳', '06.12'],
   ['南京', '05.22'],
-  ['杭州', '05.15'],
+  ['杭州', '05.22'],
   ['广州', '05.15'],
   ['凡云', '05.15'],
   ['阿多比', '05.15']
 ]
 
-// 按时间顺序对校区数组重排,不包括末尾的‘凡云’和‘阿多比’
+// 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
   for (let j = 0; j < campusArray.length - 1 - i; j++) {
     if (campusArray[j][1] > campusArray[j + 1][1]) {
@@ -71,6 +64,7 @@ for (let i = 0; i < campusArray.length - 1; i++) {
   }
 }
 
+// 场景水滴参数
 const shuidiArray: BABYLON.AbstractMesh[] = []
 const shuidiPositionArray = [
   // eslint-disable-next-line prettier/prettier
@@ -176,19 +170,28 @@ export default function BannerBox(): JSX.Element {
         }
 
         // ------------------------依赖model内容循环构建的内容------------------------------
-        for (let a = 0; a < campusArray.length - 2; a++) {
+        let b = 0
+        for (let a = 0; a < campusArray.length; a++) {
+          if (campusArray[a][0] === '阿多比' || campusArray[a][0] === '凡云') {
+            b++
+            continue
+          }
           // 值简化
-          const shuidiPosition = new BABYLON.Vector3(shuidiPositionArray[0][a], shuidiPositionArray[1][a], shuidiPositionArray[2][a])
-          const shuidiRotation = new BABYLON.Vector3(
-            Math.PI * shuidiRotationArray[0][a],
-            Math.PI * shuidiRotationArray[1][a],
-            Math.PI * shuidiRotationArray[2][a]
+          const shuidiPosition = new BABYLON.Vector3(
+            shuidiPositionArray[0][a - b],
+            shuidiPositionArray[1][a - b],
+            shuidiPositionArray[2][a - b]
           )
-          const shuidiScaling = new BABYLON.Vector3(shuidiScaleArray[0][a], shuidiScaleArray[1][a], shuidiScaleArray[2][a])
+          const shuidiRotation = new BABYLON.Vector3(
+            Math.PI * shuidiRotationArray[0][a - b],
+            Math.PI * shuidiRotationArray[1][a - b],
+            Math.PI * shuidiRotationArray[2][a - b]
+          )
+          const shuidiScaling = new BABYLON.Vector3(shuidiScaleArray[0][a - b], shuidiScaleArray[1][a - b], shuidiScaleArray[2][a - b])
           const text_material_color = new BABYLON.Color3(
-            textMaterialColorArray[0][a % 3] / 255,
-            textMaterialColorArray[1][a % 3] / 255,
-            textMaterialColorArray[2][a % 3] / 255
+            textMaterialColorArray[0][(a - b) % 3] / 255,
+            textMaterialColorArray[1][(a - b) % 3] / 255,
+            textMaterialColorArray[2][(a - b) % 3] / 255
           )
 
           // ---------------------------动态定义材质--------------------------------
@@ -198,7 +201,7 @@ export default function BannerBox(): JSX.Element {
           textPbrMaterial.roughness = 1
           textPbrMaterial.albedoColor = text_material_color.toLinearSpace()
           // 每三个水滴一个循环
-          switch (a % 3) {
+          switch ((a - b) % 3) {
             case 0:
               textPbrMaterial.emissiveColor = text_material_color.hsvOffset([0, 'add'], [1], [0.5, 'mul'])
               break
@@ -228,8 +231,8 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YSbiaotiyuan', // 名称注意大小写
             'letter-height': 0.2,
             'letter-thickness': 0.05
-          })
-          const shuidi_textMesh = shuidi_textWriter.getMesh()
+          }) as Writer
+          const shuidi_textMesh = shuidi_textWriter.getMesh()!
           shuidi_textMesh.name = 'shuidi_textMesh'
           shuidi_textMesh.id = 'shuidi_textMesh' + a
           // shuidi_textMesh.showBoundingBox = true
@@ -285,7 +288,7 @@ export default function BannerBox(): JSX.Element {
           text_spotLight.intensity = 500
           text_spotLight.radius = 3
           text_spotLight.diffuse =
-            a % 3 === 1
+            (a - b) % 3 === 1
               ? text_material_color.hsvOffset([0.1, 'add'], [1], [0.1, 'mul'])
               : text_material_color.hsvOffset([0.1, 'add'], [1], [1])
           text_spotLight.parent = shuidiClone
@@ -411,8 +414,8 @@ export default function BannerBox(): JSX.Element {
         'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
         'letter-height': 0.05,
         'letter-thickness': 0.001
-      })
-      const title_cn_textMesh = title_cn_textWriter.getMesh()
+      }) as Writer
+      const title_cn_textMesh = title_cn_textWriter.getMesh()!
       title_cn_textMesh.id = 'title_cn_textMesh'
       title_cn_textMesh.name = 'title_cn_textMesh'
       title_cn_textMesh.material = infoPbrMaterial
@@ -426,8 +429,8 @@ export default function BannerBox(): JSX.Element {
         'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
         'letter-height': 0.026,
         'letter-thickness': 0.001
-      })
-      const title_en_textMesh = title_en_textWriter.getMesh()
+      }) as Writer
+      const title_en_textMesh = title_en_textWriter.getMesh()!
       title_en_textMesh.id = 'title_en_textMesh'
       title_en_textMesh.name = 'title_en_textMesh'
       title_en_textMesh.material = infoPbrMaterial
@@ -463,8 +466,8 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
             'letter-height': 0.02,
             'letter-thickness': 0.001
-          })
-          campus_name_textMesh = campus_textWriter.getMesh()
+          }) as Writer
+          campus_name_textMesh = campus_textWriter.getMesh()!
           campus_name_textMesh.id = 'campus_name_textMesh' + a
           campus_name_textMesh.name = 'campus_name_textMesh'
           campus_name_textMesh.material = infoPbrMaterial
@@ -480,8 +483,8 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
             'letter-height': 0.02,
             'letter-thickness': 0.001
-          })
-          const date_textMesh = date_textWriter.getMesh()
+          }) as Writer
+          const date_textMesh = date_textWriter.getMesh()!
           date_textMesh.id = 'date_textMesh' + a
           date_textMesh.name = 'date_textMesh'
           date_textMesh.material = infoPbrMaterial
@@ -519,7 +522,7 @@ export default function BannerBox(): JSX.Element {
               mesh.name === 'title_cn_textMesh' ||
               mesh.name === 'title_en_textMesh'
             ) {
-              mesh.isVisible = true // 配置此项以屏蔽文本内容
+              mesh.isVisible = false // 配置此项以屏蔽文本内容
             }
           }
           // 标题靠右
@@ -639,7 +642,7 @@ export default function BannerBox(): JSX.Element {
             screenshotLoop()
           } else if (e.code == 'Space') {
             if (k < exportSets.length) {
-              screenshot(false) //测试环境变更此值以觉定是否截图
+              screenshot(true) //测试环境变更此值以觉定是否截图
               k++
             } else {
               k = 0

@@ -85,45 +85,6 @@ export default function Wrapper(
     }
   }
 ): (lttrs: string, opt: fonOptions) => void {
-  // {
-  //   material: BABYLON.StandardMaterial | null
-  //   sps: BABYLON.SolidParticleSystem | null
-  //   mesh: BABYLON.Mesh | null
-  //   position: mrPosition
-  //   colors: mrColors
-  //   fontFamily: string
-  //   anchor: mrAnchor
-  //   rawheight: number
-  //   rawThickness: number
-  //   basicColor: string
-  //   opac: number
-  //   x: number
-  //   y: number
-  //   z: number
-  //   diffuse: string
-  //   specular: string
-  //   ambient: string
-  //   fontSpec: fontType
-  //   letterScale: number
-  //   thickness: number
-  //   letters: string
-  //   meshesAndBoxes: meshesAndBoxes
-  //   meshes: BABYLON.Mesh[]
-  //   lettersBoxes: number[][]
-  //   lettersOrigins: number[][]
-  //   xWidth: number
-  //   combo: [BABYLON.SolidParticleSystem, BABYLON.Mesh]
-  //   offsetX: number
-  //   getSPS: () => BABYLON.SolidParticleSystem | null
-  //   getMesh: () => BABYLON.Mesh | null
-  //   getMaterial: () => BABYLON.StandardMaterial | null
-  //   getOffsetX: () => number
-  //   getLettersBoxes: () => number[][]
-  //   getLettersOrigins: () => number[][]
-  //   color: () => string
-  //   alpha: () => number
-  //   clearall: () => void
-  // }
   const preferences = makePreferences(prenferences)
   const defaultFont = isObject(FONTS[preferences.defaultFont]) ? preferences.defaultFont : 'HelveticaNeue-Medium'
   const meshOrigin = preferences.meshOrigin === 'fontOrigin' ? preferences.meshOrigin : 'letterCenter'
