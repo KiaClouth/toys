@@ -13,31 +13,153 @@ const exportSets = [
   {
     name: 'cn.pc',
     exportSize: { w: 1920, h: 650 },
-    container: { w: 1500, h: 58 },
-    layout: { rowCount: 1, titlePosition: 'right' }
+    container: {
+      position: new BABYLON.Vector3(0, 0.22, 13),
+      size: { w: 1500, h: 58 },
+      rowCount: 1,
+      childs: {
+        chineseTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0.185, 0.12, 0),
+          fontSize: 48
+        },
+        englishTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0, 0, -0.025),
+          fontSize: 24
+        },
+        line: {
+          position: new BABYLON.Vector3(0, 0.032, 0)
+        },
+        box: {
+          addTop: 17,
+          campusName: {
+            fontSize: 18,
+            simpleFormat: false
+          },
+          date: {
+            fontSize: 18,
+            simpleFormat: false,
+            positionZ: 0.01
+          },
+          addBottom: 5
+        }
+      }
+    }
   },
   {
     name: 'cn.mo',
     exportSize: { w: 660, h: 330 },
-    container: { w: 570, h: 105 },
-    layout: { rowCount: 2, titlePosition: 'center' }
+    container: {
+      position: new BABYLON.Vector3(0, 0.373, 13),
+      size: { w: 571, h: 164 },
+      rowCount: 2,
+      childs: {
+        chineseTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0.185, 0.136, 0),
+          fontSize: 48
+        },
+        englishTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0, 0, -0.025),
+          fontSize: 24
+        },
+        line: {
+          position: new BABYLON.Vector3(0, -0.01, 0)
+        },
+        box: {
+          addTop: 17,
+          campusName: {
+            fontSize: 24,
+            simpleFormat: true
+          },
+          date: {
+            fontSize: 24,
+            simpleFormat: true,
+            positionZ: -0.02
+          },
+          addBottom: 5
+        }
+      }
+    }
   },
   {
     name: 'com.pc',
     exportSize: { w: 1110, h: 450 },
-    container: { w: 1200, h: 58 },
-    layout: { rowCount: 1, titlePosition: 'right' }
+    container: {
+      position: new BABYLON.Vector3(0.03, 0.186, 13),
+      size: { w: 1240, h: 85 },
+      rowCount: 1,
+      childs: {
+        chineseTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0.217, 0.148, 0),
+          fontSize: 70
+        },
+        englishTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0, 0, -0.037),
+          fontSize: 35
+        },
+        line: {
+          position: new BABYLON.Vector3(0, 0.045, 0)
+        },
+        box: {
+          addTop: 17 * 1.2,
+          campusName: {
+            fontSize: 26,
+            simpleFormat: true
+          },
+          date: {
+            fontSize: 26,
+            simpleFormat: true,
+            positionZ: -0.027
+          },
+          addBottom: 5 * 1.2
+        }
+      }
+    }
   },
   {
     name: 'com.mo',
     exportSize: { w: 900, h: 300 },
-    container: { w: 660, h: 158 },
-    layout: { rowCount: 2, titlePosition: 'center' }
+    container: {
+      position: new BABYLON.Vector3(0, 0.423, 13),
+      size: { w: 661, h: 158 },
+      rowCount: 2,
+      childs: {
+        chineseTitle: {
+          visibilty: true,
+          position: new BABYLON.Vector3(0.185, 0.1, 0),
+          fontSize: 36
+        },
+        englishTitle: {
+          visibilty: false,
+          position: new BABYLON.Vector3(0, 0, -0.025),
+          fontSize: 24
+        },
+        line: {
+          position: new BABYLON.Vector3(0, 0, 0)
+        },
+        box: {
+          addTop: 20,
+          campusName: {
+            fontSize: 24,
+            simpleFormat: true
+          },
+          date: {
+            fontSize: 24,
+            simpleFormat: true,
+            positionZ: 0.016
+          },
+          addBottom: 7
+        }
+      }
+    }
   }
 ]
-const camaraScale = 1.68 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
-const defaultContainerWidth = exportSets[0].container.w * camaraScale
-const defaultContainerHeight = exportSets[0].container.h * camaraScale
+const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
   ['成都', '05.22'],
   ['天府', '05.22'],
@@ -48,9 +170,9 @@ const campusArray = [
   ['深圳', '06.12'],
   ['南京', '05.22'],
   ['杭州', '05.22'],
-  ['广州', '05.15'],
-  ['凡云', '05.15'],
-  ['阿多比', '05.15']
+  ['广州', '06.22'],
+  ['凡云', '05.24'],
+  ['阿多比', '05.29']
 ]
 
 // 按时间顺序对校区数组重排
@@ -123,7 +245,8 @@ export default function BannerBox(): JSX.Element {
 
       const scene = new BABYLON.Scene(engine)
       scene.ambientColor = new BABYLON.Color3(1, 0, 1)
-      // 是否开启inspector
+
+      // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
       scene.debugLayer.show({
         // embedMode: true
       })
@@ -385,179 +508,189 @@ export default function BannerBox(): JSX.Element {
       infoPbrMaterial.roughness = 0.9
       infoPbrMaterial.emissiveColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
 
-      // 平面文本构建
-      const container = BABYLON.MeshBuilder.CreateBox(
-        'container',
-        { width: defaultContainerWidth, height: defaultContainerHeight, depth: 0.01 },
-        scene
-      )
-      container.id = 'container'
-      container.scaling = new BABYLON.Vector3(1, 1, 1)
-      container.position = new BABYLON.Vector3(0, 0.22, 13)
-      container.addRotation(Math.PI * (0 / 2), Math.PI * (2 / 2), Math.PI * (0 / 2))
-      container.material = infoPbrMaterial
-      container.isVisible = false
-      container.visibility = 0
-      container.showBoundingBox = true
-
-      // 复制原始顶点数据
-      const containerPositionsDefault = new Float32Array(container.getVerticesData(BABYLON.VertexBuffer.PositionKind)!)
-
       // //局部坐标轴显示
       // const campus_name_textMesh_a = new BABYLON.AxesViewer(scene, 0.25)
       // campus_name_textMesh_a.xAxis.parent = container
       // campus_name_textMesh_a.yAxis.parent = container
       // campus_name_textMesh_a.zAxis.parent = container
 
-      // 最新开班时间
-      const title_cn_textWriter = new Writer('最新开班时间', {
-        'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-        'letter-height': 0.05,
-        'letter-thickness': 0.001
-      }) as Writer
-      const title_cn_textMesh = title_cn_textWriter.getMesh()!
-      title_cn_textMesh.id = 'title_cn_textMesh'
-      title_cn_textMesh.name = 'title_cn_textMesh'
-      title_cn_textMesh.material = infoPbrMaterial
-      title_cn_textMesh.parent = container
-      title_cn_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
-      title_cn_textMesh.position = new BABYLON.Vector3(0.185, 0.12, 0)
-      title_cn_textMesh.isVisible = true
-
-      // Lastest opening time
-      const title_en_textWriter = new Writer('Lastest opening time', {
-        'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-        'letter-height': 0.026,
-        'letter-thickness': 0.001
-      }) as Writer
-      const title_en_textMesh = title_en_textWriter.getMesh()!
-      title_en_textMesh.id = 'title_en_textMesh'
-      title_en_textMesh.name = 'title_en_textMesh'
-      title_en_textMesh.material = infoPbrMaterial
-      title_en_textMesh.parent = title_cn_textMesh
-      title_en_textMesh.position = new BABYLON.Vector3(0, 0, -0.025)
-
-      // 世界坐标轴显示
-      // new BABYLON.AxesViewer(scene, 1)
-
-      // 白色横线
-      const line = BABYLON.CreateBox('line', { width: 1, height: 0.001, depth: 0.001 })
-      line.id = 'line'
-      line.name = 'line'
-      line.material = infoPbrMaterial
-      line.parent = container
-      line.position = new BABYLON.Vector3(0, 0.033, 0)
-
       // 动态布局
-      let k = 0
-      const timerIdArray: NodeJS.Timeout[] = []
-      const campusMeshArray: BABYLON.AbstractMesh[] = []
-      let campus_name_textMesh: BABYLON.AbstractMesh
+      let container: BABYLON.AbstractMesh
+      const screenshot = (shot: boolean, k: number): void => {
+        // 清空网格
+        container !== undefined && container.dispose()
 
-      const screenshot = (shot: boolean): void => {
-        // 与model无关的循环创建项
+        // 重新生成容器
+        container = BABYLON.MeshBuilder.CreateBox(
+          'container',
+          { width: exportSets[k].container.size.w * camaraScale, height: exportSets[k].container.size.h * camaraScale, depth: 0.01 },
+          scene
+        )
+        container.id = 'container'
+        container.position = exportSets[k].container.position
+        container.addRotation(Math.PI * (0 / 2), Math.PI * (2 / 2), Math.PI * (0 / 2))
+        container.material = infoPbrMaterial
+        container.isVisible = true
+        container.visibility = 0
+        // container.showBoundingBox = true
+
+        // 最新开班时间
+        const title_cn_textWriter = new Writer('最新开班时间', {
+          'font-family': 'YouSheBiaoTiHei-2',
+          'letter-height': exportSets[k].container.childs.chineseTitle.fontSize * camaraScale,
+          'letter-thickness': 0.001
+        }) as Writer
+        const title_cn_textMesh = title_cn_textWriter.getMesh()!
+        title_cn_textMesh.id = 'title_cn_textMesh'
+        title_cn_textMesh.name = 'title_cn_textMesh'
+        title_cn_textMesh.material = infoPbrMaterial
+        title_cn_textMesh.parent = container
+        title_cn_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+        title_cn_textMesh.position = exportSets[k].container.childs.chineseTitle.position
+        title_cn_textMesh.isVisible = exportSets[k].container.childs.chineseTitle.visibilty
+
+        // Lastest opening time
+        const title_en_textWriter = new Writer('Lastest opening time', {
+          'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+          'letter-height': exportSets[k].container.childs.englishTitle.fontSize * camaraScale,
+          'letter-thickness': 0.001
+        }) as Writer
+        const title_en_textMesh = title_en_textWriter.getMesh()!
+        title_en_textMesh.id = 'title_en_textMesh'
+        title_en_textMesh.name = 'title_en_textMesh'
+        title_en_textMesh.material = infoPbrMaterial
+        title_en_textMesh.parent = title_cn_textMesh
+        title_en_textMesh.position = exportSets[k].container.childs.englishTitle.position
+        title_en_textMesh.isVisible = exportSets[k].container.childs.englishTitle.visibilty
+
+        // 世界坐标轴显示
+        // new BABYLON.AxesViewer(scene, 1)
+
+        // 白色横线
+        const line = BABYLON.CreateBox('line', { width: 1, height: 0.001, depth: 0.001 })
+        line.id = 'line'
+        line.name = 'line'
+        line.material = infoPbrMaterial
+        line.parent = container
+        line.position = exportSets[k].container.childs.line.position
+
+        const meshSizeArray: { w: number; h: number; d: number }[] = []
+        // 开班时间信息创建
         for (let a = 0; a < campusArray.length; a++) {
-          let campusName = campusArray[a][0] + '校区'
+          const time_array = campusArray[a][1].split('.') // 从“·”号处将时间拆分为[月，日]
+          const campusName = exportSets[k].container.childs.box.campusName.simpleFormat ? campusArray[a][0] : campusArray[a][0] + '校区'
+          const date = exportSets[k].container.childs.box.date.simpleFormat
+            ? time_array[0].replace(/\b(0+)/gi, '') + '.' + time_array[1]
+            : time_array[0].replace(/\b(0+)/gi, '') + '月' + time_array[1] + '日'
           if (exportSets[k].name.split('.')[1] === 'mo') {
-            campusName = campusArray[a][0]
+            // 当导出设置为移动端时，隐藏模型场景
+            for (const mesh of scene.meshes) {
+              if (mesh.name === '__root__') {
+                // 将 __root__ 及其所有子级设置为不可见
+                setVisibility(mesh, false)
+              }
+            }
+            // 标题居中
+            title_cn_textMesh.position.x = 0 - title_cn_textMesh.getBoundingInfo().boundingBox.center.x
+          } else {
+            // 桌面端显示背景
+            for (const mesh of scene.meshes) {
+              mesh.isVisible = true
+            }
           }
           // 校区名称字体
           const campus_textWriter = new Writer(campusName, {
             'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-            'letter-height': 0.02,
+            'letter-height': exportSets[k].container.childs.box.campusName.fontSize * camaraScale,
             'letter-thickness': 0.001
           }) as Writer
-          campus_name_textMesh = campus_textWriter.getMesh()!
+          const campus_name_textMesh = campus_textWriter.getMesh()!
           campus_name_textMesh.id = 'campus_name_textMesh' + a
           campus_name_textMesh.name = 'campus_name_textMesh'
           campus_name_textMesh.material = infoPbrMaterial
-          campus_name_textMesh.parent = container
-          campus_name_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
-          campusMeshArray.push(campus_name_textMesh)
+          // campus_name_textMesh.showBoundingBox = true
+          // const campusAxesViewer = new BABYLON.AxesViewer(scene, 0.025)
+          // campusAxesViewer.xAxis.parent = campus_name_textMesh
+          // campusAxesViewer.yAxis.parent = campus_name_textMesh
+          // campusAxesViewer.zAxis.parent = campus_name_textMesh
 
           // 时间文字生成
-          const time_array = campusArray[a][1].split('.') // 从“·”号处将时间拆分为[月，日]
-          time_array[0] = time_array[0].replace(/\b(0+)/gi, '') //去掉月前面的0
-          const date = time_array[0] + '月' + time_array[1] + '日'
           const date_textWriter = new Writer(date, {
             'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
-            'letter-height': 0.02,
+            'letter-height': exportSets[k].container.childs.box.date.fontSize * camaraScale,
             'letter-thickness': 0.001
           }) as Writer
           const date_textMesh = date_textWriter.getMesh()!
           date_textMesh.id = 'date_textMesh' + a
           date_textMesh.name = 'date_textMesh'
           date_textMesh.material = infoPbrMaterial
-          date_textMesh.parent = campus_name_textMesh
-          date_textMesh.position = new BABYLON.Vector3(0, 0, -0.025)
-        }
-        // 分尺寸对应处理
-        if (exportSets[k].name.split('.')[1] === 'mo') {
-          // 当导出设置为移动端时，隐藏除开以下元素以外的网格
-          for (const mesh of scene.meshes) {
-            if (
-              !(mesh.name === '地面') &&
-              !(mesh.name === 'container') &&
-              !(mesh.name === 'campus_name_textMesh') &&
-              !(mesh.name === 'date_textMesh') &&
-              !(mesh.name === 'line') &&
-              !(mesh.name === 'title_cn_textMesh') &&
-              !(mesh.name === 'title_en_textMesh')
-            ) {
-              mesh.isVisible = false
-            }
+          // date_textMesh.showBoundingBox = true
+          // const dateAxesViewer = new BABYLON.AxesViewer(scene, 0.025)
+          // dateAxesViewer.xAxis.parent = date_textMesh
+          // dateAxesViewer.yAxis.parent = date_textMesh
+          // dateAxesViewer.zAxis.parent = date_textMesh
+
+          const campusMeshSize = {
+            w: Math.abs(campus_name_textMesh.getBoundingInfo().maximum._x - campus_name_textMesh.getBoundingInfo().minimum._x),
+            h: Math.abs(campus_name_textMesh.getBoundingInfo().maximum._y - campus_name_textMesh.getBoundingInfo().minimum._y),
+            d: Math.abs(campus_name_textMesh.getBoundingInfo().maximum._z - campus_name_textMesh.getBoundingInfo().minimum._z)
           }
-          // 标题居中
-          title_cn_textMesh.position.x = 0 - title_cn_textMesh.getBoundingInfo().boundingBox.center.x
-          container.position.y = 0.383
-        } else {
-          // 桌面端显示背景
-          for (const mesh of scene.meshes) {
-            mesh.isVisible = true
-            if (
-              mesh.name === 'container' ||
-              mesh.name === 'campus_name_textMesh' ||
-              mesh.name === 'date_textMesh' ||
-              mesh.name === 'line' ||
-              mesh.name === 'title_cn_textMesh' ||
-              mesh.name === 'title_en_textMesh'
-            ) {
-              mesh.isVisible = false // 配置此项以屏蔽文本内容
-            }
+
+          const dateMeshSize = {
+            w: Math.abs(date_textMesh.getBoundingInfo().maximum._x - date_textMesh.getBoundingInfo().minimum._x),
+            h: Math.abs(date_textMesh.getBoundingInfo().maximum._y - date_textMesh.getBoundingInfo().minimum._y),
+            d: Math.abs(date_textMesh.getBoundingInfo().maximum._z - date_textMesh.getBoundingInfo().minimum._z)
           }
-          // 标题靠右
-          title_cn_textMesh.position = new BABYLON.Vector3(0.185, 0.12, 0)
-          container.position.y = 0.22
-        }
-        const containerPositions = containerPositionsDefault.slice(0)
-        // 更新场景中的对象
-        for (let i = 0; i < containerPositions.length; i += 3) {
-          containerPositions[i] *= (exportSets[k].container.w * camaraScale) / defaultContainerWidth
-          containerPositions[i + 1] *= (exportSets[k].container.h * camaraScale) / defaultContainerHeight
+
+          const boxW = campusMeshSize.w > dateMeshSize.w ? campusMeshSize.w : dateMeshSize.w
+          const boxH = campusMeshSize.h > dateMeshSize.h ? campusMeshSize.h : dateMeshSize.h
+          const boxD =
+            campusMeshSize.d +
+            dateMeshSize.d +
+            Math.abs(exportSets[k].container.childs.box.date.positionZ) +
+            exportSets[k].container.childs.box.addTop * camaraScale +
+            exportSets[k].container.childs.box.addBottom * camaraScale
+          const box = BABYLON.MeshBuilder.CreateBox('box', { width: boxW, height: boxH, depth: boxD }, scene)
+          box.id = 'box' + a
+          box.material = infoPbrMaterial
+          box.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
+          box.visibility = 0
+          box.parent = container
+          // box.showBoundingBox = true
+          // const boxAxesViewer = new BABYLON.AxesViewer(scene, 0.05)
+          // boxAxesViewer.xAxis.parent = box
+          // boxAxesViewer.yAxis.parent = box
+          // boxAxesViewer.zAxis.parent = box
+
+          campus_name_textMesh.parent = box
+          date_textMesh.parent = box
+
+          campus_name_textMesh.position = new BABYLON.Vector3(
+            -boxW / 2,
+            0,
+            boxD / 2 - campusMeshSize.d - exportSets[k].container.childs.box.addTop * camaraScale
+          )
+          date_textMesh.position = new BABYLON.Vector3(-boxW / 2, 0, -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale)
+
+          meshSizeArray.push({ w: boxW, h: boxH, d: boxD })
         }
 
-        // 更新顶点坐标数据
-        container.setVerticesData(BABYLON.VertexBuffer.PositionKind, containerPositions)
-
-        const containerBundingInfo = container.getBoundingInfo()
-        const containerSize = containerBundingInfo.boundingBox.maximum.subtract(containerBundingInfo.boundingBox.minimum)
         const dateMeshPositionsArray = computeDateMeshPositions(
-          campusMeshArray,
-          containerSize.x,
-          containerSize.y,
-          exportSets[k].layout.rowCount
+          meshSizeArray,
+          exportSets[k].container.size.w * camaraScale,
+          exportSets[k].container.size.h * camaraScale,
+          exportSets[k].container.rowCount
         )
 
         // 更新相机
         // camera.target = camera.target.multiply(new BABYLON.Vector3(1, 1, 0.5))
 
         // 调整横线宽度
-        // console.log(container.getBoundingInfo().boundingBox.maximum._x, line.getBoundingInfo().boundingBox.center.x)
         line.scaling._x = container.getBoundingInfo().boundingBox.maximum._x / line.getBoundingInfo().boundingBox.maximum._x
 
         // 更新校区网格坐标
         for (let b = 0; b < campusArray.length; b++) {
-          const mesh = scene.getMeshById('campus_name_textMesh' + b)
+          const mesh = scene.getMeshById('box' + b)
           if (mesh !== null) {
             mesh.position = new BABYLON.Vector3(dateMeshPositionsArray[b].x, dateMeshPositionsArray[b].y, 0)
           }
@@ -571,7 +704,7 @@ export default function BannerBox(): JSX.Element {
             { width: exportSets[k].exportSize.w, height: exportSets[k].exportSize.h, precision: 4 },
             undefined,
             'image/png',
-            1,
+            4,
             true,
             'opening' + exportSets[k].name + '.png'
           )
@@ -582,50 +715,68 @@ export default function BannerBox(): JSX.Element {
 
       // 根据container尺寸等设置计算元素位置
       const computeDateMeshPositions = (
-        meshArray: BABYLON.AbstractMesh[],
-        boxWidth: number,
-        boxHeight: number,
+        meshSizeArray: { w: number; h: number; d: number }[],
+        containerWidth: number,
+        containerHeight: number,
         rowCount: number
       ): { x: number; y: number }[] => {
         const positons: { x: number; y: number }[] = [] // 定义坐标数组
-        const colCount = Math.ceil(meshArray.length / rowCount) // 每行可容纳的数量
+        const colCount = Math.ceil(meshSizeArray.length / rowCount) // 每行可容纳的数量
         for (let i = 0; i < rowCount; i++) {
-          const meshHeight = meshArray[0].getBoundingInfo().boundingBox.center.z * 2
-          const totalHeight = rowCount * meshHeight
-          const vSpacing = (boxHeight - totalHeight) / (rowCount - 1)
-          const y = rowCount <= 1 ? 0 : i * (meshHeight + vSpacing) - boxHeight / 2
+          const meshHeight = meshSizeArray[0].d // 网格高度
+          const totalHeight = rowCount * meshHeight // 计算有内容的高度
+          const vSpacing = rowCount === 1 ? 0 : (containerHeight - totalHeight) / (rowCount - 1) // 计算均分垂直间距
+          const y = containerHeight / 2 - i * (meshHeight + vSpacing)
           let x = 0
           let totalWidth = 0
           let hSpacing = 0
 
           // 计算单行元素总长度
           for (let j = 0; j < colCount; j++) {
-            totalWidth += meshArray[i * colCount + j].getBoundingInfo().boundingBox.center.x * 2
+            totalWidth += meshSizeArray[i * colCount + j].w
           }
-          hSpacing = (boxWidth - totalWidth) / (colCount - 1) // 第i行的元素水平间距
+          // 第i行的元素水平间距
+          hSpacing = (containerWidth - totalWidth) / (colCount - 1)
           for (let k = 0; k < colCount; k++) {
-            const meshWidth = meshArray[i * colCount + k].getBoundingInfo().boundingBox.center.x * 2
-            x = k * (meshWidth + hSpacing) - boxWidth / 2
-            positons.push({ x: x, y: y })
+            // 计算左侧所有盒子总宽度
+            let totalWidthOfLeft = 0
+            for (let l = 0; l < k; l++) {
+              totalWidthOfLeft += meshSizeArray[i * colCount + l].w
+            }
+            x = totalWidthOfLeft + meshSizeArray[i * colCount + k].w / 2 + k * hSpacing - containerWidth / 2
+            positons.push({ x: x, y: y - meshHeight / 2 })
           }
         }
         return positons
       }
 
-      const screenshotLoop = (): void => {
-        screenshot(true)
+      // 递归函数，将网格及其子级的可见性设置为 false
+      const setVisibility = (mesh: BABYLON.AbstractMesh, visible: boolean): void => {
+        mesh.isVisible = visible
 
-        if (++k === 1) {
-          screenshot(false)
+        // 遍历所有子级并递归调用 setVisibility 函数
+        for (let i = 0; i < mesh.getChildMeshes().length; i++) {
+          const childMesh = mesh.getChildMeshes()[i]
+          setVisibility(childMesh, visible)
+        }
+      }
+
+      let k = 0
+      const timerIdArray: NodeJS.Timeout[] = []
+      const screenshotLoop = (): void => {
+        screenshot(true, k)
+
+        // const delay = k === 0 ? 5000 : 500
+        const timeId = setTimeout(screenshotLoop, 1000)
+        timerIdArray.push(timeId)
+
+        if (++k === 4) {
           console.log('已循环完所有导出配置')
           for (const timerId of timerIdArray) {
             clearTimeout(timerId)
           }
           return
         }
-
-        const timeId = setTimeout(screenshotLoop, 5000)
-        timerIdArray.push(timeId)
       }
 
       engine.displayLoadingUI()
@@ -636,17 +787,17 @@ export default function BannerBox(): JSX.Element {
         engine.runRenderLoop(() => {
           scene.render()
         })
+        screenshot(false, 0) /////////////////////////////////////////////////////////////////////////////////////
         window.addEventListener('keydown', (e: KeyboardEvent) => {
           if (e.code == 'Enter') {
             console.log('正在循环导出所有配置的截图')
             screenshotLoop()
           } else if (e.code == 'Space') {
             if (k < exportSets.length) {
-              screenshot(true) //测试环境变更此值以觉定是否截图
+              screenshot(true, k) //测试环境变更此值以觉定是否截图
               k++
             } else {
               k = 0
-              screenshot(false)
               console.log('已经执行过所有导出配置了')
             }
           }

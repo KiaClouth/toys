@@ -8,7 +8,7 @@ const chineseCoverage = [
   // eslint-disable-next-line prettier/prettier
   "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
   // eslint-disable-next-line prettier/prettier
-  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."
 ]
 
 const config = {
@@ -24,10 +24,10 @@ const config = {
     ":", ";", "<", "=", ">", "?", "@", "[", "]", "^", "_", " ", " "
   ],
 
-  //需要转化的字体文件目录
+  //【字体文件目录】
   relPathFrom: './font/',
 
-  //导出资源目录
+  //【导出资源目录】
   relPathTo: './src/renderer/src/assets/js-plugin/meshwriter/dist/',
 
   //自定义字符区间
@@ -48,21 +48,12 @@ let coverage = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] // 缺省值
 global.PiP = PiP
 global.config_ = config
 
-// 读取./font目录下的字体文件并在./dist下生成对应js文件
+// 读取【字体文件目录】下的字体文件并在【导出资源目录】下生成对应js文件
 fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
   if (err) {
     console.log('无法读取' + path.join(__dirname, config.relPathFrom))
   } else {
-    // console.log(data)
     for (const ttfFileName of data) {
-      // fs.readFile(path.join(__dirname, config.relPathFrom + ttfFileName), (err, data) => {
-      //   if (err) {
-      //     console.log('err')
-      //   } else {
-      //     console.log(data)
-      //   }
-      // })
-
       const name = ttfFileName.replace('.ttf', '').replace('.TTF', '')
       coverage = chineseCoverage
 
@@ -133,10 +124,11 @@ function filePost() {
 }
 
 // 生成meshwriter.ES.js提供给浏览器环境使用
-fs.readFile(path.join(__dirname, './meshwriterTemplate.ES.js'), (err, data) => {
+fs.readFile(path.join(__dirname, './meshwriter.ES.ts'), (err, data) => {
   if (err) {
     console.log(err)
   } else {
+    console.log('data :')
     console.log(data)
   }
 })
