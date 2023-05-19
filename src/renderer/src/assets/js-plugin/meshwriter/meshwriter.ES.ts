@@ -93,27 +93,27 @@ export default function Wrapper(
   //   ~ options
 
   function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
-    let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null, color
+    let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // Here we set ALL parameters with incoming value or a default
     // setOption:  applies a test to potential incoming parameters
     //             if the test passes, the parameters are used, else the default is used
-    const options = isObject(opt) ? opt : {},
-      position = setOption<mrPosition>(options, 'position', isObject, {}),
+    const options = isObject(opt) ? opt : {}
+    let color = setOption<string>(options, 'color', isString, defaultColor)
+    let opac = setOption<number>(options, 'alpha', isAmplitude, defaultOpac)
+    const position = setOption<mrPosition>(options, 'position', isObject, {}),
       colors = setOption<mrColors>(options, 'colors', isObject, {}),
       fontFamily = setOption<string>(options, 'font-family', isSupportedFont, defaultFont),
       anchor = setOption<mrAnchor>(options, 'anchor', isSupportedAnchor, 'left'),
       rawheight = setOption<number>(options, 'letter-height', isPositiveNumber, 100),
       rawThickness = setOption<number>(options, 'letter-thickness', isPositiveNumber, 1),
-      basicColor = setOption<string>(options, 'color', isString, defaultColor)
-    let opac = setOption<number>(options, 'alpha', isAmplitude, defaultOpac)
-    const y = setOption<number>(position, 'y', isNumber, 0),
+      y = setOption<number>(position, 'y', isNumber, 0),
       x = setOption<number>(position, 'x', isNumber, 0),
       z = setOption<number>(position, 'z', isNumber, 0),
       diffuse = setOption<string>(colors, 'diffuse', isString, '#F0F0F0'),
       specular = setOption<string>(colors, 'specular', isString, '#000000'),
       ambient = setOption<string>(colors, 'ambient', isString, '#F0F0F0'),
-      emissive = setOption<string>(colors, 'emissive', isString, basicColor),
+      emissive = setOption<string>(colors, 'emissive', isString, color),
       fontSpec = FONTS[fontFamily],
       letterScale = round((scale * rawheight) / naturalLetterHeight),
       thickness = round(scale * rawThickness),
@@ -128,8 +128,9 @@ export default function Wrapper(
     // Next, create the meshes
     // This creates an array of meshes, one for each letter
     // It also creates two other arrays, which are used for letter positioning
-    const meshesAndBoxes = constructLetterPolygons(letters, fontSpec, 0, 0, 0, letterScale, thickness, material, meshOrigin)
-    const meshes = meshesAndBoxes[0]
+    // const meshesAndBoxes = constructLetterPolygons(letters, fontSpec, 0, 0, 0, letterScale, thickness, material, meshOrigin)
+    const meshesAndBoxes = constructLetterPolygons(letters, fontSpec, 0, 0, letterScale, thickness, meshOrigin)
+    // const meshes = meshesAndBoxes[0]
     const lettersBoxes = meshesAndBoxes[1]
     const lettersOrigins = meshesAndBoxes[2]
     // 下标为3的值是ix
@@ -154,7 +155,7 @@ export default function Wrapper(
     this.getOffsetX = (): number => offsetX
     this.getLettersBoxes = (): number[][] => lettersBoxes
     this.getLettersOrigins = (): number[][] => lettersOrigins
-    this.color = (c): string => (isString(c) ? (color = c) : basicColor)
+    this.color = (c): string => (isString(c) ? (color = c) : color)
     this.alpha = (o): number => (isAmplitude(o) ? (opac = o) : opac)
     this.clearall = function (): void {
       sps = null
@@ -282,11 +283,11 @@ function constructLetterPolygons(
   letters: string,
   fontSpec: fontType,
   xOffset: number,
-  yOffset: number,
+  // yOffset: number,
   zOffset: number,
   letterScale: number,
   thickness: number,
-  material,
+  // material,
   meshOrigin: 'fontOrigin' | 'letterCenter'
 ): meshesAndBoxes {
   let letterOffsetX = 0

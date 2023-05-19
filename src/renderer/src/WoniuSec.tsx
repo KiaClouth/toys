@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { PerlinNoise, canvasResize, isCanvas } from './tool'
+import { canvasResize, isCanvas } from './tool'
 import * as BABYLON from 'babylonjs'
 import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES'
 import './assets/js-plugin/babylon/cannon.js'
@@ -26,8 +26,8 @@ export default function GS(): JSX.Element {
   }, [])
 
   function createBabylonScene(canvas: HTMLCanvasElement): void {
-    const perlinNosie = new PerlinNoise()
-    const startTime = new Date().getTime() //记录场景开始时间
+    // const perlinNosie = new PerlinNoise()
+    // const startTime = new Date().getTime() //记录场景开始时间
     const engine = new BABYLON.Engine(canvas, true) // 初始化 BABYLON 3D engine
 
     if (document.getElementById('FPS')) {
@@ -119,7 +119,7 @@ export default function GS(): JSX.Element {
 
       const animation = (scene): void => {
         scene.registerBeforeRender(function () {
-          const a = new Date().getTime() - startTime
+          // const a = new Date().getTime() - startTime
         })
       }
 

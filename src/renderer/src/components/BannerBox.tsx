@@ -538,7 +538,8 @@ export default function BannerBox(): JSX.Element {
         const title_cn_textWriter = new Writer('最新开班时间', {
           'font-family': 'YouSheBiaoTiHei-2',
           'letter-height': exportSets[k].container.childs.chineseTitle.fontSize * camaraScale,
-          'letter-thickness': 0.001
+          'letter-thickness': 0.001,
+          color: '#e72323'
         }) as Writer
         const title_cn_textMesh = title_cn_textWriter.getMesh()!
         title_cn_textMesh.id = 'title_cn_textMesh'
