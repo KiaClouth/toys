@@ -19,12 +19,12 @@ const exportSets = [
       rowCount: 1,
       childs: {
         chineseTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0.185, 0.12, 0),
           fontSize: 48
         },
         englishTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0, 0, -0.025),
           fontSize: 24
         },
@@ -56,12 +56,12 @@ const exportSets = [
       rowCount: 2,
       childs: {
         chineseTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0.185, 0.136, 0),
           fontSize: 48
         },
         englishTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0, 0, -0.025),
           fontSize: 24
         },
@@ -93,12 +93,12 @@ const exportSets = [
       rowCount: 1,
       childs: {
         chineseTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0.217, 0.148, 0),
           fontSize: 70
         },
         englishTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0, 0, -0.037),
           fontSize: 35
         },
@@ -130,12 +130,12 @@ const exportSets = [
       rowCount: 2,
       childs: {
         chineseTitle: {
-          visibilty: true,
+          visibilty: 1,
           position: new BABYLON.Vector3(0.185, 0.1, 0),
           fontSize: 36
         },
         englishTitle: {
-          visibilty: false,
+          visibilty: 0,
           position: new BABYLON.Vector3(0, 0, -0.025),
           fontSize: 24
         },
@@ -256,10 +256,18 @@ export default function BannerBox(): JSX.Element {
 
       // 摄像机
       const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
-      camera.attachControl(canvas, true)
+      camera.attachControl(canvas, false)
       camera.minZ = 0.1
       camera.fov = 0.26
-      // new BABYLON.FxaaPostProcess('fxaa', 4, camera) //后期抗锯齿处理
+
+      const cameraControl = (event: MouseEvent): void => {
+        if (event.buttons === 0) {
+          camera.alpha += event.movementX / 1000000
+          camera.beta += event.movementY / 1000000
+        }
+      }
+      // 注册鼠标移动事件来触发相机控制
+      canvas.addEventListener('mousemove', cameraControl)
 
       // ----------------------------静态材质定义----------------------------------
 
@@ -501,6 +509,12 @@ export default function BannerBox(): JSX.Element {
         }
       })
 
+      // 世界坐标轴显示
+      // new BABYLON.AxesViewer(scene, 1)
+
+      // 动态布局
+      let container: BABYLON.AbstractMesh
+
       // 功能型信息PBR材质
       const infoPbrMaterial = new BABYLON.PBRMaterial('infoPbrMaterial', scene)
       infoPbrMaterial.albedoColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
@@ -508,21 +522,12 @@ export default function BannerBox(): JSX.Element {
       infoPbrMaterial.roughness = 0.9
       infoPbrMaterial.emissiveColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
 
-      // //局部坐标轴显示
-      // const campus_name_textMesh_a = new BABYLON.AxesViewer(scene, 0.25)
-      // campus_name_textMesh_a.xAxis.parent = container
-      // campus_name_textMesh_a.yAxis.parent = container
-      // campus_name_textMesh_a.zAxis.parent = container
+      // 容器透明材质
+      const containerMaterial = new BABYLON.PBRMaterial('containerMaterial', scene)
+      containerMaterial.alpha = 0
 
-      // 动态布局
-      let container: BABYLON.AbstractMesh
       const screenshot = (shot: boolean, k: number): void => {
-        // 清空网格
-        container !== undefined && container.dispose()
-
-        // 重新生成容器
-        const containerMaterial = new BABYLON.PBRMaterial('containerMaterial', scene)
-        containerMaterial.alpha = 0
+        container !== undefined && container.dispose() // 清空容器
         container = BABYLON.MeshBuilder.CreateBox(
           'container',
           { width: exportSets[k].container.size.w * camaraScale, height: exportSets[k].container.size.h * camaraScale, depth: 0.01 },
@@ -532,7 +537,6 @@ export default function BannerBox(): JSX.Element {
         container.position = exportSets[k].container.position
         container.addRotation(Math.PI * (0 / 2), Math.PI * (2 / 2), Math.PI * (0 / 2))
         container.material = containerMaterial
-        container.isVisible = true
         // container.showBoundingBox = true
 
         // 最新开班时间
@@ -549,11 +553,11 @@ export default function BannerBox(): JSX.Element {
         title_cn_textMesh.parent = container
         title_cn_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
         title_cn_textMesh.position = exportSets[k].container.childs.chineseTitle.position
-        title_cn_textMesh.isVisible = exportSets[k].container.childs.chineseTitle.visibilty
+        title_cn_textMesh.visibility = exportSets[k].container.childs.chineseTitle.visibilty
 
         // Lastest opening time
         const title_en_textWriter = new Writer('Lastest opening time', {
-          'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+          'font-family': 'YouSheBiaoTiHei-2',
           'letter-height': exportSets[k].container.childs.englishTitle.fontSize * camaraScale,
           'letter-thickness': 0.001
         }) as Writer
@@ -563,10 +567,7 @@ export default function BannerBox(): JSX.Element {
         title_en_textMesh.material = infoPbrMaterial
         title_en_textMesh.parent = title_cn_textMesh
         title_en_textMesh.position = exportSets[k].container.childs.englishTitle.position
-        title_en_textMesh.isVisible = exportSets[k].container.childs.englishTitle.visibilty
-
-        // 世界坐标轴显示
-        // new BABYLON.AxesViewer(scene, 1)
+        title_en_textMesh.visibility = exportSets[k].container.childs.englishTitle.visibilty
 
         // 白色横线
         const line = BABYLON.CreateBox('line', { width: 1, height: 0.001, depth: 0.001 })
@@ -575,6 +576,7 @@ export default function BannerBox(): JSX.Element {
         line.material = infoPbrMaterial
         line.parent = container
         line.position = exportSets[k].container.childs.line.position
+        line.scaling._x = container.getBoundingInfo().boundingBox.maximum._x / line.getBoundingInfo().boundingBox.maximum._x
 
         const meshSizeArray: { w: number; h: number; d: number }[] = []
         // 开班时间信息创建
@@ -586,7 +588,7 @@ export default function BannerBox(): JSX.Element {
             : time_array[0].replace(/\b(0+)/gi, '') + '月' + time_array[1] + '日'
           // 校区名称字体
           const campus_textWriter = new Writer(campusName, {
-            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.campusName.fontSize * camaraScale,
             'letter-thickness': 0.001
           }) as Writer
@@ -602,7 +604,7 @@ export default function BannerBox(): JSX.Element {
 
           // 时间文字生成
           const date_textWriter = new Writer(date, {
-            'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
+            'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.date.fontSize * camaraScale,
             'letter-thickness': 0.001
           }) as Writer
@@ -652,11 +654,15 @@ export default function BannerBox(): JSX.Element {
           date_textMesh.parent = box
 
           campus_name_textMesh.position = new BABYLON.Vector3(
-            -boxW / 2,
+            0 - boxW / 2,
             0,
             boxD / 2 - campusMeshSize.d - exportSets[k].container.childs.box.addTop * camaraScale
           )
-          date_textMesh.position = new BABYLON.Vector3(-boxW / 2, 0, -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale)
+          date_textMesh.position = new BABYLON.Vector3(
+            0 - boxW / 2,
+            0,
+            -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale
+          )
 
           meshSizeArray.push({ w: boxW, h: boxH, d: boxD })
 
@@ -664,7 +670,7 @@ export default function BannerBox(): JSX.Element {
             // 当导出设置为移动端时，隐藏模型场景
             for (const mesh of scene.meshes) {
               if (mesh.name === '__root__') {
-                // 将 __root__ 及其所有子级设置为不可见
+                // 将 __root__ 及其所有子级可见度设置为0
                 setVisibility(mesh, false)
               }
             }
@@ -688,12 +694,6 @@ export default function BannerBox(): JSX.Element {
           exportSets[k].container.size.h * camaraScale,
           exportSets[k].container.rowCount
         )
-
-        // 更新相机
-        // camera.target = camera.target.multiply(new BABYLON.Vector3(1, 1, 0.5))
-
-        // 调整横线宽度
-        line.scaling._x = container.getBoundingInfo().boundingBox.maximum._x / line.getBoundingInfo().boundingBox.maximum._x
 
         // 更新校区网格坐标
         for (let b = 0; b < campusArray.length; b++) {
@@ -785,7 +785,21 @@ export default function BannerBox(): JSX.Element {
           return
         }
       }
-
+      const keydown = (e: KeyboardEvent): void => {
+        if (e.code == 'Enter') {
+          console.log('正在循环导出所有配置的截图')
+          screenshotLoop()
+        } else if (e.code == 'Space') {
+          if (k < exportSets.length) {
+            screenshot(true, k) //测试环境变更此值以觉定是否截图
+            k++
+          } else {
+            k = 0
+            screenshot(false, k)
+            console.log('已经执行过所有导出配置了')
+          }
+        }
+      }
       engine.displayLoadingUI()
 
       // 当场景中资源加载和初始化完成后
@@ -795,20 +809,7 @@ export default function BannerBox(): JSX.Element {
           scene.render()
         })
         screenshot(false, 0) /////////////////////////////////////////////////////////////////////////////////////
-        window.addEventListener('keydown', (e: KeyboardEvent) => {
-          if (e.code == 'Enter') {
-            console.log('正在循环导出所有配置的截图')
-            screenshotLoop()
-          } else if (e.code == 'Space') {
-            if (k < exportSets.length) {
-              screenshot(true, k) //测试环境变更此值以觉定是否截图
-              k++
-            } else {
-              k = 0
-              console.log('已经执行过所有导出配置了')
-            }
-          }
-        })
+        window.addEventListener('keydown', keydown)
       })
 
       //组件卸载时
@@ -816,6 +817,8 @@ export default function BannerBox(): JSX.Element {
         // 销毁场景和引擎
         scene.dispose()
         engine.dispose()
+        canvas.removeEventListener('mousemove', cameraControl)
+        window.removeEventListener('keydown', keydown)
         console.log('内存已清理')
       }
     } else {
