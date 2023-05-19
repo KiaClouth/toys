@@ -44,6 +44,7 @@ const fs = require('fs')
 const path = require('path')
 
 let coverage = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] // 缺省值
+let fontName = []
 
 global.PiP = PiP
 global.config_ = config
@@ -55,6 +56,7 @@ fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
   } else {
     for (const ttfFileName of data) {
       const name = ttfFileName.replace('.ttf', '').replace('.TTF', '')
+      fontName.push(name)
       coverage = chineseCoverage
 
       fs.readFile(path.join(__dirname, config.relPathFrom + name + '.' + suffix), (err, data) => {
@@ -74,7 +76,7 @@ fs.readdir(path.join(__dirname, config.relPathFrom), (err, data) => {
             if (err) {
               throw err
             } else {
-              console.log('路径就绪' + config.relPathTo)
+              // console.log('路径就绪' + config.relPathTo)
             }
           })
           fs.writeFile(config.relPathTo + name + '.' + 'js', fileBuffer, (err) => {
@@ -124,11 +126,24 @@ function filePost() {
 }
 
 // 生成meshwriter.ES.js提供给浏览器环境使用
-fs.readFile(path.join(__dirname, './meshwriter.ES.ts'), (err, data) => {
+fs.readFile(path.join(__dirname, './meshwriter.ES.template.ts'), (err, data) => {
   if (err) {
     console.log(err)
   } else {
-    console.log('data :')
-    console.log(data)
+    let updatedContent = data.toString()
+    for (const name of fontName) {
+      const nodeB = '// >>>>>  STEP 3 <<<<<'
+      const stringA = `import ${name.replace(/-/g, '')} from './dist/${name}'\n`
+      updatedContent = stringA + updatedContent // 插入【import PMZ from './dist/xxxx'】
+
+      const stringB = `FONTS['${name}'] = ${name.replace(/-/g, '')}(codeList)\n`
+      const insertIndexB = updatedContent.indexOf(nodeB) + nodeB.length + 1
+      updatedContent = updatedContent.slice(0, insertIndexB) + stringB + updatedContent.slice(insertIndexB) // 插入【FONTS['xxx'] = xxx(codeList)】
+    }
+    fs.writeFile(path.join(__dirname, './meshwriter.ES.ts'), updatedContent, (err) => {
+      if (err) {
+        console.log(err)
+      }
+    })
   }
 })

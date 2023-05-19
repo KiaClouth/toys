@@ -582,22 +582,6 @@ export default function BannerBox(): JSX.Element {
           const date = exportSets[k].container.childs.box.date.simpleFormat
             ? time_array[0].replace(/\b(0+)/gi, '') + '.' + time_array[1]
             : time_array[0].replace(/\b(0+)/gi, '') + '月' + time_array[1] + '日'
-          if (exportSets[k].name.split('.')[1] === 'mo') {
-            // 当导出设置为移动端时，隐藏模型场景
-            for (const mesh of scene.meshes) {
-              if (mesh.name === '__root__') {
-                // 将 __root__ 及其所有子级设置为不可见
-                setVisibility(mesh, false)
-              }
-            }
-            // 标题居中
-            title_cn_textMesh.position.x = 0 - title_cn_textMesh.getBoundingInfo().boundingBox.center.x
-          } else {
-            // 桌面端显示背景
-            for (const mesh of scene.meshes) {
-              mesh.isVisible = true
-            }
-          }
           // 校区名称字体
           const campus_textWriter = new Writer(campusName, {
             'font-family': 'YouSheBiaoTiHei-2', // 名称注意大小写
@@ -673,6 +657,26 @@ export default function BannerBox(): JSX.Element {
           date_textMesh.position = new BABYLON.Vector3(-boxW / 2, 0, -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale)
 
           meshSizeArray.push({ w: boxW, h: boxH, d: boxD })
+
+          if (exportSets[k].name.split('.')[1] === 'mo') {
+            // 当导出设置为移动端时，隐藏模型场景
+            for (const mesh of scene.meshes) {
+              if (mesh.name === '__root__') {
+                // 将 __root__ 及其所有子级设置为不可见
+                setVisibility(mesh, false)
+              }
+            }
+            // 标题居中
+            title_cn_textMesh.position.x = 0 - title_cn_textMesh.getBoundingInfo().boundingBox.center.x
+          } else {
+            // 桌面端显示背景
+            for (const mesh of scene.meshes) {
+              if (mesh.name === 'container') {
+                // 将 container 及其所有子级设置为不可见 ////////////////////////////////////////
+                // setVisibility(mesh, false)
+              }
+            }
+          }
         }
 
         const dateMeshPositionsArray = computeDateMeshPositions(

@@ -1,8 +1,8 @@
-import PMZ from './dist/pangmenzhengdao'
-import HBSB from './dist/helvetica-black-semibold'
-import ZHMQRTT from './dist/ZiHunMengQuRuanTangTi'
-import YSBTH from './dist/YouSheBiaoTiHei-2'
-import YSBTY from './dist/YSbiaotiyuan'
+import ZiHunMengQuRuanTangTi from './dist/ZiHunMengQuRuanTangTi'
+import YSbiaotiyuan from './dist/YSbiaotiyuan'
+import YouSheBiaoTiHei2 from './dist/YouSheBiaoTiHei-2'
+import PangMenZhengDao from './dist/PangMenZhengDao'
+import HelveticaBlackSemiBold from './dist/Helvetica-Black-SemiBold'
 import HNM from './helveticaneue-medium'
 import earcut from 'earcut'
 
@@ -37,21 +37,14 @@ const methodsList = [
 ]
 prepArray()
 // >>>>>  STEP 2 <<<<<
-const pmz = PMZ(codeList)
-const hbsb = HBSB(codeList)
-const zhmqrtt = ZHMQRTT(codeList)
-const ysbth = YSBTH(codeList)
-const ysbty = YSBTY(codeList)
-const hnm = HNM(codeList) // Do not remove
-// >>>>>  STEP 2 <<<<<
 const FONTS: fontsType = {}
 // >>>>>  STEP 3 <<<<<
-FONTS['PangMenZhengDao'] = pmz
-FONTS['Helvetica-Black-SemiBold'] = hbsb
-FONTS['ZiHunMengQuRuanTangTi'] = zhmqrtt
-FONTS['YouSheBiaoTiHei-2'] = ysbth
-FONTS['YSbiaotiyuan'] = ysbty
-FONTS['HelveticaNeue-Medium'] = hnm // Do not remove
+FONTS['ZiHunMengQuRuanTangTi'] = ZiHunMengQuRuanTangTi(codeList)
+FONTS['YSbiaotiyuan'] = YSbiaotiyuan(codeList)
+FONTS['YouSheBiaoTiHei-2'] = YouSheBiaoTiHei2(codeList)
+FONTS['PangMenZhengDao'] = PangMenZhengDao(codeList)
+FONTS['Helvetica-Black-SemiBold'] = HelveticaBlackSemiBold(codeList)
+FONTS['HelveticaNeue-Medium'] = HNM(codeList) // Do not remove
 // >>>>>  STEP 4 <<<<<
 const defaultColor = '#808080'
 const defaultOpac = 1

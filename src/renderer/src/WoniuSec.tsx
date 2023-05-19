@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { PerlinNoise, canvasResize, isCanvas } from './tool'
 import * as BABYLON from 'babylonjs'
-import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES2'
+import MeshWriter from './assets/js-plugin/meshwriter/meshwriter.ES'
 import './assets/js-plugin/babylon/cannon.js'
 
 import topNavUrl from './public/img/WoniuSec/topNav.svg?url'
