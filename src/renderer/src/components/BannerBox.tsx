@@ -239,7 +239,7 @@ export default function BannerBox(): JSX.Element {
         hideLoadingUI: (): void => {
           // console.log('hidden')
         },
-        loadingUIBackgroundColor: '#ffffff',
+        loadingUIBackgroundColor: '#000000',
         loadingUIText: 'Loading...'
       }
 
@@ -247,9 +247,9 @@ export default function BannerBox(): JSX.Element {
       scene.ambientColor = new BABYLON.Color3(1, 0, 1)
 
       // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
-      scene.debugLayer.show({
-        // embedMode: true
-      })
+      // scene.debugLayer.show({
+      //   // embedMode: true
+      // })
 
       // 文字模型创建器
       const Writer = MeshWriter(scene, { scale: 1 })
@@ -521,6 +521,8 @@ export default function BannerBox(): JSX.Element {
         container !== undefined && container.dispose()
 
         // 重新生成容器
+        const containerMaterial = new BABYLON.PBRMaterial('containerMaterial', scene)
+        containerMaterial.alpha = 0
         container = BABYLON.MeshBuilder.CreateBox(
           'container',
           { width: exportSets[k].container.size.w * camaraScale, height: exportSets[k].container.size.h * camaraScale, depth: 0.01 },
@@ -529,9 +531,8 @@ export default function BannerBox(): JSX.Element {
         container.id = 'container'
         container.position = exportSets[k].container.position
         container.addRotation(Math.PI * (0 / 2), Math.PI * (2 / 2), Math.PI * (0 / 2))
-        container.material = infoPbrMaterial
+        container.material = containerMaterial
         container.isVisible = true
-        container.visibility = 0
         // container.showBoundingBox = true
 
         // 最新开班时间
@@ -637,7 +638,7 @@ export default function BannerBox(): JSX.Element {
             exportSets[k].container.childs.box.addBottom * camaraScale
           const box = BABYLON.MeshBuilder.CreateBox('box', { width: boxW, height: boxH, depth: boxD }, scene)
           box.id = 'box' + a
-          box.material = infoPbrMaterial
+          box.material = containerMaterial
           box.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
           box.visibility = 0
           box.parent = container
@@ -672,6 +673,7 @@ export default function BannerBox(): JSX.Element {
           } else {
             // 桌面端显示背景
             for (const mesh of scene.meshes) {
+              setVisibility(mesh, true)
               if (mesh.name === 'container') {
                 // 将 container 及其所有子级设置为不可见 ////////////////////////////////////////
                 // setVisibility(mesh, false)
@@ -757,7 +759,7 @@ export default function BannerBox(): JSX.Element {
 
       // 递归函数，将网格及其子级的可见性设置为 false
       const setVisibility = (mesh: BABYLON.AbstractMesh, visible: boolean): void => {
-        mesh.isVisible = visible
+        mesh.visibility = visible ? 1 : 0
 
         // 遍历所有子级并递归调用 setVisibility 函数
         for (let i = 0; i < mesh.getChildMeshes().length; i++) {
