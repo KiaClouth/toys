@@ -186,3 +186,8 @@
 #loadingBox .shadow .circle:nth-child(16) {
   animation-delay: calc(var(--startTime) + var(--animationTime) / 2 + 7 * var(--intervalTime));
 }
+
+#loadingBox{
+  background: paint(mesh-gradient);
+  --mesh-gradient: {0,0,red,1,0.5,green,0,1,blue};
+}

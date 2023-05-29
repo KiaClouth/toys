@@ -1,6 +1,6 @@
 import App from './App'
 import { root, resize } from './tool'
-import SmoothCorners from './assets/js-plugin/houdini/smooth-corners.worklet.js?url'
+import MyPaint from './assets/js-plugin/houdini/myPain.worklet.js?url'
 import ReactDOM from 'react-dom/client'
 
 // 启用监听
@@ -24,5 +24,5 @@ console.log(this === window ? 'browser' : 'node')
 
 // }
 
-window.CSS && CSS.paintWorklet && CSS.paintWorklet.addModule && CSS.paintWorklet.addModule(SmoothCorners)
+window.CSS && CSS.paintWorklet && CSS.paintWorklet.addModule && CSS.paintWorklet.addModule(MyPaint)
 ReactDOM.createRoot(root).render(<App />)

@@ -161,19 +161,21 @@ const exportSets = [
 ]
 const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
-  ['成都', '05.22'],
-  ['天府', '05.22'],
+  ['成都', '05.29'],
+  ['天府', '06.26'],
   ['重庆', '05.29'],
   ['西安', '05.31'],
-  ['上海', '05.22'],
-  ['武汉', '05.25'],
+  ['上海', '05.29'],
+  ['武汉', '06.19'],
   ['深圳', '06.12'],
-  ['南京', '05.22'],
-  ['杭州', '05.22'],
+  ['南京', '06.05'],
+  ['杭州', '05.29'],
   ['广州', '06.22'],
-  ['凡云', '05.24'],
+  ['凡云', '05.29'],
   ['阿多比', '05.29']
 ]
+
+const textIsVisibilty = true // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
@@ -256,7 +258,7 @@ export default function BannerBox(): JSX.Element {
 
       // 摄像机
       const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
-      camera.attachControl(canvas, false)
+      // camera.attachControl(canvas, false)
       camera.minZ = 0.1
       camera.fov = 0.26
 
@@ -679,10 +681,10 @@ export default function BannerBox(): JSX.Element {
           } else {
             // 桌面端显示背景
             for (const mesh of scene.meshes) {
-              setVisibility(mesh, true)
+              // setVisibility(mesh, true)
               if (mesh.name === 'container') {
                 // 将 container 及其所有子级设置为不可见 ////////////////////////////////////////
-                // setVisibility(mesh, false)
+                setVisibility(mesh, textIsVisibilty)
               }
             }
           }
