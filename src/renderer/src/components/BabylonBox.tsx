@@ -16,6 +16,10 @@ export default function BabylonBox(): JSX.Element {
       const startTime = new Date().getTime() //记录场景开始时间
       const engine = new BABYLON.Engine(canvas, true) // 初始化 BABYLON 3D engine
       const scene = new BABYLON.Scene(engine)
+      // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
+      // scene.debugLayer.show({
+      //   // embedMode: true
+      // })
 
       fps !== null && (fps.innerHTML = engine.getFps().toFixed() + ' fps')
 
@@ -29,7 +33,8 @@ export default function BabylonBox(): JSX.Element {
       camera.minZ = 0.1
 
       // 灯光
-      const light1 = new BABYLON.PointLight('light1', new BABYLON.Vector3(0, 40, 0), scene)
+      const light1 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 0, 0), scene)
+      light1.diffuse = new BABYLON.Color3(158 / 255, 209 / 255, 255 / 255)
 
       // 物理地面
       // const ground = BABYLON.MeshBuilder.CreateSphere('Ground', { diameter: 2 }, scene)
@@ -49,6 +54,13 @@ export default function BabylonBox(): JSX.Element {
       //   { mass: 1, friction: 0, restitution: 0.9 }
       // )
 
+      // 二十面体材质-----------------
+      const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
+      const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
+      // icosahedronMaterial.albedoColor = baseColor
+      icosahedronMaterial.emissiveColor = baseColor
+      icosahedronMaterial.pointsCloud = true
+
       // 二十面体---------------------
       const icosahedron = BABYLON.MeshBuilder.CreateGeodesic('icosahedron1', {
         m: 24,
@@ -56,6 +68,7 @@ export default function BabylonBox(): JSX.Element {
         size: 1.8,
         updatable: true
       })
+      icosahedron.material = icosahedronMaterial
       // icosahedron.position = new BABYLON.Vector3(0, 15, 0)
       // icosahedron.physicsImpostor = new BABYLON.PhysicsImpostor(
       //   icosahedron,
@@ -64,14 +77,14 @@ export default function BabylonBox(): JSX.Element {
       // )
 
       // //阴影---------------------
-      const generator = new BABYLON.ShadowGenerator(1024, light1)
-      generator.usePoissonSampling = true
-      generator.bias = 0.000001
-      generator.blurScale = 1
-      generator.transparencyShadow = true
-      generator.darkness = 0.6
+      // const generator = new BABYLON.ShadowGenerator(1024, light1)
+      // generator.usePoissonSampling = true
+      // generator.bias = 0.000001
+      // generator.blurScale = 1
+      // generator.transparencyShadow = true
+      // generator.darkness = 0.6
 
-      generator.addShadowCaster(icosahedron)
+      // generator.addShadowCaster(icosahedron)
 
       const positions = icosahedron.getVerticesData(BABYLON.VertexBuffer.PositionKind) //顶点位置引用
 
@@ -105,6 +118,8 @@ export default function BabylonBox(): JSX.Element {
             positions[i * 3 + 2] = initial_vector.z * ratio
           }
           icosahedron.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions) //更新顶点坐标数据
+
+          // icosahedronMaterial.albedoColor = new BABYLON.Color3(perlinNosie.noise(baseColor.r, baseColor.g, baseColor.b))
         }
       })
 

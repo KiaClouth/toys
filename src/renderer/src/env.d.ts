@@ -118,7 +118,7 @@ declare namespace BABYLON {
   }
 }
 
-// paintAPI部分
+// paintAPI部分 //////////////////////////////////////////////////////////////////////
 
 declare namespace CSS {
   let paintWorklet: paintWorklet
@@ -147,6 +147,10 @@ interface PaintRenderingContext2D
 interface PaintSize {
   width: number
   height: number
+}
+
+interface PropertyIndexedKeyframes {
+  [property: string]: Keyframe[] | null
 }
 
 declare function registerPaint(name: string, worklet: PaintWorkletConstructor): void

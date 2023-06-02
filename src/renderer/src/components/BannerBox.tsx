@@ -6,7 +6,7 @@ import 'babylonjs-inspector'
 import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
 
 import { canvasResize, isCanvas } from '../tool'
-import top_nav_url from '../public/img/banner/top_nav.svg?url'
+// import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
 
 const exportSets = [
@@ -161,21 +161,21 @@ const exportSets = [
 ]
 const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
-  ['成都', '05.29'],
+  ['成都', '06.05'],
   ['天府', '06.26'],
-  ['重庆', '05.29'],
-  ['西安', '05.31'],
-  ['上海', '05.29'],
+  ['重庆', '06.12'],
+  ['西安', '06.05'],
+  ['上海', '06.19'],
   ['武汉', '06.19'],
   ['深圳', '06.12'],
   ['南京', '06.05'],
-  ['杭州', '05.29'],
+  ['杭州', '07.10'],
   ['广州', '06.22'],
-  ['凡云', '05.29'],
-  ['阿多比', '05.29']
+  ['凡云', '06.28'],
+  ['阿多比', '06.19']
 ]
 
-const textIsVisibilty = true // 是否显示文字
+const textIsVisibilty = false // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
@@ -831,9 +831,7 @@ export default function BannerBox(): JSX.Element {
 
   return (
     <div id="BannerBox">
-      <div className="top_nav">
-        <img src={top_nav_url} />
-      </div>
+      <div className="top_nav">{/* <img src={top_nav_url} /> */}</div>
       <div className="banner_area">
         <img className="contrast" src={imgUrl} />
         <canvas id="BannerCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
