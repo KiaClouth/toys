@@ -1,15 +1,92 @@
-#Toram{
+#Toram {
   position: relative;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background-color: rgba(142, 211, 83, 1);
+  justify-content: flex-start;
+  /* background-color: rgba(142, 211, 83, 1); */
+  padding-top: 10vh;
 }
 
-#container{
+#container {
   width: 1280px;
   height: 400px;
+}
+
+#colorBox {
+  margin-top: 40px;
+}
+
+input {
+  border: none;
+  block-size: 60px;
+  background: none;
+  padding: 0px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+input:hover {
+  box-shadow: 2px 2px 4px var(--small-shadow-color);
+}
+
+#startCompute {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20%;
+  z-index: 2;
+  font-size: 1.25rem;
+  padding: 1rem 4rem;
+  mask-image: paint(smooth-corners);
+  -webkit-mask-image: paint(smooth-corners);
+  --smooth-corners: 12;
+  cursor: pointer;
+  transition: all var(--time-normal);
+}
+
+#startCompute:hover {
+  padding: 1rem 5rem;
+}
+
+#colorPickerBG {
+  /* position: absolute;
+  top: 50vh;
+  left: 50vw; */
+  transform: translateX(-60%) translateY(-50%);
+}
+
+#colorPickerEL {
+  /* position: absolute;
+  top: 50vh;
+  left: 50vw; */
+  transform: translateX(60%) translateY(+50%);
+}
+
+#colorBox {
+  max-width: 72%;
+  flex-wrap: wrap;
+  display: flex;
+  /* filter: blur(5px); */
+}
+
+.subDiv {
+  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0);
+  width: 120px;
+  height: 80px;
+  /* border-radius: 10px; */
+  /* border: #fff 2px solid; */
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* filter: blur(5px); */
+}
+
+.subDiv:hover {
+  color: rgba(255, 255, 255, 1);
 }

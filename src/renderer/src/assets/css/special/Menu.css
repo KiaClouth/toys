@@ -14,3 +14,7 @@
   cursor: pointer;
   transition: all var(--time-normal);
 }
+
+#Menu:hover {
+  color: black;
+}

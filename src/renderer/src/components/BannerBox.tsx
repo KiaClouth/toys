@@ -161,21 +161,21 @@ const exportSets = [
 ]
 const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
-  ['成都', '06.05'],
-  ['天府', '06.26'],
-  ['重庆', '06.12'],
-  ['西安', '06.05'],
-  ['上海', '06.19'],
-  ['武汉', '06.19'],
-  ['深圳', '06.12'],
-  ['南京', '06.05'],
-  ['杭州', '07.10'],
-  ['广州', '06.22'],
-  ['凡云', '06.28'],
-  ['阿多比', '06.19']
+  ['成都', '09.14'],
+  ['天府', '09.18'],
+  ['重庆', '09.20'],
+  ['西安', '09.18'],
+  ['上海', '09.18'],
+  ['武汉', '09.18'],
+  ['深圳', '09.11'],
+  ['南京', '09.25'],
+  ['杭州', '09.12'],
+  ['广州', '09.04'],
+  ['凡云', '09.04'],
+  ['阿多比', '09.06']
 ]
 
-const textIsVisibilty = false // 是否显示文字
+const textIsVisibilty = true // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
@@ -258,14 +258,14 @@ export default function BannerBox(): JSX.Element {
 
       // 摄像机
       const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
-      // camera.attachControl(canvas, false)
+      camera.attachControl(canvas, false)
       camera.minZ = 0.1
       camera.fov = 0.26
 
       const cameraControl = (event: MouseEvent): void => {
         if (event.buttons === 0) {
-          camera.alpha += event.movementX / 1000000
-          camera.beta += event.movementY / 1000000
+          camera.alpha += event.movementX / 100000
+          camera.beta += event.movementY / 100000
         }
       }
       // 注册鼠标移动事件来触发相机控制
@@ -399,7 +399,7 @@ export default function BannerBox(): JSX.Element {
           shuidi_spotLight.parent = shuidiClone
 
           // 锥形光的阴影发生器---------------------
-          const shuidi_generator = new BABYLON.ShadowGenerator(4096, shuidi_spotLight)
+          const shuidi_generator = new BABYLON.ShadowGenerator(1024, shuidi_spotLight)
           shuidi_generator.usePoissonSampling = true
           shuidi_generator.bias = 0.000001
           shuidi_generator.blurScale = 1
