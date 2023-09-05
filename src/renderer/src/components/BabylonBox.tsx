@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { root, PerlinNoise, canvasResize, isCanvas } from '../tool'
-import * as BABYLON from 'babylonjs'
+import 'https://cdn.babylonjs.com/babylon.js'
 import '../assets/js-plugin/babylon/cannon.js'
 
 export default function BabylonBox(): JSX.Element {

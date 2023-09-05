@@ -73,7 +73,8 @@ class MeshGradient {
   paint(ctx, geom, properties) {
     // 将css属性中的--mesh-gradient赋值给变量meshData
     const meshData = properties.get('--mesh-gradient').toString()
-    console.log(meshData)
+    // console.log(meshData)
+    meshData
   }
 }
 

@@ -1,5 +1,3 @@
-import 'babylonjs'
-
 export const root = document.getElementById('root')!
 export const resize = new CustomEvent('resize', { detail: 'change' })
 
@@ -303,9 +301,13 @@ export function hex2rgb(hex: string): {
   return { r, g, b }
 }
 
-// 给BABYLON.Color3添加按hsv调整色值方法
-BABYLON.Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth]): BABYLON.Color3 {
-  const hsv = rgb2hsv({ r: this.r * 255, g: this.g * 255, b: this.b * 255 })
+export function hsvOffset(
+  color3: BABYLON.Color3,
+  [h, hMeth]: [number, string?],
+  [s, sMeth]: [number, string?],
+  [v, vMeth]: [number, string?]
+): BABYLON.Color3 {
+  const hsv = rgb2hsv({ r: color3.r * 255, g: color3.g * 255, b: color3.b * 255 })
   // console.log('hsv:', hsv)
 
   h = typeof hMeth !== 'undefined' ? (hMeth === 'add' ? hsv.h + h : hsv.h * h) : h
@@ -327,6 +329,30 @@ BABYLON.Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth
   // console.log('rgb:', rgb)
   return new BABYLON.Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
 }
+// 给BABYLON.Color3添加按hsv调整色值方法
+// BABYLON.Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth]): BABYLON.Color3 {
+//   const hsv = rgb2hsv({ r: this.r * 255, g: this.g * 255, b: this.b * 255 })
+//   // console.log('hsv:', hsv)
+
+//   h = typeof hMeth !== 'undefined' ? (hMeth === 'add' ? hsv.h + h : hsv.h * h) : h
+//   s = typeof sMeth !== 'undefined' ? (sMeth === 'add' ? hsv.s + s : hsv.s * s) : s
+//   v = typeof vMeth !== 'undefined' ? (vMeth === 'add' ? hsv.v + v : hsv.v * v) : v
+
+//   while (h < 0 || h > 1) {
+//     h = h > 1 ? h - 1 : h < 0 ? h + 1 : h
+//   }
+//   while (s < 0 || s > 1) {
+//     s = s > 1 ? 1 : s < 0 ? 0 : s
+//   }
+//   while (v < 0 || v > 1) {
+//     v = v > 1 ? 1 : v < 0 ? 0 : v
+//   }
+//   // console.log(h, s, v)
+
+//   const rgb = hsv2rgb({ h: h, s: s, v: v })
+//   // console.log('rgb:', rgb)
+//   return new BABYLON.Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
+// }
 
 /**
  * Colour class

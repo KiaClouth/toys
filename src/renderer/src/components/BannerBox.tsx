@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
-import 'babylonjs'
-import 'babylonjs-materials'
-import 'babylonjs-loaders'
-import 'babylonjs-inspector'
+import { useEffect } from 'react'
+import 'https://cdn.babylonjs.com/babylon.js'
+import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
+import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
+// import 'babylonjs-inspector'
 import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
 
-import { canvasResize, isCanvas } from '../tool'
+import { canvasResize, isCanvas, hsvOffset } from '../tool'
 // import top_nav_url from '../public/img/banner/top_nav.svg?url'
 import banner_model_url from '../public/model/banner.gltf?url'
 
@@ -170,8 +170,8 @@ const campusArray = [
   ['深圳', '09.11'],
   ['南京', '09.25'],
   ['杭州', '09.12'],
-  ['广州', '09.04'],
-  ['凡云', '09.04'],
+  ['广州', '09.11'],
+  ['凡云', '10.16'],
   ['阿多比', '09.06']
 ]
 
@@ -224,7 +224,7 @@ const textMaterialColorArray = [
 ]
 
 export default function BannerBox(): JSX.Element {
-  const [imgUrl, setImgUrl] = useState('/src/public/img/banner/opneing.' + exportSets[0].name + '.jpg')
+  // const [imgUrl, setImgUrl] = useState('/src/public/img/banner/opneing.' + exportSets[0].name + '.jpg')
 
   useEffect(() => {
     const canvas = document.getElementById('BannerCanvas')
@@ -336,15 +336,15 @@ export default function BannerBox(): JSX.Element {
           // 每三个水滴一个循环
           switch ((a - b) % 3) {
             case 0:
-              textPbrMaterial.emissiveColor = text_material_color.hsvOffset([0, 'add'], [1], [0.5, 'mul'])
+              textPbrMaterial.emissiveColor = hsvOffset(text_material_color, [0, 'add'], [1], [0.5, 'mul'])
               break
 
             case 1:
-              textPbrMaterial.emissiveColor = text_material_color.hsvOffset([-0.07, 'add'], [1], [0.5, 'mul'])
+              textPbrMaterial.emissiveColor = hsvOffset(text_material_color, [-0.07, 'add'], [1], [0.5, 'mul'])
               break
 
             case 2:
-              textPbrMaterial.emissiveColor = text_material_color.hsvOffset([0.05, 'add'], [1], [0.5, 'mul'])
+              textPbrMaterial.emissiveColor = hsvOffset(text_material_color, [0.05, 'add'], [1], [0.5, 'mul'])
               break
 
             default:
@@ -422,8 +422,8 @@ export default function BannerBox(): JSX.Element {
           text_spotLight.radius = 3
           text_spotLight.diffuse =
             (a - b) % 3 === 1
-              ? text_material_color.hsvOffset([0.1, 'add'], [1], [0.1, 'mul'])
-              : text_material_color.hsvOffset([0.1, 'add'], [1], [1])
+              ? hsvOffset(text_material_color, [0.1, 'add'], [1], [0.1, 'mul'])
+              : hsvOffset(text_material_color, [0.1, 'add'], [1], [1])
           text_spotLight.parent = shuidiClone
         }
         // 网格构建循环结束
@@ -719,7 +719,7 @@ export default function BannerBox(): JSX.Element {
           )
 
         // 替换背景图
-        setImgUrl('/src/public/img/banner/opneing.' + exportSets[k].name + '.jpg')
+        // setImgUrl('/src/public/img/banner/opneing.' + exportSets[k].name + '.jpg')
       }
 
       // 根据container尺寸等设置计算元素位置
@@ -833,7 +833,7 @@ export default function BannerBox(): JSX.Element {
     <div id="BannerBox">
       <div className="top_nav">{/* <img src={top_nav_url} /> */}</div>
       <div className="banner_area">
-        <img className="contrast" src={imgUrl} />
+        {/* <img className="contrast" src={imgUrl} /> */}
         <canvas id="BannerCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       </div>
       <div className="loading_progress">

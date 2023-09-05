@@ -25,7 +25,7 @@ const config = {
   ],
 
   //【字体文件目录】
-  relPathFrom: './font/',
+  relPathFrom: '../../../public/font/BabylonFont/',
 
   //【导出资源目录】
   relPathTo: './src/renderer/src/assets/js-plugin/meshwriter/dist/',
