@@ -6,27 +6,39 @@ import LoadingAnimation from './components/LoadingAnimation'
 import Versions from './components/Versions'
 import BannerBox from './components/BannerBox'
 import PaintBox from './components/PaintBox'
+import Filing from './components/Filing'
 
 export default function GS(): JSX.Element {
   const [appState, setAppState] = useState('LoadingAnimation')
+  const [content, setContent] = useState(<LoadingAnimation />)
   // const appStateArray = ['Paint', 'BannerBox', 'BabylonBox']
-
+  // let content = <LoadingAnimation />
   const classReplace = (): string => {
     switch (appState) {
-      case 'LoadingAnimation':
+      case 'LoadingAnimation': {
+        setContent(<PaintBox />)
         return 'Paint'
+      }
 
-      case 'Paint':
+      case 'Paint': {
+        setContent(<BannerBox />)
         return 'BannerBox'
+      }
 
-      case 'BannerBox':
+      case 'BannerBox': {
+        setContent(<BabylonBox />)
         return 'BabylonBox'
+      }
 
-      case 'BabylonBox':
+      case 'BabylonBox': {
+        setContent(<LoadingAnimation />)
         return 'LoadingAnimation'
+      }
 
-      default:
+      default: {
+        setContent(<LoadingAnimation />)
         return 'LoadingAnimation'
+      }
     }
   }
 
@@ -39,38 +51,12 @@ export default function GS(): JSX.Element {
     }
   }, [])
 
-  switch (appState) {
-    case 'Paint': {
-      return (
-        <div id="GS" data-state={appState}>
-          <PaintBox />
-          <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
-        </div>
-      )
-    }
-    case 'BabylonBox':
-      return (
-        <div id="GS" data-state={appState}>
-          <BabylonBox />
-          <Versions />
-          <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
-        </div>
-      )
-    case 'BannerBox':
-      return (
-        <div id="GS" data-state={appState}>
-          <BannerBox />
-          <Versions />
-          <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
-        </div>
-      )
-    default:
-      return (
-        <div id="GS" data-state={appState}>
-          <LoadingAnimation />
-          <Versions />
-          <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
-        </div>
-      )
-  }
+  return (
+    <div id="GS" data-state={appState}>
+      {content}
+      <Versions />
+      <Filing />
+      <Menu onClick={(): void => setAppState(classReplace())} content={appState} />
+    </div>
+  )
 }
