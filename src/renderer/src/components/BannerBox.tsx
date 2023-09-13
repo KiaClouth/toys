@@ -7,7 +7,8 @@ import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
 
 import { canvasResize, isCanvas, hsvOffset } from '../tool'
 // import top_nav_url from '../public/img/banner/top_nav.svg?url'
-import banner_model_url from '../public/model/banner.gltf?url'
+// import banner_model_url from '../public/model/banner.gltf?url'
+import banner_model_url from '../public/model/banner_new.glb?url'
 
 const exportSets = [
   {
@@ -167,15 +168,15 @@ const campusArray = [
   ['西安', '09.18'],
   ['上海', '09.18'],
   ['武汉', '09.18'],
-  ['深圳', '09.11'],
+  ['深圳', '10.30'],
   ['南京', '09.25'],
-  ['杭州', '09.12'],
-  ['广州', '09.11'],
+  ['杭州', '10.09'],
+  ['广州', '10.30'],
   ['凡云', '10.16'],
-  ['阿多比', '09.06']
+  ['阿多比', '09.21']
 ]
 
-const textIsVisibilty = true // 是否显示文字
+const textIsVisibilty = false // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {

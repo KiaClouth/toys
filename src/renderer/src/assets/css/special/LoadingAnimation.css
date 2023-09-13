@@ -5,12 +5,12 @@
 }
 
 #loadingBox {
-  --overallWidth: calc( 1920px / 5);
-  --overallHeight: calc( 1920px / 5);
+  --overallWidth: calc( 100vw / 5);
+  --overallHeight: calc( 100vw / 5);
   position: fixed;
-  left: 50vw;
-  top: 50vh;
-  transform: translateX(-50%) translateY(-50%);
+  right: 0vw;
+  bottom: 0vw;
+  /* transform: translateX(-50%) translateY(-50%); */
   width: var(--overallWidth);
   height: var(--overallHeight);
   mask-image: url(../../../public/img/page/loading/Union.svg);

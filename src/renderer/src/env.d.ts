@@ -112,6 +112,9 @@ declare namespace BABYLON {
       vOffset: [number, 'add' | 'mul'] | [number]
     ): BABYLON.Color3
   }
+  declare interface Material {
+    albedoColor: BABYLON.Color3
+  }
   declare interface Path2 {
     addQuadraticCurveTo: (redX: number, redY: number, blueX: number, blueY: number) => void
     addCubicCurveTo: (redX: number, redY: number, greenX: number, greenY: number, blueX: number, blueY: number) => void
