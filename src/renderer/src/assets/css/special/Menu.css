@@ -4,6 +4,11 @@
   transform: translateX(-50%);
   bottom: 10%;
   z-index: 2;
+  transition: all var(--time-normal);
+  filter: drop-shadow(var(--shadow-nav-2));
+}
+
+#Menu #content{
   font-size: 1.5rem;
   color: rgba(142, 211, 83, 1);
   padding: 0.5rem 4rem;
@@ -11,10 +16,12 @@
   mask-image: paint(smooth-corners);
   -webkit-mask-image: paint(smooth-corners);
   --smooth-corners: 12;
+  /* mask-image: paint(rounded-octagon);
+  -webkit-mask-image: paint(rounded-octagon);
+  --hypotenuse-length: 4; */
   cursor: pointer;
-  transition: all var(--time-normal);
 }
 
-#Menu:hover {
+#Menu #content:hover {
   color: black;
 }

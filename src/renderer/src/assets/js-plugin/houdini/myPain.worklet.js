@@ -78,6 +78,21 @@ class MeshGradient {
   }
 }
 
+// 圆角八边形
+class RoundedOctagon {
+  // 获取css中设置的斜边长度
+  static get inputProperties() {
+    return ['--hypotenuse-length']
+  }
+
+  paint(ctx, geom, properties) {
+    const hypotenuseLength = properties.get('--hypotenuse-length').toString()
+    console.log(hypotenuseLength)
+  }
+}
+
+// 注册cssPaintApi，第一个参数是css属性中worklet的名字，第二个是此文件中的class名称
+registerPaint('rounded-octagon', RoundedOctagon)
 registerPaint('smooth-corners', SmoothCorners)
 registerPaint('mesh-gradient', MeshGradient)
 

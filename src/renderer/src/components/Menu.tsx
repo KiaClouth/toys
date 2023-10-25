@@ -6,8 +6,10 @@ interface menuProps {
 }
 export default function Menu(props: menuProps): JSX.Element {
   return (
-    <div id="Menu" onClick={props.onClick}>
-      {props.content}
+    <div id="Menu">
+      <div id="content" onClick={props.onClick}>
+        {props.content}
+      </div>
     </div>
   )
 }
