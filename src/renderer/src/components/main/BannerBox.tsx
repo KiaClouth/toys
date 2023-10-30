@@ -3,12 +3,12 @@ import 'https://cdn.babylonjs.com/babylon.js'
 import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
 import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
 // import 'babylonjs-inspector'
-import MeshWriter from '../assets/js-plugin/meshwriter/meshwriter.ES'
+import MeshWriter from '../../assets/js-plugin/meshwriter/meshwriter.ES'
 
-import { canvasResize, isCanvas, hsvOffset } from '../tool'
-// import top_nav_url from '../public/img/banner/top_nav.svg?url'
-// import banner_model_url from '../public/model/banner.gltf?url'
-import banner_model_url from '../public/model/banner_new.glb?url'
+import { canvasResize, isCanvas, hsvOffset } from '../../tool'
+// import top_nav_url from '../../public/img/banner/top_nav.svg?url'
+// import banner_model_url from '../../public/model/banner.gltf?url'
+import banner_model_url from '../../public/model/banner_new.glb?url'
 
 const exportSets = [
   {
@@ -832,6 +832,10 @@ export default function BannerBox(): JSX.Element {
 
   return (
     <div id="BannerBox">
+      <div id="title">
+        <div id="mian">一个3D的banner</div>
+        <div id="info">在banner上晃动鼠标，摄像机将响应鼠标移动而发生变化</div>
+      </div>
       <div className="top_nav">{/* <img src={top_nav_url} /> */}</div>
       <div className="banner_area">
         {/* <img className="contrast" src={imgUrl} /> */}

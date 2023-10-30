@@ -3,11 +3,11 @@ import 'https://cdn.babylonjs.com/babylon.js'
 import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
 import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
 
-import { canvasResize, isCanvas } from '../tool'
+import { canvasResize, isCanvas } from '../../tool'
 
-import model_url from '../public/model/koduck.glb?url'
-// import hdr_url from '../public/model/chun.hdr?url'
-export default function LoadingAnimation(): JSX.Element {
+import model_url from '../../public/model/koduck.glb?url'
+// import hdr_url from '../../public/model/chun.hdr?url'
+export default function Index(): JSX.Element {
   useEffect(() => {
     const canvas = document.getElementById('KoduckCanvas')
 
@@ -165,6 +165,10 @@ export default function LoadingAnimation(): JSX.Element {
 
   return (
     <div id="loadingPage">
+      <div id="title">
+        <div id="mian">启动页</div>
+        <div id="info">这里会随便放一些有意思的东西，切换页面可以查看其他内容</div>
+      </div>
       <div id="loadingBox">
         <div className="shadow">
           <div className="circle"></div>

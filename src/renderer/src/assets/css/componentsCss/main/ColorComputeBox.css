@@ -1,4 +1,4 @@
-#Toram {
+#ColorComputeBox {
   position: relative;
   width: 100%;
   height: 100%;
@@ -10,16 +10,16 @@
   padding-top: 10vh;
 }
 
-#container {
+#ColorComputeBox #container {
   width: 1280px;
   height: 400px;
 }
 
-#colorBox {
+#ColorComputeBox #colorBox {
   margin-top: 40px;
 }
 
-input {
+#ColorComputeBox input {
   border: none;
   block-size: 60px;
   background: none;
@@ -29,11 +29,11 @@ input {
   cursor: pointer;
 }
 
-input:hover {
+#ColorComputeBox input:hover {
   box-shadow: 2px 2px 4px var(--small-shadow-color);
 }
 
-#startCompute {
+#ColorComputeBox #startCompute {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -48,32 +48,32 @@ input:hover {
   transition: all var(--time-normal);
 }
 
-#startCompute:hover {
+#ColorComputeBox #startCompute:hover {
   padding: 1rem 5rem;
 }
 
-#colorPickerBG {
+#ColorComputeBox #colorPickerBG {
   /* position: absolute;
   top: 50vh;
   left: 50vw; */
   transform: translateX(-60%) translateY(-50%);
 }
 
-#colorPickerEL {
+#ColorComputeBox #colorPickerEL {
   /* position: absolute;
   top: 50vh;
   left: 50vw; */
   transform: translateX(60%) translateY(+50%);
 }
 
-#colorBox {
+#ColorComputeBox #colorBox {
   max-width: 72%;
   flex-wrap: wrap;
   display: flex;
   /* filter: blur(5px); */
 }
 
-.subDiv {
+#ColorComputeBox .subDiv {
   transition: all 0.2s;
   color: rgba(255, 255, 255, 0);
   width: 120px;
@@ -87,6 +87,6 @@ input:hover {
   /* filter: blur(5px); */
 }
 
-.subDiv:hover {
+#ColorComputeBox .subDiv:hover {
   color: rgba(255, 255, 255, 1);
 }

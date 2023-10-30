@@ -1,17 +1,18 @@
-/* 样式 */
+/* 基础样式 */
 @import url(normalize.css);/* 规范化样式 */
 @import url(font.css);/* 引入外部字体 */
 @import url(atom.css);/* 原子样式库 */
 
-/* 布局规则 */
+/* 公共布局规则 */
 @import url(layout.css);
 
-/* 特殊样式 */
-@import url(./special/LoadingAnimation.css);
-@import url(./special/GS.css);
-@import url(./special/BannerBox.css);
-@import url(./special/VersionInfo.css);
-@import url(./special/Menu.css);
-@import url(./special/Toram.css);
-@import url(./special/WoniuSec.css);
-@import url(./special/Filing.css);
+/* 组件样式 */
+@import url(./componentsCss/GS.css);
+@import url(./componentsCss/accessory/Filing.css);
+@import url(./componentsCss/accessory/Menu.css);
+@import url(./componentsCss/accessory/VersionInfo.css);
+
+@import url(./componentsCss/main/BannerBox.css);
+@import url(./componentsCss/main/ColorComputeBox.css);
+@import url(./componentsCss/main/Index.css);
+@import url(./componentsCss/main/WoniuSec.css);

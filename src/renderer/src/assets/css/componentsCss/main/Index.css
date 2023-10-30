@@ -13,8 +13,8 @@
   /* transform: translateX(-50%) translateY(-50%); */
   width: var(--overallWidth);
   height: var(--overallHeight);
-  mask-image: url(../../../public/img/page/loading/Union.svg);
-  -webkit-mask-image: url(../../../public/img/page/loading/Union.svg);
+  mask-image: url(../../public/img/page/loading/Union.svg);
+  -webkit-mask-image: url(../../public/img/page/loading/Union.svg);
   mask-position: center center;
   -webkit-mask-position: center center;
   mask-repeat: no-repeat;

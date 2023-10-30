@@ -1,27 +1,32 @@
 #Menu {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 10%;
+  left: 2vw;
+  bottom: 2vh;
   z-index: 2;
   transition: all var(--time-normal);
-  filter: drop-shadow(var(--shadow-nav-2));
+  filter: drop-shadow(1px 2px 4px rgba(56, 71, 101, 0.3));
 }
 
 #Menu #content{
   font-size: 1.5rem;
-  color: rgba(142, 211, 83, 1);
-  padding: 0.5rem 4rem;
+  color: var(--main-text-color);
+  padding: 0.5rem 2rem;
   background-color: var(--white-100);
-  mask-image: paint(smooth-corners);
+  border-radius: var(--border-radius-small);
+
+  /* mask-image: paint(smooth-corners);
   -webkit-mask-image: paint(smooth-corners);
-  --smooth-corners: 12;
+  --smooth-corners: 12; */
+
   /* mask-image: paint(rounded-octagon);
   -webkit-mask-image: paint(rounded-octagon);
   --hypotenuse-length: 4; */
+
   cursor: pointer;
+  transition: all var(--time-normal);
 }
 
 #Menu #content:hover {
   color: black;
+  padding: 0.5rem 2.5rem;
 }

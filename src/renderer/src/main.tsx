@@ -1,4 +1,4 @@
-import App from './App'
+import GS from './GS'
 import { root, resize } from './tool'
 import MyPaint from './assets/js-plugin/houdini/myPain.worklet.js?url'
 import ReactDOM from 'react-dom/client'
@@ -25,4 +25,4 @@ console.log(this === window ? 'browser' : 'node')
 // }
 
 window.CSS && CSS.paintWorklet && CSS.paintWorklet.addModule && CSS.paintWorklet.addModule(MyPaint)
-ReactDOM.createRoot(root).render(<App />)
+ReactDOM.createRoot(root).render(<GS />)

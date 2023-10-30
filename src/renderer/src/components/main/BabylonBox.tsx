@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { root, PerlinNoise, canvasResize, isCanvas } from '../tool'
+import { root, PerlinNoise, canvasResize, isCanvas } from '../../tool'
 import 'https://cdn.babylonjs.com/babylon.js'
-import '../assets/js-plugin/babylon/cannon.js'
+import '../../assets/js-plugin/babylon/cannon.js'
 
 export default function BabylonBox(): JSX.Element {
   useEffect(() => {
@@ -146,6 +146,10 @@ export default function BabylonBox(): JSX.Element {
 
   return (
     <div id="BabylonBox">
+      <div id="title">
+        <div id="mian">随机运动的多面体</div>
+        <div id="info">每个顶点的运动都是随机的，算法采用柏林噪声</div>
+      </div>
       <canvas id="babylonCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       <div className="pfs-info">
         FPS: <span className="FPS"></span>
