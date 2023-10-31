@@ -834,7 +834,7 @@ export default function BannerBox(): JSX.Element {
     <div id="BannerBox">
       <div id="title">
         <div id="mian">一个3D的banner</div>
-        <div id="info">在banner上晃动鼠标，摄像机将响应鼠标移动而发生变化</div>
+        <div id="info">在banner上晃动鼠标，摄像机将响应鼠标移动而发生变化。</div>
       </div>
       <div className="top_nav">{/* <img src={top_nav_url} /> */}</div>
       <div className="banner_area">

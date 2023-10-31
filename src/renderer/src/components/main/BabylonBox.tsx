@@ -28,7 +28,7 @@ export default function BabylonBox(): JSX.Element {
       scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), new BABYLON.CannonJSPlugin(false))
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 4, Math.PI / 2.5, 10, BABYLON.Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 4, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
 
@@ -148,7 +148,7 @@ export default function BabylonBox(): JSX.Element {
     <div id="BabylonBox">
       <div id="title">
         <div id="mian">随机运动的多面体</div>
-        <div id="info">每个顶点的运动都是随机的，算法采用柏林噪声</div>
+        <div id="info">每个顶点的运动都是随机的，算法采用柏林噪声。</div>
       </div>
       <canvas id="babylonCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
       <div className="pfs-info">

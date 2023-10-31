@@ -167,7 +167,7 @@ export default function Index(): JSX.Element {
     <div id="loadingPage">
       <div id="title">
         <div id="mian">启动页</div>
-        <div id="info">这里会随便放一些有意思的东西，切换页面可以查看其他内容</div>
+        <div id="info">这里会随便放一些有意思的东西，点击左下角的按钮切换页面可以查看其他内容</div>
       </div>
       <div id="loadingBox">
         <div className="shadow">
