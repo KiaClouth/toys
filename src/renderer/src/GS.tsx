@@ -11,8 +11,8 @@ import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('Index')
-  const [content, setContent] = useState(<Index />)
+  const [appState, setAppState] = useState('ColorComputeBox')
+  const [content, setContent] = useState(<ColorComputeBox />)
   // const mainComponentsNameAray = [Index, ColorComputeBox, PaintBox, BannerBox, BabylonBox]
   // const mainComponentReplace = (): string => {
   //   for (const i in mainComponentsNameAray) {

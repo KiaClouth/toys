@@ -29,6 +29,11 @@
   cursor: pointer;
 }
 
+#ColorComputeBox.busy input{
+  cursor: no-drop;
+  pointer-events: none;
+}
+
 #ColorComputeBox input:hover {
   box-shadow: 2px 2px 4px var(--small-shadow-color);
 }
@@ -46,6 +51,11 @@
   --smooth-corners: 12;
   cursor: pointer;
   transition: all var(--time-normal);
+}
+
+#ColorComputeBox.busy #startCompute{
+  cursor: no-drop;
+  pointer-events: none;
 }
 
 #ColorComputeBox #startCompute:hover {

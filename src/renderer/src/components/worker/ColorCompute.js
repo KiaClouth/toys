@@ -4268,7 +4268,6 @@ onmessage = (e) => {
   const color2 = new Color('sRGB', [c2.r / 255, c2.g / 255, c2.b / 255])
   const delta = color1.contrast(color2, 'APCA')
   ColorArray.push([c1.r, c1.g, c1.b]) // 将参考颜色放在第一个
-  console.log('这可能会持续几秒到几分钟的时间，计算过程较长，请耐心等待...')
   for (let i = 0; i < 1; i += 1 / 255) {
     for (let j = 0; j < 1; j += 1 / 255) {
       for (let k = 0; k < 1; k += 1 / 255) {
@@ -4278,7 +4277,7 @@ onmessage = (e) => {
         }
       }
     }
+    postMessage({ class: 'progress', value: i })
   }
-  postMessage(ColorArray) // 发送结果回主线程
-  console.log('计算结束~')
+  postMessage({ class: 'color', value: ColorArray }) // 发送结果回主线程
 }
