@@ -1,7 +1,9 @@
 export const root = document.getElementById('root')!
 export const resize = new CustomEvent('resize', { detail: 'change' })
 
-// 柏林噪声
+/**
+ * 柏林噪声
+ */
 export class PerlinNoise {
   private permutation: number[] = [
     151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6,
@@ -89,79 +91,12 @@ export class PerlinNoise {
   }
 }
 
-//
-// export class SmoothCorners {
-
-//     static get inputProperties() {
-//         return ["--smooth-corners"];
-//     }
-
-//     paint(ctx: PaintRenderingContext2D, geom: PaintSize, properties: StylePropertyMapReadOnly) {
-//         // 将css属性中的--smooth-corners赋值给变量c
-//         const c = properties.get("--smooth-corners").toString();
-
-//         const n = c;
-//         let m = n;
-
-//         //限定区间
-//         if (n > 100) m = 100;
-//         if (n < 0.00000000001) m = 0.00000000001;
-
-//         const w = Math.trunc(geom.width / 2);
-//         const h = Math.trunc(geom.height / 2);
-
-//         //   将椭圆分成4个象限的四个部分
-//         const coordinate: Array<number[]> = [[], []];
-
-//         //   记录x,y正方向象限的坐标值
-//         for (let i = 0; i < w + 1; i++) {
-//             const x = i;
-//             const y =
-//                 Math.pow(
-//                     Math.abs(Math.pow(h, m) * (1 - Math.pow(i, m) / Math.pow(w, m))),
-//                     1 / m
-//                 ) + h;
-//             coordinate[0].push(x);
-//             coordinate[1].push(y);
-//         }
-
-//         //开始绘制
-//         ctx.beginPath();
-
-//         // 绘制第一象限，并镜像绘制其余三个象限
-//         for (let i = 0; i < coordinate[0].length; i++) {
-//             if (i == 0) {
-//                 ctx.moveTo(w, h);
-//                 ctx.lineTo(w, 2 * h);
-//             } else ctx.lineTo(w + coordinate[0][i], +coordinate[1][i]);
-//         }
-//         for (let i = 0; i < coordinate[0].length; i++) {
-//             if (i == 0) {
-//                 ctx.moveTo(w, h);
-//                 ctx.lineTo(w, 0);
-//             } else ctx.lineTo(w + coordinate[0][i], -coordinate[1][i] + 2 * h);
-//         }
-//         for (let i = 0; i < coordinate[0].length; i++) {
-//             if (i == 0) {
-//                 ctx.moveTo(w, h);
-//                 ctx.lineTo(w, 2 * h);
-//             } else ctx.lineTo(w - coordinate[0][i], +coordinate[1][i]);
-//         }
-//         for (let i = 0; i < coordinate[0].length; i++) {
-//             if (i == 0) {
-//                 ctx.moveTo(w, h);
-//                 ctx.lineTo(w, 0);
-//             } else ctx.lineTo(w - coordinate[0][i], -coordinate[1][i] + 2 * h);
-//         }
-
-//         ctx.closePath();
-//         ctx.fill();
-//     }
-// }
-// typeof registerPaint === 'function' && registerPaint('smooth-corners', SmoothCorners);
-/**/
-
-//canvas大小设置
+/**
+ * 设置canvas的大小
+ * @param canvas 一个HTMLCanvasElement对象
+ * @param width 宽度值，当类型为number时，将会把canvas的宽度设为该值；当值为'unset'或者不存在时，将会把canvas的宽度设为与父级一样
+ * @param height 高度值，当类型为number时，将会把canvas的高度设为该值；当值为'unset'或者不存在时，将会把canvas的高度设为与父级一样
+ */
 export function canvasResize(canvas: HTMLCanvasElement, width?: number | string, height?: number | string): void {
   if (typeof width === 'number') {
     canvas.width = width
@@ -177,7 +112,10 @@ export function canvasResize(canvas: HTMLCanvasElement, width?: number | string,
   // console.log('canvas：' + canvas.id + '的尺寸设置完成！')
 }
 
-//判断对象是否为HTMLCanvasElement
+/**
+ * 判断对象是否为HTMLCanvasElement
+ * @param obj 任意类型的对象
+ */
 export function isCanvas(obj: HTMLCanvasElement | HTMLElement | null): obj is HTMLCanvasElement {
   if (obj !== null) {
     return obj.tagName === 'CANVAS'
@@ -186,6 +124,10 @@ export function isCanvas(obj: HTMLCanvasElement | HTMLElement | null): obj is HT
   }
 }
 
+/**
+ * 将rgb值转换成hsv
+ * @param rgb 一个rgb色值
+ */
 export function rgb2hsv(rgb: { r: number; g: number; b: number }): {
   h: number
   s: number
@@ -241,6 +183,10 @@ export function rgb2hsv(rgb: { r: number; g: number; b: number }): {
   }
 }
 
+/**
+ * 将hsv值转换成rgb
+ * @param hsv 一个hsv色值
+ */
 export function hsv2rgb(hsv: { h: number; s: number; v: number }): {
   r: number
   g: number
@@ -285,6 +231,10 @@ export function hsv2rgb(hsv: { h: number; s: number; v: number }): {
   }
 }
 
+/**
+ * 将hex值转换成rgb
+ * @param hex 一个hex色值
+ */
 export function hex2rgb(hex: string): {
   r: number
   g: number
@@ -301,6 +251,14 @@ export function hex2rgb(hex: string): {
   return { r, g, b }
 }
 
+/**
+ * 返回一个颜色，具体计算方式由参数决定。只有赋值、加法、乘法三种运算模式。
+ * @param rgb 一个BABYLON.Color3类型的值
+ * @param h 在色相上的增量
+ * @param s 在饱和度上的增量
+ * @param v 在明度上的增量
+ * @param vMeth 运算模式。不写是赋值；add是加法；其他所有字符串都是乘法。
+ */
 export function hsvOffset(
   color3: BABYLON.Color3,
   [h, hMeth]: [number, string?],

@@ -77,9 +77,11 @@
 }
 
 #ColorComputeBox #colorBox {
-  max-width: 72%;
+  max-width: 72vw;
+  max-height: 64vh;
   flex-wrap: wrap;
   display: flex;
+  overflow: scroll;
   /* filter: blur(5px); */
 }
 
@@ -88,7 +90,7 @@
   color: rgba(255, 255, 255, 0);
   width: 120px;
   height: 80px;
-  /* border-radius: 10px; */
+  border-radius: var(--border-radius-small);
   /* border: #fff 2px solid; */
   margin: 20px;
   display: flex;
