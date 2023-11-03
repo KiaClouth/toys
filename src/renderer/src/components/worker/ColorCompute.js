@@ -4260,24 +4260,22 @@ Color.extend(contrastMethods)
 
 onmessage = (e) => {
   // 接收消息
-  const c1 = e.data.c1
-  const c2 = e.data.c2
+  const el = e.data.el
+  const bg = e.data.bg
   // 执行计算
-  const ColorArray = []
-  const color1 = new Color('sRGB', [c1.r / 255, c1.g / 255, c1.b / 255])
-  const color2 = new Color('sRGB', [c2.r / 255, c2.g / 255, c2.b / 255])
-  const delta = color1.contrast(color2, 'DeltaPhi')
-  ColorArray.push([c1.r, c1.g, c1.b]) // 将参考颜色放在第一个
+  const ELColor = new Color('sRGB', [el.r / 255, el.g / 255, el.b / 255])
+  const BGColor = new Color('sRGB', [bg.r / 255, bg.g / 255, bg.b / 255])
+  const contrast = BGColor.contrast(ELColor, 'APCA')
   for (let i = 0; i < 1; i += 1 / 255) {
     for (let j = 0; j < 1; j += 1 / 255) {
       for (let k = 0; k < 1; k += 1 / 255) {
-        const color = new Color('sRGB', [i, j, k])
-        if (Math.abs(color.contrast(color2, 'DeltaPhi') - delta) < 0.00001) {
-          ColorArray.push([Math.round(i * 255), Math.round(j * 255), Math.round(k * 255)])
+        const newElColor = new Color('sRGB', [i, j, k])
+        if (Math.abs(BGColor.contrast(newElColor, 'APCA') - contrast) < 0.00001) {
+          postMessage({ class: 'color', value: [Math.round(i * 255), Math.round(j * 255), Math.round(k * 255)] }) // 发送结果回主线程
         }
       }
     }
     postMessage({ class: 'progress', value: i })
   }
-  postMessage({ class: 'color', value: ColorArray }) // 发送结果回主线程
+  postMessage({ class: 'finish', value: 255 * 255 * 255 }) // 发送结果回主线程
 }

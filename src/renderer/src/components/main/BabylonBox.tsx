@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { root, PerlinNoise, canvasResize, isCanvas } from '../../tool'
+import { PerlinNoise, canvasResize, isCanvas } from '../../tool'
 import 'https://cdn.babylonjs.com/babylon.js'
 import '../../assets/js-plugin/babylon/cannon.js'
 
@@ -136,7 +136,8 @@ export default function BabylonBox(): JSX.Element {
         // 销毁场景和引擎
         scene.dispose()
         engine.dispose()
-        root.removeEventListener('resize', () => canvasResize(canvas))
+        console.log('内存已清理')
+        window.removeEventListener('resize', () => canvasResize(canvas))
       }
     } else {
       console.log('cannot find canvas')

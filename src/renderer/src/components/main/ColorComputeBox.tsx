@@ -9,6 +9,7 @@ export default function ColorComputeBox(): JSX.Element {
   const [mainComponentState, setMainComponentState] = useState<string>('idle')
   const [ColorBoxChild, setColorBoxChild] = useState<JSX.Element[]>([])
   const ColorComputeWorker = new Worker(ColorComputeUrl)
+  let key = 0
 
   useEffect(() => {
     // 初始化
@@ -20,21 +21,28 @@ export default function ColorComputeBox(): JSX.Element {
   }, [])
 
   const deltaE = (): void => {
-    setMainComponentState('busy')
-    const c1 = hex2rgb(ELcolor)
-    const c2 = hex2rgb(BGcolor)
-    ColorComputeWorker.postMessage({ c1, c2 })
+    setColorBoxChild([])
+    setMainComponentState('busy') // 调整输入组件可用性
+    const el = hex2rgb(ELcolor)
+    const bg = hex2rgb(BGcolor)
+    ColorComputeWorker.postMessage({ el, bg })
+    const colorBoxContent: JSX.Element[] = []
     ColorComputeWorker.onmessage = (e): void => {
       // 从 Web Worker 接收结果
       // 处理结果
       if (e.data.class === 'progress') {
-        setProgress('[当前进度：' + (e.data.value * 100).toFixed(2) + '%' + ']')
+        setProgress('[当前进度：' + (e.data.value * 100).toFixed(2) + '%' + ']，已找到' + key + '个,点击终止')
       } else if (e.data.class === 'color') {
-        const result = e.data.value
-        setColorBoxChild(
-          result.map((color, index) => (
+        if (key++ >= 1000) {
+          ColorComputeWorker.terminate()
+          console.log('已得到颜色超过1000个，为防止数量过多导致页面崩溃，已终止计算')
+          setMainComponentState('idle')
+          setProgress('已终止，点击再次计算')
+        } else {
+          const color = e.data.value
+          const newDiv = (
             <div
-              key={index}
+              key={key}
               className="subDiv"
               style={{
                 backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
@@ -42,17 +50,28 @@ export default function ColorComputeBox(): JSX.Element {
             >
               {`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
             </div>
-          ))
-        )
+          )
+          colorBoxContent.push(newDiv)
+          setColorBoxChild(colorBoxContent)
+        }
+      } else if (e.data.class === 'finish') {
+        // setTotal(0)
+        key = 0
         setMainComponentState('idle')
-        setProgress('已完成，点击再次计算')
+        setProgress('已对比' + e.data.value + '个颜色，点击再次计算')
       }
     }
   }
 
-  const handleColorInput_colorPickerEL = (event): void => setELcolor(event.target.value)
+  const handleColorInput_colorPickerEL = (event): void => {
+    setELcolor(event.target.value)
+    key = 0
+  }
 
-  const handleColorChange_colorPickerBG = (event): void => setBGcolor(event.target.value)
+  const handleColorChange_colorPickerBG = (event): void => {
+    setBGcolor(event.target.value)
+    key = 0
+  }
 
   return (
     <div id="ColorComputeBox" className={mainComponentState} style={{ backgroundColor: BGcolor }}>
