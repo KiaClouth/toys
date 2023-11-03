@@ -6,6 +6,81 @@ import HelveticaBlackSemiBold from './dist/Helvetica-Black-SemiBold'
 import HNM from './helveticaneue-medium'
 import earcut from 'earcut'
 
+class MyPath2 extends BABYLON.Path2 {
+  // 这里可以添加自定义的方法或属性
+  addCubicCurveTo = function (this, redX, redY, greenX, greenY, blueX, blueY): void {
+    const points = this.getPoints()
+    const lastPoint = points[points.length - 1]
+    const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+    const control1 = new B.Vector3(redX, redY, 0)
+    const control2 = new B.Vector3(greenX, greenY, 0)
+    const destination = new B.Vector3(blueX, blueY, 0)
+    const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
+    const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
+    const curvePoints = curve.getPoints()
+    for (let i = 1; i < curvePoints.length; i++) {
+      this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+    }
+  }
+}
+
+type meshesAndBoxes = [BABYLON.Mesh[], number[][], number[][], number, number]
+
+type fontData = {
+  sC: string[] | null
+  shapeCmds?: number[][][]
+  hC?: string[][] | null
+  holeCmds?: number[][][][]
+  xMin: number
+  xMax: number
+  yMin: number
+  yMax: number
+  wdth: number
+}
+
+type fontType = {
+  [key: string]: fontData | boolean
+  reverseHoles: boolean
+  reverseShapes: boolean
+}
+
+type fontsType = {
+  [key: string]: fontType
+}
+
+type mrPosition = { x?: number; y?: number; z?: number }
+type mrColors = {
+  diffuse?: string
+  specular?: string
+  ambient?: string
+  emissive?: string
+}
+type mrAnchor = 'left' | 'center' | 'right'
+
+type fonOptions = {
+  position?: mrPosition
+  colors?: mrColors
+  'font-family'?: string
+  anchor?: mrAnchor
+  'letter-height'?: number
+  'letter-thickness'?: number
+  color?: string
+  alpha?: number
+}
+
+interface MeshWriter {
+  getSPS: () => BABYLON.SolidParticleSystem | null
+  getMesh: () => BABYLON.Mesh | null
+  getMaterial: () => BABYLON.StandardMaterial | null
+  getOffsetX: () => number
+  getLettersBoxes: () => number[][]
+  getLettersOrigins: () => number[][]
+  color: (c) => string
+  alpha: (o) => number
+  clearall: () => void
+  setColor: () => void
+}
+
 // >>>>>  STEP 1 <<<<<
 const Γ = Math.floor
 let scene: BABYLON.Scene, debug
@@ -13,7 +88,7 @@ let b128back, b128digits
 const B = {
   Vector2: BABYLON.Vector2,
   Vector3: BABYLON.Vector3,
-  Path2: BABYLON.Path2,
+  Path2: MyPath2,
   Curve3: BABYLON.Curve3,
   Color3: BABYLON.Color3,
   SolidParticleSystem: BABYLON.SolidParticleSystem,
@@ -683,6 +758,20 @@ function cacheMethods(src): void {
     })
     if (!incomplete) {
       supplementCurveFunctions()
+      // addCubicCurveTo = function (obj, redX, redY, greenX, greenY, blueX, blueY): void {
+      //   const points = obj.getPoints()
+      //   const lastPoint = points[points.length - 1]
+      //   const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+      //   const control1 = new B.Vector3(redX, redY, 0)
+      //   const control2 = new B.Vector3(greenX, greenY, 0)
+      //   const destination = new B.Vector3(blueX, blueY, 0)
+      //   const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
+      //   const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
+      //   const curvePoints = curve.getPoints()
+      //   for (let i = 1; i < curvePoints.length; i++) {
+      //     obj.addLineTo(curvePoints[i].x, curvePoints[i].y)
+      //   }
+      // }
     }
   }
   if (isString(incomplete)) {
@@ -695,40 +784,40 @@ function cacheMethods(src): void {
 // Thanks Gijs, wherever you are
 //
 function supplementCurveFunctions(): void {
-  if (isObject(B.Path2)) {
-    if (!Object.keys(B.Path2).includes('addQuadraticCurveTo')) {
-      // B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
-      //   const points = this.getPoints()
-      //   const lastPoint = points[points.length - 1]
-      //   const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-      //   const control = new B.Vector3(redX, redY, 0)
-      //   const destination = new B.Vector3(blueX, blueY, 0)
-      //   const nb_of_points = curveSampleSize
-      //   const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
-      //   const curvePoints = curve.getPoints()
-      //   for (let i = 1; i < curvePoints.length; i++) {
-      //     this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-      //   }
-      // }
-      console.log('在BABYLON.Path2上没有找到addQuadraticCurveTo方法')
-    }
-    if (!B.Path2.prototype.addCubicCurveTo) {
-      B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY): void {
-        const points = this.getPoints()
-        const lastPoint = points[points.length - 1]
-        const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-        const control1 = new B.Vector3(redX, redY, 0)
-        const control2 = new B.Vector3(greenX, greenY, 0)
-        const destination = new B.Vector3(blueX, blueY, 0)
-        const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
-        const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
-        const curvePoints = curve.getPoints()
-        for (let i = 1; i < curvePoints.length; i++) {
-          this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-        }
-      }
-    }
-  }
+  // if (isObject(B.Path2)) {
+  //   if (!Object.keys(B.Path2).includes('addQuadraticCurveTo')) {
+  //     // B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
+  //     //   const points = this.getPoints()
+  //     //   const lastPoint = points[points.length - 1]
+  //     //   const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+  //     //   const control = new B.Vector3(redX, redY, 0)
+  //     //   const destination = new B.Vector3(blueX, blueY, 0)
+  //     //   const nb_of_points = curveSampleSize
+  //     //   const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
+  //     //   const curvePoints = curve.getPoints()
+  //     //   for (let i = 1; i < curvePoints.length; i++) {
+  //     //     this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+  //     //   }
+  //     // }
+  //     console.log('在BABYLON.Path2上没有找到addQuadraticCurveTo方法')
+  //   }
+  //   if (!B.Path2.prototype.addCubicCurveTo) {
+  //     B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY): void {
+  //       const points = this.getPoints()
+  //       const lastPoint = points[points.length - 1]
+  //       const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+  //       const control1 = new B.Vector3(redX, redY, 0)
+  //       const control2 = new B.Vector3(greenX, greenY, 0)
+  //       const destination = new B.Vector3(blueX, blueY, 0)
+  //       const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
+  //       const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
+  //       const curvePoints = curve.getPoints()
+  //       for (let i = 1; i < curvePoints.length; i++) {
+  //         this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+  //       }
+  //     }
+  //   }
+  // }
 }
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // Applies a test to potential incoming parameters

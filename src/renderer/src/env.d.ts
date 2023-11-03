@@ -1,6 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 
+// declare namespace BABYLON {
+//   interface Color3 {
+//     hsvOffset(
+//       hOffset: [number, 'add' | 'mul'] | [number],
+//       sOffset: [number, 'add' | 'mul'] | [number],
+//       vOffset: [number, 'add' | 'mul'] | [number]
+//     ): BABYLON.Color3
+//   }
+//   interface Material {
+//     albedoColor: BABYLON.Color3
+//   }
+//   interface Path2 {
+//     addCubicCurveTo: (redX: number, redY: number, greenX: number, greenY: number, blueX: number, blueY: number) => void
+//   }
+// }
+
 // paintAPI部分 //////////////////////////////////////////////////////////////////////
 
 declare namespace CSS {

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import 'https://cdn.babylonjs.com/babylon.js'
 import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
 import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
-
 import { canvasResize, isCanvas } from '../../tool'
 
 import model_url from '../../public/model/koduck.glb?url'
@@ -104,7 +103,7 @@ export default function Index(): JSX.Element {
         })
 
         // scene.getMeshByName("outline").dispose()
-        scene.getMeshByName('outline')!.material!.albedoColor = BABYLON.Color3.Black()
+        // scene.getMeshByName('outline')!.material!.albedoColor = BABYLON.Color3.Black()
         // scene.getMeshByName("outline").computeBonesUsingShaders = false
         // BABYLON.NodeMaterial.ParseFromSnippetAsync('#N1W93B#30', scene).then((onode) => {
         //   scene.getMeshByName('outline')!.material = onode

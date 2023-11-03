@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
-import 'https://cdn.babylonjs.com/babylon.js'
-import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
-import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
+// import * as BABYLON from 'babylonjs'
+// import 'babylonjs-loaders'
+// import 'babylonjs-marerials'
+// import 'https://cdn.babylonjs.com/babylon.js'
+// import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
+// import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
 // import 'babylonjs-inspector'
 import MeshWriter from '../../assets/js-plugin/meshwriter/meshwriter.ES'
 
