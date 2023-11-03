@@ -57,7 +57,7 @@ export default function ColorComputeBox(): JSX.Element {
   return (
     <div id="ColorComputeBox" className={mainComponentState} style={{ backgroundColor: BGcolor }}>
       <div id="title">
-        <div id="mian">查找等感知亮度的颜色</div>
+        <div id="mian">查找等感知对比度的颜色</div>
         <div id="info">
           选择背景色和前景色后，按下[计算]按钮将锁定输入并开始计算，由于计算过程非常复杂，通常需要花费几分钟的时候才能得到结果，请耐心等待...
         </div>

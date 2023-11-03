@@ -165,64 +165,6 @@ export default function Wrapper(
   }
   //  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR  CONSTRUCTOR
   // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
-  const proto = MeshWriter.prototype
-
-  proto.setColor = function (this: MeshWriter, color: string): void {
-    const material = this.getMaterial()
-    if (material !== null) {
-      if (isString(color)) {
-        material.emissiveColor = rgb2Bcolor3(this.color(color))
-      }
-    } else {
-      throw 'material is null'
-    }
-  }
-  proto.setAlpha = function (this: MeshWriter, alpha): void {
-    const material = this.getMaterial()
-    if (material !== null) {
-      if (isAmplitude(alpha)) {
-        material.alpha = this.alpha(alpha)
-      }
-    } else {
-      throw 'material is null'
-    }
-  }
-  proto.overrideAlpha = function (this: MeshWriter, alpha): void {
-    const material = this.getMaterial()
-    if (material !== null) {
-      if (isAmplitude(alpha)) {
-        material.alpha = alpha
-      }
-    } else {
-      throw 'material is null'
-    }
-  }
-  proto.resetAlpha = function (this: MeshWriter): void {
-    const material = this.getMaterial()
-    if (material !== null) {
-      material.alpha = this.alpha(1)
-    } else {
-      throw 'material is null'
-    }
-  }
-  proto.getLetterCenter = function (): BABYLON.Vector2 {
-    return new B.Vector2(0, 0)
-  }
-  proto.dispose = function (this: MeshWriter): void {
-    const mesh = this.getMesh(),
-      sps = this.getSPS(),
-      material = this.getMaterial()
-    if (mesh) {
-      mesh.dispose()
-    }
-    if (sps) {
-      sps.dispose()
-    }
-    if (material) {
-      material.dispose()
-    }
-    this.clearall()
-  }
   MeshWriter.codeList = codeList
   MeshWriter.decodeList = decodeList
 
@@ -755,19 +697,20 @@ function cacheMethods(src): void {
 function supplementCurveFunctions(): void {
   if (isObject(B.Path2)) {
     if (!Object.keys(B.Path2).includes('addQuadraticCurveTo')) {
-      B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
-        const points = this.getPoints()
-        const lastPoint = points[points.length - 1]
-        const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-        const control = new B.Vector3(redX, redY, 0)
-        const destination = new B.Vector3(blueX, blueY, 0)
-        const nb_of_points = curveSampleSize
-        const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
-        const curvePoints = curve.getPoints()
-        for (let i = 1; i < curvePoints.length; i++) {
-          this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-        }
-      }
+      // B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
+      //   const points = this.getPoints()
+      //   const lastPoint = points[points.length - 1]
+      //   const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
+      //   const control = new B.Vector3(redX, redY, 0)
+      //   const destination = new B.Vector3(blueX, blueY, 0)
+      //   const nb_of_points = curveSampleSize
+      //   const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
+      //   const curvePoints = curve.getPoints()
+      //   for (let i = 1; i < curvePoints.length; i++) {
+      //     this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+      //   }
+      // }
+      console.log('在BABYLON.Path2上没有找到addQuadraticCurveTo方法')
     }
     if (!B.Path2.prototype.addCubicCurveTo) {
       B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY): void {

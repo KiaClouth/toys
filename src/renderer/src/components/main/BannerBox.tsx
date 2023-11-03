@@ -365,7 +365,7 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YSbiaotiyuan', // 名称注意大小写
             'letter-height': 0.2,
             'letter-thickness': 0.05
-          }) as Writer
+          })
           const shuidi_textMesh = shuidi_textWriter.getMesh()!
           shuidi_textMesh.name = 'shuidi_textMesh'
           shuidi_textMesh.id = 'shuidi_textMesh' + a
@@ -548,7 +548,7 @@ export default function BannerBox(): JSX.Element {
           'letter-height': exportSets[k].container.childs.chineseTitle.fontSize * camaraScale,
           'letter-thickness': 0.001,
           color: '#e72323'
-        }) as Writer
+        })
         const title_cn_textMesh = title_cn_textWriter.getMesh()!
         title_cn_textMesh.id = 'title_cn_textMesh'
         title_cn_textMesh.name = 'title_cn_textMesh'
@@ -563,7 +563,7 @@ export default function BannerBox(): JSX.Element {
           'font-family': 'YouSheBiaoTiHei-2',
           'letter-height': exportSets[k].container.childs.englishTitle.fontSize * camaraScale,
           'letter-thickness': 0.001
-        }) as Writer
+        })
         const title_en_textMesh = title_en_textWriter.getMesh()!
         title_en_textMesh.id = 'title_en_textMesh'
         title_en_textMesh.name = 'title_en_textMesh'
@@ -594,7 +594,7 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.campusName.fontSize * camaraScale,
             'letter-thickness': 0.001
-          }) as Writer
+          })
           const campus_name_textMesh = campus_textWriter.getMesh()!
           campus_name_textMesh.id = 'campus_name_textMesh' + a
           campus_name_textMesh.name = 'campus_name_textMesh'
@@ -610,7 +610,7 @@ export default function BannerBox(): JSX.Element {
             'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.date.fontSize * camaraScale,
             'letter-thickness': 0.001
-          }) as Writer
+          })
           const date_textMesh = date_textWriter.getMesh()!
           date_textMesh.id = 'date_textMesh' + a
           date_textMesh.name = 'date_textMesh'

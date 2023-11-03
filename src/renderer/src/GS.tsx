@@ -11,18 +11,8 @@ import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('ColorComputeBox')
-  const [content, setContent] = useState(<ColorComputeBox />)
-  // const mainComponentsNameAray = [Index, ColorComputeBox, PaintBox, BannerBox, BabylonBox]
-  // const mainComponentReplace = (): string => {
-  //   for (const i in mainComponentsNameAray) {
-  //     if (mainComponentsNameAray.map((obj) => obj.name)[i] == appState) {
-  //       setContent(mainComponentsNameAray[parseInt(i) + 1])
-  //       return mainComponentsNameAray.map((obj) => obj.name)[i]
-  //     }
-  //   }
-  //   return 'Index'
-  // }
+  const [appState, setAppState] = useState('BannerBox')
+  const [content, setContent] = useState(<BannerBox />)
   const mainComponentReplace = (): string => {
     switch (appState) {
       case 'Index': {
