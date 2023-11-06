@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+
 import { hex2rgb } from '../../tool'
 import ColorComputeUrl from './../worker/ColorCompute.js?url'
 
@@ -31,7 +32,7 @@ export default function ColorComputeBox(): JSX.Element {
       // 从 Web Worker 接收结果
       // 处理结果
       if (e.data.class === 'progress') {
-        setProgress('[当前进度：' + (e.data.value * 100).toFixed(2) + '%' + ']，已找到' + key + '个,点击终止')
+        setProgress('[当前进度：' + (e.data.value * 100).toFixed(2) + '%' + ']，已找到' + key + '个')
       } else if (e.data.class === 'color') {
         if (key++ >= 1000) {
           ColorComputeWorker.terminate()

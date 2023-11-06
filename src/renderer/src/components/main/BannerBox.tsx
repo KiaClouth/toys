@@ -1,16 +1,31 @@
 import { useEffect } from 'react'
-// import * as BABYLON from 'babylonjs'
-// import 'babylonjs-loaders'
-// import 'babylonjs-marerials'
-// import 'https://cdn.babylonjs.com/babylon.js'
-// import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
-// import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
-// import 'babylonjs-inspector'
+import { canvasResize, isCanvas, hsvOffset } from '../../tool'
+import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh'
+import { Engine } from '@babylonjs/core/Engines/engine'
+import { Scene } from '@babylonjs/core/scene'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
+import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { SpotLight } from '@babylonjs/core/Lights/spotLight'
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
+import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
+import { PointLight } from '@babylonjs/core/Lights/pointLight'
+import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight'
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { Tools } from '@babylonjs/core/Misc/tools'
+import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader'
+
+// 需要inspector时引入以下内容
+// import '@babylonjs/serializers'
+// import '@babylonjs/gui-editor'
+// import '@babylonjs/gui'
+// import '@babylonjs/materials'
+// import { Inspector } from '@babylonjs/inspector'
+
 import MeshWriter from '../../assets/js-plugin/meshwriter/meshwriter.ES'
 
-import { canvasResize, isCanvas, hsvOffset } from '../../tool'
-// import top_nav_url from '../../public/img/banner/top_nav.svg?url'
-// import banner_model_url from '../../public/model/banner.gltf?url'
 import banner_model_url from '../../public/model/banner_new.glb?url'
 
 const exportSets = [
@@ -18,22 +33,22 @@ const exportSets = [
     name: 'cn.pc',
     exportSize: { w: 1920, h: 650 },
     container: {
-      position: new BABYLON.Vector3(0, 0.22, 13),
+      position: new Vector3(0, 0.22, 13),
       size: { w: 1500, h: 58 },
       rowCount: 1,
       childs: {
         chineseTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0.185, 0.12, 0),
+          position: new Vector3(0.185, 0.12, 0),
           fontSize: 48
         },
         englishTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0, 0, -0.025),
+          position: new Vector3(0, 0, -0.025),
           fontSize: 24
         },
         line: {
-          position: new BABYLON.Vector3(0, 0.032, 0)
+          position: new Vector3(0, 0.032, 0)
         },
         box: {
           addTop: 17,
@@ -55,22 +70,22 @@ const exportSets = [
     name: 'cn.mo',
     exportSize: { w: 660, h: 330 },
     container: {
-      position: new BABYLON.Vector3(0, 0.373, 13),
+      position: new Vector3(0, 0.373, 13),
       size: { w: 571, h: 164 },
       rowCount: 2,
       childs: {
         chineseTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0.185, 0.136, 0),
+          position: new Vector3(0.185, 0.136, 0),
           fontSize: 48
         },
         englishTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0, 0, -0.025),
+          position: new Vector3(0, 0, -0.025),
           fontSize: 24
         },
         line: {
-          position: new BABYLON.Vector3(0, -0.01, 0)
+          position: new Vector3(0, -0.01, 0)
         },
         box: {
           addTop: 17,
@@ -92,22 +107,22 @@ const exportSets = [
     name: 'com.pc',
     exportSize: { w: 1110, h: 450 },
     container: {
-      position: new BABYLON.Vector3(0.03, 0.186, 13),
+      position: new Vector3(0.03, 0.186, 13),
       size: { w: 1240, h: 85 },
       rowCount: 1,
       childs: {
         chineseTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0.217, 0.148, 0),
+          position: new Vector3(0.217, 0.148, 0),
           fontSize: 70
         },
         englishTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0, 0, -0.037),
+          position: new Vector3(0, 0, -0.037),
           fontSize: 35
         },
         line: {
-          position: new BABYLON.Vector3(0, 0.045, 0)
+          position: new Vector3(0, 0.045, 0)
         },
         box: {
           addTop: 17 * 1.2,
@@ -129,22 +144,22 @@ const exportSets = [
     name: 'com.mo',
     exportSize: { w: 900, h: 300 },
     container: {
-      position: new BABYLON.Vector3(0, 0.423, 13),
+      position: new Vector3(0, 0.423, 13),
       size: { w: 661, h: 158 },
       rowCount: 2,
       childs: {
         chineseTitle: {
           visibilty: 1,
-          position: new BABYLON.Vector3(0.185, 0.1, 0),
+          position: new Vector3(0.185, 0.1, 0),
           fontSize: 36
         },
         englishTitle: {
           visibilty: 0,
-          position: new BABYLON.Vector3(0, 0, -0.025),
+          position: new Vector3(0, 0, -0.025),
           fontSize: 24
         },
         line: {
-          position: new BABYLON.Vector3(0, 0, 0)
+          position: new Vector3(0, 0, 0)
         },
         box: {
           addTop: 20,
@@ -193,7 +208,7 @@ for (let i = 0; i < campusArray.length - 1; i++) {
 }
 
 // 场景水滴参数
-const shuidiArray: BABYLON.AbstractMesh[] = []
+const shuidiArray: AbstractMesh[] = []
 const shuidiPositionArray = [
   // eslint-disable-next-line prettier/prettier
   [-0.75, -0.36, -0.08, +0.4, +0.77, +1.3, +1.86, +2.37, +2.87, +3.35, 11, 12, 13],
@@ -235,7 +250,7 @@ export default function BannerBox(): JSX.Element {
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)
-      const engine = new BABYLON.Engine(canvas, true)
+      const engine = new Engine(canvas, true)
 
       //自定义加载动画
       engine.loadingScreen = {
@@ -249,11 +264,11 @@ export default function BannerBox(): JSX.Element {
         loadingUIText: 'Loading...'
       }
 
-      const scene = new BABYLON.Scene(engine)
-      scene.ambientColor = new BABYLON.Color3(1, 0, 1)
+      const scene = new Scene(engine)
+      scene.ambientColor = new Color3(1, 0, 1)
 
       // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
-      // scene.debugLayer.show({
+      // Inspector.Show(scene, {
       //   // embedMode: true
       // })
 
@@ -261,7 +276,7 @@ export default function BannerBox(): JSX.Element {
       const Writer = MeshWriter(scene, { scale: 1 })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
+      const camera = new ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new Vector3(0, 0.66, 3), scene)
       camera.attachControl(canvas, false)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -278,7 +293,7 @@ export default function BannerBox(): JSX.Element {
       // ----------------------------静态材质定义----------------------------------
 
       // 加载model
-      BABYLON.SceneLoader.AppendAsync(
+      SceneLoader.AppendAsync(
         banner_model_url.substring(0, banner_model_url.lastIndexOf('/') + 1),
         banner_model_url.substring(banner_model_url.lastIndexOf('/') + 1),
         scene,
@@ -291,18 +306,18 @@ export default function BannerBox(): JSX.Element {
         }
       ).then(() => {
         // 水滴PBR材质
-        const shuidiPbrMaterial = new BABYLON.PBRMaterial('shuidiPbrMaterial', scene)
-        shuidiPbrMaterial.albedoColor = new BABYLON.Color3(192 / 255, 178 / 255, 211 / 255)
+        const shuidiPbrMaterial = new PBRMaterial('shuidiPbrMaterial', scene)
+        shuidiPbrMaterial.albedoColor = new Color3(192 / 255, 178 / 255, 211 / 255)
         shuidiPbrMaterial.metallic = 1
         shuidiPbrMaterial.roughness = 0.9
-        shuidiPbrMaterial.emissiveColor = new BABYLON.Color3(192 / 255, 178 / 255, 211 / 255).multiply(new BABYLON.Color3(0.7, 0.7, 0.7))
+        shuidiPbrMaterial.emissiveColor = new Color3(192 / 255, 178 / 255, 211 / 255).multiply(new Color3(0.7, 0.7, 0.7))
 
         // 定义水滴母版
         let shuidi = scene.meshes[0]
         for (const mesh of scene.meshes) {
           if (mesh.name === '水滴') {
             shuidi = mesh
-            shuidi.position = new BABYLON.Vector3(0, 10, 0)
+            shuidi.position = new Vector3(0, 10, 0)
           }
         }
 
@@ -314,18 +329,14 @@ export default function BannerBox(): JSX.Element {
             continue
           }
           // 值简化
-          const shuidiPosition = new BABYLON.Vector3(
-            shuidiPositionArray[0][a - b],
-            shuidiPositionArray[1][a - b],
-            shuidiPositionArray[2][a - b]
-          )
-          const shuidiRotation = new BABYLON.Vector3(
+          const shuidiPosition = new Vector3(shuidiPositionArray[0][a - b], shuidiPositionArray[1][a - b], shuidiPositionArray[2][a - b])
+          const shuidiRotation = new Vector3(
             Math.PI * shuidiRotationArray[0][a - b],
             Math.PI * shuidiRotationArray[1][a - b],
             Math.PI * shuidiRotationArray[2][a - b]
           )
-          const shuidiScaling = new BABYLON.Vector3(shuidiScaleArray[0][a - b], shuidiScaleArray[1][a - b], shuidiScaleArray[2][a - b])
-          const text_material_color = new BABYLON.Color3(
+          const shuidiScaling = new Vector3(shuidiScaleArray[0][a - b], shuidiScaleArray[1][a - b], shuidiScaleArray[2][a - b])
+          const text_material_color = new Color3(
             textMaterialColorArray[0][(a - b) % 3] / 255,
             textMaterialColorArray[1][(a - b) % 3] / 255,
             textMaterialColorArray[2][(a - b) % 3] / 255
@@ -333,7 +344,7 @@ export default function BannerBox(): JSX.Element {
 
           // ---------------------------动态定义材质--------------------------------
           // 文字PBR材质
-          const textPbrMaterial = new BABYLON.PBRMaterial('textPbrMaterial', scene)
+          const textPbrMaterial = new PBRMaterial('textPbrMaterial', scene)
           textPbrMaterial.metallic = 0
           textPbrMaterial.roughness = 1
           textPbrMaterial.albedoColor = text_material_color.toLinearSpace()
@@ -377,7 +388,7 @@ export default function BannerBox(): JSX.Element {
           shuidi_textMesh.parent = shuidiClone
 
           // x轴居中处理
-          shuidi_textMesh.locallyTranslate(new BABYLON.Vector3(-shuidi_textMesh.getBoundingInfo().boundingBox.center.x, -0.09, 0.03))
+          shuidi_textMesh.locallyTranslate(new Vector3(-shuidi_textMesh.getBoundingInfo().boundingBox.center.x, -0.09, 0.03))
 
           shuidi_textMesh.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
 
@@ -388,10 +399,10 @@ export default function BannerBox(): JSX.Element {
 
           // -------------------------动态光照设置-------------------------
           // 设置锥形光补足水滴正面亮度，以及产生文字阴影
-          const shuidi_spotLight = new BABYLON.SpotLight(
+          const shuidi_spotLight = new SpotLight(
             'shuidi_spotLight',
-            new BABYLON.Vector3(1, 2, 4.5),
-            new BABYLON.Vector3(-0.2, -0.4, -1),
+            new Vector3(1, 2, 4.5),
+            new Vector3(-0.2, -0.4, -1),
             Math.PI * (1 / 3),
             2,
             scene
@@ -403,7 +414,7 @@ export default function BannerBox(): JSX.Element {
           shuidi_spotLight.parent = shuidiClone
 
           // 锥形光的阴影发生器---------------------
-          const shuidi_generator = new BABYLON.ShadowGenerator(1024, shuidi_spotLight)
+          const shuidi_generator = new ShadowGenerator(1024, shuidi_spotLight)
           shuidi_generator.usePoissonSampling = true
           shuidi_generator.bias = 0.000001
           shuidi_generator.blurScale = 1
@@ -412,10 +423,10 @@ export default function BannerBox(): JSX.Element {
           shuidi_generator.addShadowCaster(shuidi_textMesh, true)
 
           // 设置锥形光使水滴上的文字颜色产生渐变
-          const text_spotLight = new BABYLON.SpotLight(
+          const text_spotLight = new SpotLight(
             'text_spotLight',
-            new BABYLON.Vector3(0, 2, 4.5),
-            new BABYLON.Vector3(0, -0.4, -1),
+            new Vector3(0, 2, 4.5),
+            new Vector3(0, -0.4, -1),
             Math.PI * (1 / 13),
             10,
             scene
@@ -441,13 +452,13 @@ export default function BannerBox(): JSX.Element {
 
         if (floor !== null && background !== null && highway !== null && yellowLine !== null && whiteLine !== null) {
           // 主光源
-          const mainLight = new BABYLON.DirectionalLight('mainLight', new BABYLON.Vector3(0, -10, 0), scene)
+          const mainLight = new DirectionalLight('mainLight', new Vector3(0, -10, 0), scene)
           mainLight.includedOnlyMeshes = [floor, background, highway, yellowLine, whiteLine]
           mainLight.intensity = 4
           mainLight.radius = 10
 
           // 正面光
-          const positiveLight = new BABYLON.DirectionalLight('positiveLight', new BABYLON.Vector3(0, 0, -10), scene)
+          const positiveLight = new DirectionalLight('positiveLight', new Vector3(0, 0, -10), scene)
           positiveLight.includedOnlyMeshes = [floor, background, highway, yellowLine, whiteLine]
           positiveLight.intensity = 2
           positiveLight.radius = 10
@@ -455,38 +466,38 @@ export default function BannerBox(): JSX.Element {
           // 公路色彩增强光
 
           // 公路色相偏移
-          const highwayLight01 = new BABYLON.DirectionalLight('highwayLight01', new BABYLON.Vector3(0, -10, 0), scene)
+          const highwayLight01 = new DirectionalLight('highwayLight01', new Vector3(0, -10, 0), scene)
           highwayLight01.includedOnlyMeshes = [highway]
-          highwayLight01.diffuse = new BABYLON.Color3(3, 0, 255)
+          highwayLight01.diffuse = new Color3(3, 0, 255)
           highwayLight01.intensity = 1
           highwayLight01.radius = 10
 
           // 黄线饱和度提高
-          const highwayLight1 = new BABYLON.DirectionalLight('highwayLight1', new BABYLON.Vector3(0, -10, 0), scene)
+          const highwayLight1 = new DirectionalLight('highwayLight1', new Vector3(0, -10, 0), scene)
           highwayLight1.includedOnlyMeshes = [yellowLine]
-          highwayLight1.diffuse = new BABYLON.Color3(0, 255, 255)
+          highwayLight1.diffuse = new Color3(0, 255, 255)
           highwayLight1.intensity = 0.01
           highwayLight1.radius = 10
 
           // 正面红色
-          const highwayLight2 = new BABYLON.PointLight('highwayLight2', new BABYLON.Vector3(0, 1, 15), scene)
+          const highwayLight2 = new PointLight('highwayLight2', new Vector3(0, 1, 15), scene)
           highwayLight2.includedOnlyMeshes = [highway, yellowLine, whiteLine]
-          highwayLight2.diffuse = new BABYLON.Color3(1, 0, 0)
+          highwayLight2.diffuse = new Color3(1, 0, 0)
           highwayLight2.intensity = 100
 
-          const highwayLight3 = new BABYLON.DirectionalLight('highwayLight3', new BABYLON.Vector3(0, 0, -10), scene)
+          const highwayLight3 = new DirectionalLight('highwayLight3', new Vector3(0, 0, -10), scene)
           highwayLight3.includedOnlyMeshes = [highway, whiteLine]
-          highwayLight3.diffuse = new BABYLON.Color3(0, 1, 0)
+          highwayLight3.diffuse = new Color3(0, 1, 0)
           highwayLight3.intensity = 10
 
           // 水滴环境色补足
-          const shuidiLight = new BABYLON.HemisphericLight('shuidiLight', new BABYLON.Vector3(0, -10, 0), scene)
+          const shuidiLight = new HemisphericLight('shuidiLight', new Vector3(0, -10, 0), scene)
           shuidiLight.includedOnlyMeshes = shuidiArray
-          shuidiLight.diffuse = new BABYLON.Color3(0.8, 0.7, 0.97)
+          shuidiLight.diffuse = new Color3(0.8, 0.7, 0.97)
           shuidiLight.intensity = 2
 
           //阴影发生器---------------------
-          const generator = new BABYLON.ShadowGenerator(4096, mainLight)
+          const generator = new ShadowGenerator(4096, mainLight)
           generator.usePoissonSampling = true
           generator.bias = 0.00001
           generator.blurScale = 2
@@ -503,11 +514,11 @@ export default function BannerBox(): JSX.Element {
             if (scene.meshes[i].name === '公路' || scene.meshes[i].name === '黄线' || scene.meshes[i].name === '白线') {
               // scene.meshes[i].isVisible = false
               scene.meshes[i].position.y += -0.45
-              scene.meshes[i].rotation = new BABYLON.Vector3(Math.PI * (-1 / 512), Math.PI * (0 / 6), Math.PI * (0 / 6))
+              scene.meshes[i].rotation = new Vector3(Math.PI * (-1 / 512), Math.PI * (0 / 6), Math.PI * (0 / 6))
             }
 
             if (scene.meshes[i].name === '地面') {
-              scene.meshes[i].rotation = new BABYLON.Vector3(Math.PI * (1.25 / 256), Math.PI * (0 / 6), Math.PI * (0 / 6))
+              scene.meshes[i].rotation = new Vector3(Math.PI * (1.25 / 256), Math.PI * (0 / 6), Math.PI * (0 / 6))
               scene.meshes[i].position.y += -0.2
               // scene.meshes[i].isVisible = false
             }
@@ -516,25 +527,25 @@ export default function BannerBox(): JSX.Element {
       })
 
       // 世界坐标轴显示
-      // new BABYLON.AxesViewer(scene, 1)
+      // new AxesViewer(scene, 1)
 
       // 动态布局
-      let container: BABYLON.AbstractMesh
+      let container: AbstractMesh
 
       // 功能型信息PBR材质
-      const infoPbrMaterial = new BABYLON.PBRMaterial('infoPbrMaterial', scene)
-      infoPbrMaterial.albedoColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
+      const infoPbrMaterial = new PBRMaterial('infoPbrMaterial', scene)
+      infoPbrMaterial.albedoColor = new Color3(255 / 255, 255 / 255, 255 / 255)
       infoPbrMaterial.metallic = 1
       infoPbrMaterial.roughness = 0.9
-      infoPbrMaterial.emissiveColor = new BABYLON.Color3(255 / 255, 255 / 255, 255 / 255)
+      infoPbrMaterial.emissiveColor = new Color3(255 / 255, 255 / 255, 255 / 255)
 
       // 容器透明材质
-      const containerMaterial = new BABYLON.PBRMaterial('containerMaterial', scene)
+      const containerMaterial = new PBRMaterial('containerMaterial', scene)
       containerMaterial.alpha = 0
 
       const screenshot = (shot: boolean, k: number): void => {
         container !== undefined && container.dispose() // 清空容器
-        container = BABYLON.MeshBuilder.CreateBox(
+        container = MeshBuilder.CreateBox(
           'container',
           { width: exportSets[k].container.size.w * camaraScale, height: exportSets[k].container.size.h * camaraScale, depth: 0.01 },
           scene
@@ -576,7 +587,7 @@ export default function BannerBox(): JSX.Element {
         title_en_textMesh.visibility = exportSets[k].container.childs.englishTitle.visibilty
 
         // 白色横线
-        const line = BABYLON.CreateBox('line', { width: 1, height: 0.001, depth: 0.001 })
+        const line = CreateBox('line', { width: 1, height: 0.001, depth: 0.001 })
         line.id = 'line'
         line.name = 'line'
         line.material = infoPbrMaterial
@@ -603,7 +614,7 @@ export default function BannerBox(): JSX.Element {
           campus_name_textMesh.name = 'campus_name_textMesh'
           campus_name_textMesh.material = infoPbrMaterial
           // campus_name_textMesh.showBoundingBox = true
-          // const campusAxesViewer = new BABYLON.AxesViewer(scene, 0.025)
+          // const campusAxesViewer = new AxesViewer(scene, 0.025)
           // campusAxesViewer.xAxis.parent = campus_name_textMesh
           // campusAxesViewer.yAxis.parent = campus_name_textMesh
           // campusAxesViewer.zAxis.parent = campus_name_textMesh
@@ -619,7 +630,7 @@ export default function BannerBox(): JSX.Element {
           date_textMesh.name = 'date_textMesh'
           date_textMesh.material = infoPbrMaterial
           // date_textMesh.showBoundingBox = true
-          // const dateAxesViewer = new BABYLON.AxesViewer(scene, 0.025)
+          // const dateAxesViewer = new AxesViewer(scene, 0.025)
           // dateAxesViewer.xAxis.parent = date_textMesh
           // dateAxesViewer.yAxis.parent = date_textMesh
           // dateAxesViewer.zAxis.parent = date_textMesh
@@ -644,14 +655,14 @@ export default function BannerBox(): JSX.Element {
             Math.abs(exportSets[k].container.childs.box.date.positionZ) +
             exportSets[k].container.childs.box.addTop * camaraScale +
             exportSets[k].container.childs.box.addBottom * camaraScale
-          const box = BABYLON.MeshBuilder.CreateBox('box', { width: boxW, height: boxH, depth: boxD }, scene)
+          const box = MeshBuilder.CreateBox('box', { width: boxW, height: boxH, depth: boxD }, scene)
           box.id = 'box' + a
           box.material = containerMaterial
           box.addRotation(Math.PI * (3 / 2), Math.PI * (0 / 2), Math.PI * (0 / 2))
           box.visibility = 0
           box.parent = container
           // box.showBoundingBox = true
-          // const boxAxesViewer = new BABYLON.AxesViewer(scene, 0.05)
+          // const boxAxesViewer = new AxesViewer(scene, 0.05)
           // boxAxesViewer.xAxis.parent = box
           // boxAxesViewer.yAxis.parent = box
           // boxAxesViewer.zAxis.parent = box
@@ -659,16 +670,12 @@ export default function BannerBox(): JSX.Element {
           campus_name_textMesh.parent = box
           date_textMesh.parent = box
 
-          campus_name_textMesh.position = new BABYLON.Vector3(
+          campus_name_textMesh.position = new Vector3(
             0 - boxW / 2,
             0,
             boxD / 2 - campusMeshSize.d - exportSets[k].container.childs.box.addTop * camaraScale
           )
-          date_textMesh.position = new BABYLON.Vector3(
-            0 - boxW / 2,
-            0,
-            -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale
-          )
+          date_textMesh.position = new Vector3(0 - boxW / 2, 0, -boxD / 2 + exportSets[k].container.childs.box.addBottom * camaraScale)
 
           meshSizeArray.push({ w: boxW, h: boxH, d: boxD })
 
@@ -705,13 +712,13 @@ export default function BannerBox(): JSX.Element {
         for (let b = 0; b < campusArray.length; b++) {
           const mesh = scene.getMeshById('box' + b)
           if (mesh !== null) {
-            mesh.position = new BABYLON.Vector3(dateMeshPositionsArray[b].x, dateMeshPositionsArray[b].y, 0)
+            mesh.position = new Vector3(dateMeshPositionsArray[b].x, dateMeshPositionsArray[b].y, 0)
           }
         }
 
         // 截图
         shot === true &&
-          BABYLON.Tools.CreateScreenshotUsingRenderTarget(
+          Tools.CreateScreenshotUsingRenderTarget(
             engine,
             camera,
             { width: exportSets[k].exportSize.w, height: exportSets[k].exportSize.h, precision: 4 },
@@ -764,7 +771,7 @@ export default function BannerBox(): JSX.Element {
       }
 
       // 递归函数，将网格及其子级的可见性设置为 false
-      const setVisibility = (mesh: BABYLON.AbstractMesh, visible: boolean): void => {
+      const setVisibility = (mesh: AbstractMesh, visible: boolean): void => {
         mesh.visibility = visible ? 1 : 0
 
         // 遍历所有子级并递归调用 setVisibility 函数

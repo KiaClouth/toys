@@ -1,10 +1,19 @@
 import { useEffect } from 'react'
-import 'https://cdn.babylonjs.com/babylon.js'
-import 'https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js'
-import 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js'
 import { canvasResize, isCanvas } from '../../tool'
 
 import model_url from '../../public/model/koduck.glb?url'
+import { Engine } from '@babylonjs/core/Engines/engine'
+import { Scene } from '@babylonjs/core/scene'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
+import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
+import { NodeMaterial } from '@babylonjs/core/Materials/Node/nodeMaterial'
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
+
+import '@babylonjs/loaders'
+
 // import hdr_url from '../../public/model/chun.hdr?url'
 export default function Index(): JSX.Element {
   useEffect(() => {
@@ -12,7 +21,7 @@ export default function Index(): JSX.Element {
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)
-      const engine = new BABYLON.Engine(canvas, true)
+      const engine = new Engine(canvas, true)
 
       //自定义加载动画
       engine.loadingScreen = {
@@ -26,12 +35,12 @@ export default function Index(): JSX.Element {
         loadingUIText: 'Loading...'
       }
 
-      const scene = new BABYLON.Scene(engine)
-      // scene.ambientColor = new BABYLON.Color3(1, 0, 1)
-      scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
+      const scene = new Scene(engine)
+      // scene.ambientColor = new Color3(1, 0, 1)
+      scene.clearColor = new Color4(0, 0, 0, 0)
 
-      // const hdrTexture = new BABYLON.HDRCubeTexture(hdr_url, scene, 128, false, true, false, true, () => {
-      //   const hdrFiltering = new BABYLON.HDRFiltering(engine)
+      // const hdrTexture = new HDRCubeTexture(hdr_url, scene, 128, false, true, false, true, () => {
+      //   const hdrFiltering = new HDRFiltering(engine)
       //   hdrFiltering.prefilter(hdrTexture, () => {
       //     scene.environmentTexture = hdrTexture
       //     // previousOnLoad();
@@ -45,7 +54,7 @@ export default function Index(): JSX.Element {
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 5, 25, BABYLON.Vector3.Zero(), scene)
+      const camera = new ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 5, 25, Vector3.Zero(), scene)
       camera.attachControl(canvas, false)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -69,7 +78,7 @@ export default function Index(): JSX.Element {
       // ----------------------------静态材质定义----------------------------------
 
       // 加载model
-      BABYLON.SceneLoader.AppendAsync(
+      SceneLoader.AppendAsync(
         model_url.substring(0, model_url.lastIndexOf('/') + 1),
         model_url.substring(model_url.lastIndexOf('/') + 1),
         scene,
@@ -86,8 +95,8 @@ export default function Index(): JSX.Element {
         const Root = scene.getMeshByName('__root__')!
         Root.position._y = -1
 
-        const sun = new BABYLON.DirectionalLight('sun', new BABYLON.Vector3(-0.6, -1, -0.8), scene)
-        sun.diffuse = new BABYLON.Color3(1, 0.99, 0.87)
+        const sun = new DirectionalLight('sun', new Vector3(-0.6, -1, -0.8), scene)
+        sun.diffuse = new Color3(1, 0.99, 0.87)
         sun.autoCalcShadowZBounds = true
         sun.autoCalcShadowZBounds = false
         sun.shadowMinZ = -4
@@ -95,7 +104,7 @@ export default function Index(): JSX.Element {
         sun.includedOnlyMeshes = [Root, Sphere001]
 
         Sphere001.computeBonesUsingShaders = false
-        BABYLON.NodeMaterial.ParseFromSnippetAsync('#N1W93B#44', scene).then((node) => {
+        NodeMaterial.ParseFromSnippetAsync('#N1W93B#44', scene).then((node) => {
           Sphere001.material = node
           // node.getInputBlockByPredicate((b) => b.name === 'shadowCutOff')!.value = 0.8
           // node.getInputBlockByPredicate((b) => b.name === 'shadowItensity')!.value = 0.71
@@ -103,18 +112,18 @@ export default function Index(): JSX.Element {
         })
 
         // scene.getMeshByName("outline").dispose()
-        // scene.getMeshByName('outline')!.material!.albedoColor = BABYLON.Color3.Black()
+        // scene.getMeshByName('outline')!.material!.albedoColor = Color3.Black()
         // scene.getMeshByName("outline").computeBonesUsingShaders = false
-        // BABYLON.NodeMaterial.ParseFromSnippetAsync('#N1W93B#30', scene).then((onode) => {
+        // NodeMaterial.ParseFromSnippetAsync('#N1W93B#30', scene).then((onode) => {
         //   scene.getMeshByName('outline')!.material = onode
         //   // onode.getInputBlockByPredicate((b) => b.name === "shadowCutOff").value = 0.8
         //   // node.getInputBlockByPredicate((b) => b.name === "shadowItensity").value = 0.71
         //   // node.getInputBlockByPredicate((b) => b.name === "rimIntensity").value = 0.08
         // })
-        const shadowGenerator = new BABYLON.ShadowGenerator(512, sun, true)
+        const shadowGenerator = new ShadowGenerator(512, sun, true)
         shadowGenerator.getShadowMap()!.renderList!.push(Sphere001)
         shadowGenerator.setDarkness(0)
-        shadowGenerator.filter = BABYLON.ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP
+        shadowGenerator.filter = ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP
         shadowGenerator.usePoissonSampling = true
         shadowGenerator.useContactHardeningShadow = true
         shadowGenerator.usePercentageCloserFiltering = true
@@ -129,19 +138,19 @@ export default function Index(): JSX.Element {
         // shadowGenerator.addShadowCaster(Sphere001, true)
         // shadowGenerator.addShadowCaster(Root, true)
 
-        // const groundPbrMaterial = new BABYLON.PBRMaterial('groundPbrMaterial', scene)
+        // const groundPbrMaterial = new PBRMaterial('groundPbrMaterial', scene)
         // groundPbrMaterial.metallic = 1
         // groundPbrMaterial.roughness = 0.9
-        // groundPbrMaterial.emissiveColor = new BABYLON.Color3(194 / 255, 121 / 255, 0 / 255)
+        // groundPbrMaterial.emissiveColor = new Color3(194 / 255, 121 / 255, 0 / 255)
 
-        // const ground = BABYLON.CreateBox('ground', { width: 20, height: 2, depth: 20 }, scene)
+        // const ground = CreateBox('ground', { width: 20, height: 2, depth: 20 }, scene)
         // ground.material = groundPbrMaterial
         // ground.position.y = -2
         // ground.receiveShadows = true
       })
 
       // 世界坐标轴显示
-      // new BABYLON.AxesViewer(scene, 1)
+      // new AxesViewer(scene, 1)
       engine.displayLoadingUI()
       // 注册循环渲染函数
       engine.runRenderLoop(() => {

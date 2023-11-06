@@ -1,7 +1,16 @@
+import { Curve3, Path2 } from '@babylonjs/core/Maths/math.path'
 import HNM from './helveticaneue-medium'
 import earcut from 'earcut'
+import { Mesh } from '@babylonjs/core/Meshes/mesh'
+import { SolidParticleSystem } from '@babylonjs/core/Particles/solidParticleSystem'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Scene } from '@babylonjs/core/scene'
+import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { PolygonMeshBuilder } from '@babylonjs/core/Meshes/polygonMesh'
+import { CSG } from '@babylonjs/core/Meshes/csg'
 
-class MyPath2 extends BABYLON.Path2 {
+class MyPath2 extends Path2 {
   // 这里可以添加自定义的方法或属性
   addCubicCurveTo = function (this, redX, redY, greenX, greenY, blueX, blueY): void {
     const points = this.getPoints()
@@ -19,7 +28,7 @@ class MyPath2 extends BABYLON.Path2 {
   }
 }
 
-type meshesAndBoxes = [BABYLON.Mesh[], number[][], number[][], number, number]
+type meshesAndBoxes = [Mesh[], number[][], number[][], number, number]
 
 type fontData = {
   sC: string[] | null
@@ -64,9 +73,9 @@ type fonOptions = {
 }
 
 interface MeshWriter {
-  getSPS: () => BABYLON.SolidParticleSystem | null
-  getMesh: () => BABYLON.Mesh | null
-  getMaterial: () => BABYLON.StandardMaterial | null
+  getSPS: () => SolidParticleSystem | null
+  getMesh: () => Mesh | null
+  getMaterial: () => StandardMaterial | null
   getOffsetX: () => number
   getLettersBoxes: () => number[][]
   getLettersOrigins: () => number[][]
@@ -78,19 +87,19 @@ interface MeshWriter {
 
 // >>>>>  STEP 1 <<<<<
 const Γ = Math.floor
-let scene: BABYLON.Scene, debug
+let scene: Scene, debug
 let b128back, b128digits
 const B = {
-  Vector2: BABYLON.Vector2,
-  Vector3: BABYLON.Vector3,
+  Vector2: Vector2,
+  Vector3: Vector3,
   Path2: MyPath2,
-  Curve3: BABYLON.Curve3,
-  Color3: BABYLON.Color3,
-  SolidParticleSystem: BABYLON.SolidParticleSystem,
-  PolygonMeshBuilder: BABYLON.PolygonMeshBuilder,
-  CSG: BABYLON.CSG,
-  StandardMaterial: BABYLON.StandardMaterial,
-  Mesh: BABYLON.Mesh
+  Curve3: Curve3,
+  Color3: Color3,
+  SolidParticleSystem: SolidParticleSystem,
+  PolygonMeshBuilder: PolygonMeshBuilder,
+  CSG: CSG,
+  StandardMaterial: StandardMaterial,
+  Mesh: Mesh
 }
 
 const methodsList = [
@@ -123,23 +132,23 @@ const naturalLetterHeight = 1000
 //   ~ preferences
 
 export default function Wrapper(
-  scene: BABYLON.Scene,
+  scene: Scene,
   prenferences: {
     defaultFont?: string
     meshOrigin?: string
     scale?: number
     debug?: boolean
     methods?: {
-      Vector2?: BABYLON.Vector2
-      Vector3?: BABYLON.Vector3
-      Path2?: BABYLON.Path2
-      Curve3?: BABYLON.Curve3
-      Color3?: BABYLON.Color3
-      SolidParticleSystem?: BABYLON.SolidParticleSystem
-      PolygonMeshBuilder?: BABYLON.PolygonMeshBuilder
-      CSG?: BABYLON.CSG
-      StandardMaterial?: BABYLON.StandardMaterial
-      Mesh?: BABYLON.Mesh
+      Vector2?: Vector2
+      Vector3?: Vector3
+      Path2?: Path2
+      Curve3?: Curve3
+      Color3?: Color3
+      SolidParticleSystem?: SolidParticleSystem
+      PolygonMeshBuilder?: PolygonMeshBuilder
+      CSG?: CSG
+      StandardMaterial?: StandardMaterial
+      Mesh?: Mesh
     }
   }
 ): (lttrs: string, opt: fonOptions) => void {
@@ -158,7 +167,7 @@ export default function Wrapper(
   //   ~ options
 
   function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
-    let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null
+    let material: StandardMaterial | null, sps: SolidParticleSystem | null, mesh: Mesh | null
     //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
     // Here we set ALL parameters with incoming value or a default
     // setOption:  applies a test to potential incoming parameters
@@ -214,9 +223,9 @@ export default function Wrapper(
     mesh.position.y = scale * y
     mesh.position.z = scale * z
 
-    this.getSPS = (): BABYLON.SolidParticleSystem | null => sps
-    this.getMesh = (): BABYLON.Mesh | null => mesh
-    this.getMaterial = (): BABYLON.StandardMaterial | null => material
+    this.getSPS = (): SolidParticleSystem | null => sps
+    this.getMesh = (): Mesh | null => mesh
+    this.getMaterial = (): StandardMaterial | null => material
     this.getOffsetX = (): number => offsetX
     this.getLettersBoxes = (): number[][] => lettersBoxes
     this.getLettersOrigins = (): number[][] => lettersOrigins
@@ -242,10 +251,10 @@ if (typeof window !== 'undefined') {
 if (typeof global !== 'undefined') {
   global.MeshWriter = Wrapper
 }
-if (typeof BABYLON === 'object') {
-  cacheMethods(BABYLON)
-  BABYLON['MeshWriter'] = Wrapper
-}
+// if (typeof BABYLON === 'object') {
+//   cacheMethods(BABYLON)
+//   BABYLON['MeshWriter'] = Wrapper
+// }
 if (typeof module === 'object' && module.exports) {
   module.exports = Wrapper
 }
@@ -253,11 +262,7 @@ if (typeof module === 'object' && module.exports) {
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // MakeSPS turns the output of constructLetterPolygons into an SPS
 // with the whole string, with appropriate offsets
-function makeSPS(
-  scene: BABYLON.Scene,
-  meshesAndBoxes: meshesAndBoxes,
-  material: BABYLON.StandardMaterial
-): [BABYLON.SolidParticleSystem, BABYLON.Mesh] {
+function makeSPS(scene: Scene, meshesAndBoxes: meshesAndBoxes, material: StandardMaterial): [SolidParticleSystem, Mesh] {
   const meshes = meshesAndBoxes[0]
   const lettersOrigins = meshesAndBoxes[2]
   const sps = new B.SolidParticleSystem('sps' + 'test', scene, {})
@@ -300,7 +305,7 @@ function constructLetterPolygons(
   let letterOffsetX = 0
   const lettersOrigins: number[][] = new Array(letters.length)
   const lettersBoxes: number[][] = new Array(letters.length)
-  const lettersMeshes: BABYLON.Mesh[] = new Array(letters.length)
+  const lettersMeshes: Mesh[] = new Array(letters.length)
   let ix = 0
   let letter
 
@@ -327,7 +332,7 @@ function constructLetterPolygons(
       }
     }
   }
-  const meshesAndBoxes: [BABYLON.Mesh[], number[][], number[][], number, number] = [
+  const meshesAndBoxes: [Mesh[], number[][], number[][], number, number] = [
     lettersMeshes,
     lettersBoxes,
     lettersOrigins,
@@ -351,7 +356,7 @@ function constructLetterPolygons(
   //
   // *WARNING*                                                         *WARNING*
   // buildLetterMeshes performs a lot of arithmetic for offsets to support
-  // symbol reference points, BABYLON idiocyncracies, font idiocyncracies,
+  // symbol reference points, idiocyncracies, font idiocyncracies,
   // symbol size normalization, the way curves are specified and "relative"
   // coordinates.  (Fonts use fixed coordinates but many other SVG-style
   // symbols use relative coordinates)
@@ -364,7 +369,7 @@ function constructLetterPolygons(
     spec: fontData,
     reverseShapes: boolean,
     reverseHoles: boolean
-  ): [BABYLON.Mesh[], BABYLON.Mesh[][], number[], number[]] {
+  ): [Mesh[], Mesh[][], number[], number[]] {
     // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
     // A large number of offsets are created, per warning
     const balanced = meshOrigin === 'letterCenter',
@@ -418,7 +423,7 @@ function constructLetterPolygons(
 
     return [shapeCmdsLists.map(makeCmdsToMesh(reverseShape)), holeCmdsListsArray.map(meshesFromCmdsListArray), letterBox, letterOrigins]
 
-    function meshesFromCmdsListArray(cmdsListArray: number[][][]): BABYLON.Mesh[] {
+    function meshesFromCmdsListArray(cmdsListArray: number[][][]): Mesh[] {
       return cmdsListArray.map(makeCmdsToMesh(reverseHole))
     }
     function makeCmdsToMesh(reverse) {
@@ -462,7 +467,7 @@ function constructLetterPolygons(
             path.addCubicCurveTo(adjXrel(cmd[1]), adjZrel(cmd[2]), adjXrel(cmd[3]), adjZrel(cmd[4]), adjXrel(cmd[5]), adjZrel(cmd[6]))
           }
         }
-        // Having created a Path2 instance with BABYLON utilities,
+        // Having created a Path2 instance with utilities,
         // we turn it into an array and discard it
         let array = path.getPoints().map(point2Vector)
 
@@ -520,8 +525,8 @@ function constructLetterPolygons(
   }
 
   // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
-  function punchHolesInShapes(shapesList: BABYLON.Mesh[], holesList: BABYLON.Mesh[][], letter: string, i: number): BABYLON.Mesh[] {
-    const letterMeshes: BABYLON.Mesh[] = []
+  function punchHolesInShapes(shapesList: Mesh[], holesList: Mesh[][], letter: string, i: number): Mesh[] {
+    const letterMeshes: Mesh[] = []
     for (let j = 0; j < shapesList.length; j++) {
       const shape = shapesList[j]
       const holes = holesList[j]
@@ -533,7 +538,7 @@ function constructLetterPolygons(
     }
     return letterMeshes
   }
-  function punchHolesInShape(shape: BABYLON.Mesh, holes: BABYLON.Mesh[], letter: string, i: number): BABYLON.Mesh {
+  function punchHolesInShape(shape: Mesh, holes: Mesh[], letter: string, i: number): Mesh {
     let csgShape = B.CSG.FromMesh(shape)
     for (let k = 0; k < holes.length; k++) {
       csgShape = csgShape.subtract(B.CSG.FromMesh(holes[k]))
@@ -544,7 +549,7 @@ function constructLetterPolygons(
   }
 }
 
-function makeMaterial(scene: BABYLON.Scene, letters, emissive, ambient, specular, diffuse, opac): BABYLON.StandardMaterial {
+function makeMaterial(scene: Scene, letters, emissive, ambient, specular, diffuse, opac): StandardMaterial {
   const cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
   cm0.diffuseColor = rgb2Bcolor3(diffuse)
   cm0.specularColor = rgb2Bcolor3(specular)
@@ -700,16 +705,16 @@ function makePreferences(prenfrences: {
   scale?: number
   debug?: boolean
   methods?: {
-    Vector2?: BABYLON.Vector2
-    Vector3?: BABYLON.Vector3
-    Path2?: BABYLON.Path2
-    Curve3?: BABYLON.Curve3
-    Color3?: BABYLON.Color3
-    SolidParticleSystem?: BABYLON.SolidParticleSystem
-    PolygonMeshBuilder?: BABYLON.PolygonMeshBuilder
-    CSG?: BABYLON.CSG
-    StandardMaterial?: BABYLON.StandardMaterial
-    Mesh?: BABYLON.Mesh
+    Vector2?: Vector2
+    Vector3?: Vector3
+    Path2?: Path2
+    Curve3?: Curve3
+    Color3?: Color3
+    SolidParticleSystem?: SolidParticleSystem
+    PolygonMeshBuilder?: PolygonMeshBuilder
+    CSG?: CSG
+    StandardMaterial?: StandardMaterial
+    Mesh?: Mesh
   }
 }): {
   defaultFont: string
@@ -807,22 +812,22 @@ function setOption<T>(opts: fonOptions | mrPosition | mrColors, field: string, t
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
 // Conversion functions
-function rgb2Bcolor3(rgb: string): BABYLON.Color3 {
+function rgb2Bcolor3(rgb: string): Color3 {
   rgb = rgb.replace('#', '')
   return new B.Color3(convert(rgb.substring(0, 2)), convert(rgb.substring(2, 4)), convert(rgb.substring(4, 6)))
   function convert(x): number {
     return Γ(1000 * Math.max(0, Math.min((isNumber(parseInt(x, 16)) ? parseInt(x, 16) : 0) / 255, 1))) / 1000
   }
 }
-function point2Vector(point: { x: number; y: number }): BABYLON.Vector2 {
+function point2Vector(point: { x: number; y: number }): Vector2 {
   return new B.Vector2(round(point.x), round(point.y))
 }
-function merge(arrayOfMeshes: BABYLON.Mesh[]): BABYLON.Mesh {
+function merge(arrayOfMeshes: Mesh[]): Mesh {
   // for (let i = 0; i < arrayOfMeshes.length; i++) {
   //   console.log(arrayOfMeshes[i])
   // }
   // debugger
-  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
+  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as Mesh)
 }
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*

@@ -1,3 +1,5 @@
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+
 export const root = document.getElementById('root')!
 export const resize = new CustomEvent('resize', { detail: 'change' })
 
@@ -260,11 +262,11 @@ export function hex2rgb(hex: string): {
  * @param vMeth 运算模式。不写是赋值；add是加法；其他所有字符串都是乘法。
  */
 export function hsvOffset(
-  color3: BABYLON.Color3,
+  color3: Color3,
   [h, hMeth]: [number, string?],
   [s, sMeth]: [number, string?],
   [v, vMeth]: [number, string?]
-): BABYLON.Color3 {
+): Color3 {
   const hsv = rgb2hsv({ r: color3.r * 255, g: color3.g * 255, b: color3.b * 255 })
   // console.log('hsv:', hsv)
 
@@ -285,10 +287,10 @@ export function hsvOffset(
 
   const rgb = hsv2rgb({ h: h, s: s, v: v })
   // console.log('rgb:', rgb)
-  return new BABYLON.Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
+  return new Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
 }
 // 给BABYLON.Color3添加按hsv调整色值方法
-// BABYLON.Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth]): BABYLON.Color3 {
+// Color3.prototype.hsvOffset = function ([h, hMeth], [s, sMeth], [v, vMeth]): Color3 {
 //   const hsv = rgb2hsv({ r: this.r * 255, g: this.g * 255, b: this.b * 255 })
 //   // console.log('hsv:', hsv)
 
@@ -309,7 +311,7 @@ export function hsvOffset(
 
 //   const rgb = hsv2rgb({ h: h, s: s, v: v })
 //   // console.log('rgb:', rgb)
-//   return new BABYLON.Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
+//   return new Color3(rgb.r / 255, rgb.g / 255, rgb.b / 255)
 // }
 
 /**
