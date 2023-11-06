@@ -13,7 +13,15 @@
   </head>
   <body class="light">
     <div id="root" class="fullScreen"></div>
-    <!-- <script>globalThis.global = globalThis</script> -->
     <script type="module" src="./src/main.tsx"></script>
+    <!-- 以下是使用babylonjs时需要加载的资源 -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- 以下开启babylonjs-inspector时需要加载的资源 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/babylonjs-serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-gui-editor/babylon.guiEditor.max.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-materials/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-inspector/babylon.inspector.bundle.min.js"></script> -->
   </body>
 </html>

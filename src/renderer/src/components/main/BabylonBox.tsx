@@ -1,9 +1,4 @@
 import { useEffect } from 'react'
-import { FloatArray, HemisphericLight, MeshBuilder, PBRMaterial, VertexBuffer } from '@babylonjs/core'
-import { ArcRotateCamera } from '@babylonjs/core/Cameras'
-import { Engine } from '@babylonjs/core/Engines/engine'
-import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths'
-import { Scene } from '@babylonjs/core/scene'
 
 import { PerlinNoise, canvasResize, isCanvas } from '../../tool'
 
@@ -18,8 +13,8 @@ export default function BabylonBox(): JSX.Element {
       const perlinNosie = new PerlinNoise()
       const fps = document.getElementById('FPS')
       const startTime = new Date().getTime() //记录场景开始时间
-      const engine = new Engine(canvas, true) // 初始化 3D engine
-      const scene = new Scene(engine)
+      const engine = new BABYLON.Engine(canvas, true) // 初始化 3D engine
+      const scene = new BABYLON.Scene(engine)
       // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
       // scene.debugLayer.show({
       //   // embedMode: true
@@ -28,16 +23,16 @@ export default function BabylonBox(): JSX.Element {
       fps !== null && (fps.innerHTML = engine.getFps().toFixed() + ' fps')
 
       /******* 定义场景函数 ******/
-      scene.clearColor = new Color4(0, 0, 0, 0)
+      scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
 
       // 摄像机
-      const camera = new ArcRotateCamera('Camera', -Math.PI / 4, Math.PI / 2.5, 4, Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 4, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
 
       // 灯光
-      const light1 = new HemisphericLight('light1', new Vector3(0, 0, 0), scene)
-      light1.diffuse = new Color3(158 / 255, 209 / 255, 255 / 255)
+      const light1 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 0, 0), scene)
+      light1.diffuse = new BABYLON.Color3(158 / 255, 209 / 255, 255 / 255)
 
       // 物理地面
       // const ground = MeshBuilder.CreateSphere('Ground', { diameter: 2 }, scene)
@@ -58,14 +53,14 @@ export default function BabylonBox(): JSX.Element {
       // )
 
       // 二十面体材质-----------------
-      const icosahedronMaterial = new PBRMaterial('icosahedronMaterial', scene)
-      const baseColor = new Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
+      const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
+      const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
       // icosahedronMaterial.albedoColor = baseColor
       icosahedronMaterial.emissiveColor = baseColor
       icosahedronMaterial.pointsCloud = true
 
       // 二十面体---------------------
-      const icosahedron = MeshBuilder.CreateGeodesic('icosahedron1', {
+      const icosahedron = BABYLON.MeshBuilder.CreateGeodesic('icosahedron1', {
         m: 24,
         n: 2,
         size: 1.8,
@@ -89,9 +84,9 @@ export default function BabylonBox(): JSX.Element {
 
       // generator.addShadowCaster(icosahedron)
 
-      const positions = icosahedron.getVerticesData(VertexBuffer.PositionKind) //顶点位置引用
+      const positions = icosahedron.getVerticesData(BABYLON.VertexBuffer.PositionKind) //顶点位置引用
 
-      const initial_position: FloatArray = [] //复制一份初始状态顶点位置数组
+      const initial_position: BABYLON.FloatArray = [] //复制一份初始状态顶点位置数组
       if (positions) {
         for (let i = 0; i < positions.length; i++) {
           initial_position.push(positions[i])
@@ -103,7 +98,7 @@ export default function BabylonBox(): JSX.Element {
 
         if (positions) {
           for (let i = 0; i < positions.length / 3; i++) {
-            const initial_vector = new Vector3(
+            const initial_vector = new BABYLON.Vector3(
               //将初始网格的每3个坐标组成一个点，创建Vector3对象
               initial_position[i * 3],
               initial_position[i * 3 + 1],
@@ -120,7 +115,7 @@ export default function BabylonBox(): JSX.Element {
             positions[i * 3 + 1] = initial_vector.y * ratio
             positions[i * 3 + 2] = initial_vector.z * ratio
           }
-          icosahedron.updateVerticesData(VertexBuffer.PositionKind, positions) //更新顶点坐标数据
+          icosahedron.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions) //更新顶点坐标数据
 
           // icosahedronMaterial.albedoColor = new Color3(perlinNosie.noise(baseColor.r, baseColor.g, baseColor.b))
         }

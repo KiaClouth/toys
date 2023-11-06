@@ -16,9 +16,22 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react(), visualizer()],
+    plugins: [react(), visualizer(), externalizeDepsPlugin()],
     server: {
       host: '0.0.0.0'
+    },
+    build: {
+      rollupOptions: {
+        external: [
+          'babylonjs',
+          'babylonjs-loaders',
+          'babylonjs/serializers',
+          'babylonjs/gui-editor',
+          'babylonjs/gui',
+          'babylonjs/materials',
+          'babylonjs/inspector'
+        ]
+      }
     }
   }
 })

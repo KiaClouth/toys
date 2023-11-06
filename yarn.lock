@@ -225,45 +225,6 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
-"@babylonjs/core@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/core/-/core-6.28.1.tgz#db03cc1d35865fe090ca4725f995f46496585806"
-  integrity sha512-7D0L//yQDq0WU5Mj6os3fGNoy8dtCONgRJ2ji2PMNwZlQ6jH3e5OnoaMYss1QuNCoGeTrXbNuNa7z8RezuFrCQ==
-
-"@babylonjs/gui-editor@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/gui-editor/-/gui-editor-6.28.1.tgz#8f899500c7ac56a499e95ef94803149d30df5f73"
-  integrity sha512-880gIEskM61yRNXCMj5/yBRE7wH/C1UUp/VRwNvPmVkI8okGQ7jlzRoPk7nw10dSwsHDcssdWy89NXNmYIHnqg==
-
-"@babylonjs/gui@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/gui/-/gui-6.28.1.tgz#2fbe93bf497c67e96ef809a0af8ffb78c544c6dc"
-  integrity sha512-si8REM177m2Pk0DUn1d3xXyfKmOKosK4uY8Dw+eOL8FuCGvGQe5Yuw2qgkw2BbVMkFdg2qSib5vqxaLa97c1kg==
-
-"@babylonjs/inspector@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/inspector/-/inspector-6.28.1.tgz#29af24467db52e6d1b853a8df86b73fff502a7bc"
-  integrity sha512-TtFyUXPMwSR0WGt5/9fIcf3JNlOqNxRt7R6uHQ0+siOZYgzCpjBc3jSscSi+LzW0uO0PGHt7DhrgVAzRSG8Tcg==
-  dependencies:
-    "@fortawesome/fontawesome-svg-core" "^6.1.0"
-    "@fortawesome/free-regular-svg-icons" "^6.0.0"
-    "@fortawesome/free-solid-svg-icons" "^6.0.0"
-
-"@babylonjs/loaders@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/loaders/-/loaders-6.28.1.tgz#c70ab307672544169ec062fadcb8a2e520aa814a"
-  integrity sha512-MrvkQxNaWotVE1xnKHCW/mij80efBH4sCM1xybEw2abAxr0jGfdSpPAKnddsqRE3JsAqyp40QaeHd5ngSKIaQg==
-
-"@babylonjs/materials@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/materials/-/materials-6.28.1.tgz#0f902a20dc081b53e3033496ef68d3aa8a784373"
-  integrity sha512-RM5k4JlC2r5McnLg5js3hdi6MgVnrTYhwhy6ypYR3SXxHxKvEpGLygYjdURuffBKc10JhaF0OEdwbrFCqggRQg==
-
-"@babylonjs/serializers@^6.28.1":
-  version "6.28.1"
-  resolved "https://registry.yarnpkg.com/@babylonjs/serializers/-/serializers-6.28.1.tgz#5016f76412ca3143925cdc73ac1b085c9761adf5"
-  integrity sha512-FWwOrjnSyVU+YhQmQ9aSxLtj0QZ+8X0O9H6i028AzZPm35gLoFpOUqHlyZxP2Ycdp63ux6lLUqmLdtFMrV8GDw==
-
 "@develar/schema-utils@~2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.6.5.tgz#3ece22c5838402419a6e0425f85742b961d9b6c6"
@@ -503,32 +464,6 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.53.0.tgz#bea56f2ed2b5baea164348ff4d5a879f6f81f20d"
   integrity sha512-Kn7K8dx/5U6+cT1yEhpX1w4PCSg0M+XyRILPgvwcEBjerFWCwQj5sbr3/VmxqV0JGHCBCzyd6LxypEuehypY1w==
 
-"@fortawesome/fontawesome-common-types@6.4.2":
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-6.4.2.tgz#1766039cad33f8ad87f9467b98e0d18fbc8f01c5"
-  integrity sha512-1DgP7f+XQIJbLFCTX1V2QnxVmpLdKdzzo2k8EmvDOePfchaIGQ9eCHj2up3/jNEbZuBqel5OxiaOJf37TWauRA==
-
-"@fortawesome/fontawesome-svg-core@^6.1.0":
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-6.4.2.tgz#37f4507d5ec645c8b50df6db14eced32a6f9be09"
-  integrity sha512-gjYDSKv3TrM2sLTOKBc5rH9ckje8Wrwgx1CxAPbN5N3Fm4prfi7NsJVWd1jklp7i5uSCVwhZS5qlhMXqLrpAIg==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "6.4.2"
-
-"@fortawesome/free-regular-svg-icons@^6.0.0":
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/@fortawesome/free-regular-svg-icons/-/free-regular-svg-icons-6.4.2.tgz#aee79ed76ce5dd04931352f9d83700761b8b1b25"
-  integrity sha512-0+sIUWnkgTVVXVAPQmW4vxb9ZTHv0WstOa3rBx9iPxrrrDH6bNLsDYuwXF9b6fGm+iR7DKQvQshUH/FJm3ed9Q==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "6.4.2"
-
-"@fortawesome/free-solid-svg-icons@^6.0.0":
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.4.2.tgz#33a02c4cb6aa28abea7bc082a9626b7922099df4"
-  integrity sha512-sYwXurXUEQS32fZz9hVCUUv/xu49PEJEyUOsA51l6PU/qVgfbTb2glsTEaJngVVT8VqBATRIdh7XVgV1JF1LkA==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "6.4.2"
-
 "@humanwhocodes/config-array@^0.11.13":
   version "0.11.13"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.13.tgz#075dc9684f40a531d9b26b0822153c1e832ee297"
@@ -758,13 +693,6 @@
   integrity sha512-Lsh766rGEFbaxMIDH7Qa+Yha8cMVI3qAK6CHt3OR0YfxOIn5Z54iHiyDRycHrBqeIiqGa20Kpsv1cavfBKkRSw==
   dependencies:
     "@babel/types" "^7.20.7"
-
-"@types/babylonjs@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@types/babylonjs/-/babylonjs-2.4.1.tgz#432e9a40777bca5aefec118af018ff57fb1098da"
-  integrity sha512-vt6db2PxisxsnLvL5holHLV9vMJzELAhFq54syX/tKncTmjeraQSR1W20j9/KYLEpAFU18u76rK8utb8JlUrtQ==
-  dependencies:
-    babylonjs "*"
 
 "@types/cacheable-request@^6.0.1":
   version "6.0.3"
@@ -1195,7 +1123,62 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
-babylonjs@*:
+babylonjs-gltf2interface@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-gltf2interface/-/babylonjs-gltf2interface-6.28.1.tgz#e185ce8d226ac5e7f8c52a01182e5f1aeec0bee0"
+  integrity sha512-rBOS/Vl2xpsHx93m2mGJOOqi1ofLgVGNFp5C56byrUqqlDz+GdmuLtROrHTDMZaEkHsCv8GWW72o3qFTBjSJOQ==
+
+babylonjs-gui-editor@6.28.1, babylonjs-gui-editor@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-gui-editor/-/babylonjs-gui-editor-6.28.1.tgz#41ed2657cd4ea127732f760a30d949660d7ba5f9"
+  integrity sha512-Hw3cgUbTVGYSs30odZ2yj4+0aQzfw/VpfnujZqEYJtFixyzBb7kS4dyucoxoRj2FqauzXU2TYi3hLxleobxNFg==
+  dependencies:
+    babylonjs "^6.28.1"
+    babylonjs-gui "^6.28.1"
+
+babylonjs-gui@6.28.1, babylonjs-gui@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-gui/-/babylonjs-gui-6.28.1.tgz#1bd5502d968eab0264163e481c482ffe0879d2a7"
+  integrity sha512-diqN7m9a24XbIDtNlqzzKJdVaghXfDlhXjNXLwyxiHraX9BDy9MN5CTmGniY8fRSgoGI5crqUDB3ELWM2CiDmQ==
+  dependencies:
+    babylonjs "^6.28.1"
+
+babylonjs-inspector@6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-inspector/-/babylonjs-inspector-6.28.1.tgz#fa8f231d144ebd31674a37044d71d1bbca8f723c"
+  integrity sha512-kVHNKW/axIxYniM9F5U8iTQXMsBHBuSQ+1DPQrKwdqMJqnGpQwoMa7Ugt3hcD2J8EK7RRUe6I1s3OywqGa7kyg==
+  dependencies:
+    babylonjs "^6.28.1"
+    babylonjs-gui "^6.28.1"
+    babylonjs-gui-editor "^6.28.1"
+    babylonjs-loaders "^6.28.1"
+    babylonjs-materials "^6.28.1"
+    babylonjs-serializers "^6.28.1"
+
+babylonjs-loaders@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-loaders/-/babylonjs-loaders-6.28.1.tgz#a2ae3500de6e4ff873baa4354bbf498406456def"
+  integrity sha512-VQnWhb+monxVWXlcpwMoKPw7gNM+/N/QpHFRWlFdITSh6BuQSB5tYAGzWoXc0oZqrtMb6H/LqCcK/B7aWahgOg==
+  dependencies:
+    babylonjs "^6.28.1"
+    babylonjs-gltf2interface "^6.28.1"
+
+babylonjs-materials@6.28.1, babylonjs-materials@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-materials/-/babylonjs-materials-6.28.1.tgz#f21259d62348e2250cb0430ecffd679bd9bb6d91"
+  integrity sha512-opk1mdskivi4EmkJ8DUTsJ9CJcrrFatV4bkThLaTFN+Yi9eOAcCthYwPMj4IMr65+6t53ENLK0OMm3HGRS7Ivw==
+  dependencies:
+    babylonjs "^6.28.1"
+
+babylonjs-serializers@6.28.1, babylonjs-serializers@^6.28.1:
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-serializers/-/babylonjs-serializers-6.28.1.tgz#596909f1ef199e43ab83119707f455108056b70d"
+  integrity sha512-Lz5++iCwEKZyJsCDokkG+cm1HhmTuBCoDDMwXZVOyqxDvcIUCRHQQYh4eH6NYEFqsxHM6V0hcW0xIM7SWs0m5A==
+  dependencies:
+    babylonjs "^6.28.1"
+    babylonjs-gltf2interface "^6.28.1"
+
+babylonjs@^6.28.1:
   version "6.28.1"
   resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-6.28.1.tgz#64b2b92d0270d59a09f83dbe3d46e0addd443eba"
   integrity sha512-G5TuUu8/loISLvCxTQ/SUGwUSymIVj/Pf0ooubKFmkY/SXb48eHofDjCQ2ZEVY40e4GFw1zX7VUVtJXqtj7lIg==
@@ -3050,9 +3033,9 @@ ms@2.1.2:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 nanoid@^3.3.6:
-  version "3.3.6"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
-  integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.7.tgz#d0c301a691bc8d54efa0a2226ccf3fe2fd656bd8"
+  integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
 
 natural-compare@^1.4.0:
   version "1.4.0"
