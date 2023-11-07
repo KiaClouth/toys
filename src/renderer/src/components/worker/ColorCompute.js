@@ -4253,9 +4253,6 @@ Color.extend(luminance)
 Color.extend(interpolation)
 Color.extend(contrastMethods)
 
-// export { Color as default }
-//# sourceMappingURL=color.js.map
-
 // -------------------------------------------------------------------------------------------------------------------------------------------------
 
 onmessage = (e) => {
