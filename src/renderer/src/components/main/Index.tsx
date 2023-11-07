@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { canvasResize, isCanvas } from '../../tool'
 
 import model_url from '../../public/model/koduck.glb?url'
-import 'babylonjs-loaders'
 
 // import hdr_url from '../../public/model/chun.hdr?url'
 export default function Index(): JSX.Element {
