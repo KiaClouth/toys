@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: toys
+productName: Kiya
 directories:
   buildResources: build
 files:
@@ -7,12 +7,14 @@ files:
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - '**/*.{node,dll}'
-afterSign: build/notarize.js
 win:
   executableName: toys
+  target: portable
+  icon: src/main/icon/256.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
