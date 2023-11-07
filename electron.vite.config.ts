@@ -30,7 +30,13 @@ export default defineConfig({
           'babylonjs/gui',
           'babylonjs/materials',
           'babylonjs/inspector'
-        ]
+        ],
+        output: {
+          paths: {
+            'babylonjs-loaders': 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js',
+            babylonjs: 'https://cdn.babylonjs.com/babylon.js'
+          }
+        }
       }
     }
   }
