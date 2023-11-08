@@ -14,8 +14,8 @@ import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('ColorComputeBox')
-  const [content, setContent] = useState(<ColorComputeBox />)
+  const [appState, setAppState] = useState('BannerBox')
+  const [content, setContent] = useState(<BannerBox />)
   const mainComponentReplace = (): string => {
     switch (appState) {
       case 'Index': {
