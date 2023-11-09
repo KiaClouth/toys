@@ -96,11 +96,9 @@ build/
 pkg/
 target/
 
-#https
-keys/
-
 #wasm
 wasm-pack.log
 
-#
+#others
 stats.html
+src/renderer/src/assets/js-plugin/meshwriter/meshwriter.ES.ts
