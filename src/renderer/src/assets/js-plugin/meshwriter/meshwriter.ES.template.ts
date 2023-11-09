@@ -1,24 +1,6 @@
 import HNM from './helveticaneue-medium'
 import earcut from 'earcut'
 
-class MyPath2 extends BABYLON.Path2 {
-  // 这里可以添加自定义的方法或属性
-  addCubicCurveTo = function (this, redX, redY, greenX, greenY, blueX, blueY): void {
-    const points = this.getPoints()
-    const lastPoint = points[points.length - 1]
-    const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-    const control1 = new B.Vector3(redX, redY, 0)
-    const control2 = new B.Vector3(greenX, greenY, 0)
-    const destination = new B.Vector3(blueX, blueY, 0)
-    const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
-    const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
-    const curvePoints = curve.getPoints()
-    for (let i = 1; i < curvePoints.length; i++) {
-      this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-    }
-  }
-}
-
 type meshesAndBoxes = [BABYLON.Mesh[], number[][], number[][], number, number]
 
 type fontData = {
@@ -80,34 +62,40 @@ interface MeshWriter {
 const Γ = Math.floor
 let scene: BABYLON.Scene, debug
 let b128back, b128digits
-const B = {
-  Vector2: BABYLON.Vector2,
-  Vector3: BABYLON.Vector3,
-  Path2: MyPath2,
-  Curve3: BABYLON.Curve3,
-  Color3: BABYLON.Color3,
-  SolidParticleSystem: BABYLON.SolidParticleSystem,
-  PolygonMeshBuilder: BABYLON.PolygonMeshBuilder,
-  CSG: BABYLON.CSG,
-  StandardMaterial: BABYLON.StandardMaterial,
-  Mesh: BABYLON.Mesh
-}
 
-const methodsList = [
-  'Vector2',
-  'Vector3',
-  'Path2',
-  'Curve3',
-  'Color3',
-  'SolidParticleSystem',
-  'PolygonMeshBuilder',
-  'CSG',
-  'StandardMaterial',
-  'Mesh'
-]
+class MyPath2 extends BABYLON.Path2 {
+  // 添加新方法
+  addCubicCurveTo = function (this, redX, redY, greenX, greenY, blueX, blueY): void {
+    const points = this.getPoints()
+    const lastPoint = points[points.length - 1]
+    const origin = new BABYLON.Vector3(lastPoint.x, lastPoint.y, 0)
+    const control1 = new BABYLON.Vector3(redX, redY, 0)
+    const control2 = new BABYLON.Vector3(greenX, greenY, 0)
+    const destination = new BABYLON.Vector3(blueX, blueY, 0)
+    const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
+    const curve = BABYLON.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
+    const curvePoints = curve.getPoints()
+    for (let i = 1; i < curvePoints.length; i++) {
+      this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+    }
+  }
+  mwaddQuadraticCurveTo = function (this, redX, redY, blueX, blueY): void {
+    const points = this.getPoints()
+    const lastPoint = points[points.length - 1]
+    const origin = new BABYLON.Vector3(lastPoint.x, lastPoint.y, 0)
+    const control = new BABYLON.Vector3(redX, redY, 0)
+    const destination = new BABYLON.Vector3(blueX, blueY, 0)
+    const nb_of_points = curveSampleSize
+    const curve = BABYLON.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
+    const curvePoints = curve.getPoints()
+    for (let i = 1; i < curvePoints.length; i++) {
+      this.addLineTo(curvePoints[i].x, curvePoints[i].y)
+    }
+  }
+}
 prepArray()
 // >>>>>  STEP 2 <<<<<
-const FONTS: fontsType = {}
+const FONTS: fontsType = {} // 在实际输出的ts中，FONTS里会被添加以字体名称命名的对象：‘fontFamily：fontFamily(codeList)’
 // >>>>>  STEP 3 <<<<<
 FONTS['HelveticaNeue-Medium'] = HNM(codeList) // Do not remove
 // >>>>>  STEP 4 <<<<<
@@ -129,25 +117,17 @@ export default function Wrapper(
     meshOrigin?: string
     scale?: number
     debug?: boolean
-    methods?: {
-      Vector2?: BABYLON.Vector2
-      Vector3?: BABYLON.Vector3
-      Path2?: BABYLON.Path2
-      Curve3?: BABYLON.Curve3
-      Color3?: BABYLON.Color3
-      SolidParticleSystem?: BABYLON.SolidParticleSystem
-      PolygonMeshBuilder?: BABYLON.PolygonMeshBuilder
-      CSG?: BABYLON.CSG
-      StandardMaterial?: BABYLON.StandardMaterial
-      Mesh?: BABYLON.Mesh
-    }
   }
 ): (lttrs: string, opt: fonOptions) => void {
+  // 将传入参数与缺省值对比，结果赋予preferences
   const preferences = makePreferences(prenferences)
+  // 设置默认字体，优先级：参数中设置的defaultFont>缺省值
   const defaultFont = isObject(FONTS[preferences.defaultFont]) ? preferences.defaultFont : 'HelveticaNeue-Medium'
+  // 定义对齐方式，一般不用设置
   const meshOrigin = preferences.meshOrigin === 'fontOrigin' ? preferences.meshOrigin : 'letterCenter'
+  // 设置缩放比例
   const scale = isNumber(preferences.scale) ? preferences.scale : 1
-
+  // 调试模式开关
   debug = isBoolean(preferences.debug) ? preferences.debug : false
 
   // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
@@ -158,20 +138,16 @@ export default function Wrapper(
   //   ~ options
 
   function MeshWriter(this: MeshWriter, lttrs: string, opt: fonOptions): void {
+    // 初始化各种参数
     let material: BABYLON.StandardMaterial | null, sps: BABYLON.SolidParticleSystem | null, mesh: BABYLON.Mesh | null
-    //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
-    // Here we set ALL parameters with incoming value or a default
-    // setOption:  applies a test to potential incoming parameters
-    //             if the test passes, the parameters are used, else the default is used
-    const options = isObject(opt) ? opt : {}
-    let color = setOption<string>(options, 'color', isString, defaultColor)
-    let opac = setOption<number>(options, 'alpha', isAmplitude, defaultOpac)
-    const position = setOption<mrPosition>(options, 'position', isObject, {}),
-      colors = setOption<mrColors>(options, 'colors', isObject, {}),
-      fontFamily = setOption<string>(options, 'font-family', isSupportedFont, defaultFont),
-      anchor = setOption<mrAnchor>(options, 'anchor', isSupportedAnchor, 'left'),
-      rawheight = setOption<number>(options, 'letter-height', isPositiveNumber, 100),
-      rawThickness = setOption<number>(options, 'letter-thickness', isPositiveNumber, 1),
+    let color = setOption<string>(opt, 'color', isString, defaultColor)
+    let opac = setOption<number>(opt, 'alpha', isAmplitude, defaultOpac)
+    const position = setOption<mrPosition>(opt, 'position', isObject, {}),
+      colors = setOption<mrColors>(opt, 'colors', isObject, {}),
+      fontFamily = setOption<string>(opt, 'font-family', isSupportedFont, defaultFont),
+      anchor = setOption<mrAnchor>(opt, 'anchor', isSupportedAnchor, 'left'),
+      rawheight = setOption<number>(opt, 'letter-height', isPositiveNumber, 100),
+      rawThickness = setOption<number>(opt, 'letter-thickness', isPositiveNumber, 1),
       y = setOption<number>(position, 'y', isNumber, 0),
       x = setOption<number>(position, 'x', isNumber, 0),
       z = setOption<number>(position, 'z', isNumber, 0),
@@ -244,10 +220,9 @@ if (typeof window !== 'undefined') {
 if (typeof global !== 'undefined') {
   global.MeshWriter = Wrapper
 }
-// if (typeof BABYLON === 'object') {
-//   cacheMethods(BABYLON)
-//   BABYLON['MeshWriter'] = Wrapper
-// }
+if (typeof BABYLON === 'object') {
+  BABYLON['MeshWriter'] = Wrapper
+}
 if (typeof module === 'object' && module.exports) {
   module.exports = Wrapper
 }
@@ -262,7 +237,7 @@ function makeSPS(
 ): [BABYLON.SolidParticleSystem, BABYLON.Mesh] {
   const meshes = meshesAndBoxes[0]
   const lettersOrigins = meshesAndBoxes[2]
-  const sps = new B.SolidParticleSystem('sps' + 'test', scene, {})
+  const sps = new BABYLON.SolidParticleSystem('sps' + 'test', scene, {})
   meshes.forEach(function (mesh, ix) {
     sps.addShape(mesh, 1, {
       positionFunction: makePositionParticle(lettersOrigins[ix])
@@ -426,7 +401,7 @@ function constructLetterPolygons(
     function makeCmdsToMesh(reverse) {
       return function cmdsToMesh(cmdsList) {
         let cmd = getCmd(cmdsList, 0)
-        const path = new B.Path2(adjXfix(cmd[0]), adjZfix(cmd[1]))
+        const path = new MyPath2(adjXfix(cmd[0]), adjZfix(cmd[1]))
         const first = 0
 
         // ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
@@ -449,10 +424,10 @@ function constructLetterPolygons(
           // ~  ~  ~  ~  ~  ~  ~  ~
           // Quadratic curve
           if (cmd.length === 4) {
-            path.addQuadraticCurveTo(adjXfix(cmd[0]), adjZfix(cmd[1]), adjXfix(cmd[2]), adjZfix(cmd[3]))
+            path.mwaddQuadraticCurveTo(adjXfix(cmd[0]), adjZfix(cmd[1]), adjXfix(cmd[2]), adjZfix(cmd[3]))
           }
           if (cmd.length === 5) {
-            path.addQuadraticCurveTo(adjXrel(cmd[1]), adjZrel(cmd[2]), adjXrel(cmd[3]), adjZrel(cmd[4]))
+            path.mwaddQuadraticCurveTo(adjXrel(cmd[1]), adjZrel(cmd[2]), adjXrel(cmd[3]), adjZrel(cmd[4]))
           }
 
           // ~  ~  ~  ~  ~  ~  ~  ~
@@ -477,7 +452,7 @@ function constructLetterPolygons(
           array.reverse()
         }
 
-        const meshBuilder = new B.PolygonMeshBuilder('MeshWriter-' + letter + index + '-' + weeid(), array, scene, earcut)
+        const meshBuilder = new BABYLON.PolygonMeshBuilder('MeshWriter-' + letter + index + '-' + weeid(), array, scene, earcut)
         return meshBuilder.build(true, thickness)
       }
     }
@@ -536,9 +511,9 @@ function constructLetterPolygons(
     return letterMeshes
   }
   function punchHolesInShape(shape: BABYLON.Mesh, holes: BABYLON.Mesh[], letter: string, i: number): BABYLON.Mesh {
-    let csgShape = B.CSG.FromMesh(shape)
+    let csgShape = BABYLON.CSG.FromMesh(shape)
     for (let k = 0; k < holes.length; k++) {
-      csgShape = csgShape.subtract(B.CSG.FromMesh(holes[k]))
+      csgShape = csgShape.subtract(BABYLON.CSG.FromMesh(holes[k]))
     }
     holes.forEach((h) => h.dispose())
     shape.dispose()
@@ -547,7 +522,7 @@ function constructLetterPolygons(
 }
 
 function makeMaterial(scene: BABYLON.Scene, letters, emissive, ambient, specular, diffuse, opac): BABYLON.StandardMaterial {
-  const cm0 = new B.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
+  const cm0 = new BABYLON.StandardMaterial('mw-matl-' + letters + '-' + weeid(), scene)
   cm0.diffuseColor = rgb2Bcolor3(diffuse)
   cm0.specularColor = rgb2Bcolor3(specular)
   cm0.ambientColor = rgb2Bcolor3(ambient)
@@ -565,6 +540,7 @@ function makeMaterial(scene: BABYLON.Scene, letters, emissive, ambient, specular
 // The compressed versions are placed in "sC" and "hC"
 // The *first* time a letter is used, if it was compressed, it is decompressed
 function makeLetterSpec(fontSpec: fontType, letter: string): fontData {
+  // 将生成的字体js中的特定字符数据分配给letterSpec
   const letterSpec = fontSpec[letter] as fontData,
     singleMap = (cmds: string): number[][] => decodeList(cmds),
     doubleMap = (cmdslists: string[]): number[][][] => cmdslists.map(singleMap)
@@ -728,74 +704,11 @@ function makePreferences(prenfrences: {
   }
 
   if (isObject(p) && p.defaultFont) prefs.defaultFont = p.defaultFont
-  if (isObject(p) && p['default-font']) prefs.defaultFont = p['default-font']
   if (isObject(p) && p.meshOrigin) prefs.meshOrigin = p.meshOrigin
-  if (isObject(p) && p['meshOrigin']) prefs.meshOrigin = p['meshOrigin']
   if (isObject(p) && p.scale) prefs.scale = p.scale
   if (isObject(p) && p.debug) prefs.debug = p.debug
-  if (isObject(p) && p.methods) cacheMethods(p.methods)
 
   return prefs
-}
-function cacheMethods(src): void {
-  let incomplete: boolean | string
-  incomplete = false
-  if (isObject(src)) {
-    methodsList.forEach(function (meth) {
-      if (isObject(src[meth])) {
-        B[meth] = src[meth]
-      } else {
-        incomplete = meth
-      }
-    })
-    if (!incomplete) {
-      supplementCurveFunctions()
-    }
-  }
-  if (isString(incomplete)) {
-    throw new Error("Missing method '" + incomplete + "'")
-  }
-}
-
-// ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~  ~
-// Needed for making font curves
-// Thanks Gijs, wherever you are
-//
-function supplementCurveFunctions(): void {
-  // if (isObject(B.Path2)) {
-  //   if (!Object.keys(B.Path2).includes('addQuadraticCurveTo')) {
-  //     // B.Path2.prototype.addQuadraticCurveTo = function (redX, redY, blueX, blueY): void {
-  //     //   const points = this.getPoints()
-  //     //   const lastPoint = points[points.length - 1]
-  //     //   const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-  //     //   const control = new B.Vector3(redX, redY, 0)
-  //     //   const destination = new B.Vector3(blueX, blueY, 0)
-  //     //   const nb_of_points = curveSampleSize
-  //     //   const curve = B.Curve3.CreateQuadraticBezier(origin, control, destination, nb_of_points)
-  //     //   const curvePoints = curve.getPoints()
-  //     //   for (let i = 1; i < curvePoints.length; i++) {
-  //     //     this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-  //     //   }
-  //     // }
-  //     console.log('在BABYLON.Path2上没有找到addQuadraticCurveTo方法')
-  //   }
-  //   if (!B.Path2.prototype.addCubicCurveTo) {
-  //     B.Path2.prototype.addCubicCurveTo = function (redX, redY, greenX, greenY, blueX, blueY): void {
-  //       const points = this.getPoints()
-  //       const lastPoint = points[points.length - 1]
-  //       const origin = new B.Vector3(lastPoint.x, lastPoint.y, 0)
-  //       const control1 = new B.Vector3(redX, redY, 0)
-  //       const control2 = new B.Vector3(greenX, greenY, 0)
-  //       const destination = new B.Vector3(blueX, blueY, 0)
-  //       const nb_of_points = Math.floor(0.3 + curveSampleSize * 1.5)
-  //       const curve = B.Curve3.CreateCubicBezier(origin, control1, control2, destination, nb_of_points)
-  //       const curvePoints = curve.getPoints()
-  //       for (let i = 1; i < curvePoints.length; i++) {
-  //         this.addLineTo(curvePoints[i].x, curvePoints[i].y)
-  //       }
-  //     }
-  //   }
-  // }
 }
 //  ~  -  =  ~  -  =  ~  -  =  ~  -  =  ~  -  =
 // Applies a test to potential incoming parameters
@@ -811,20 +724,20 @@ function setOption<T>(opts: fonOptions | mrPosition | mrColors, field: string, t
 // Conversion functions
 function rgb2Bcolor3(rgb: string): BABYLON.Color3 {
   rgb = rgb.replace('#', '')
-  return new B.Color3(convert(rgb.substring(0, 2)), convert(rgb.substring(2, 4)), convert(rgb.substring(4, 6)))
+  return new BABYLON.Color3(convert(rgb.substring(0, 2)), convert(rgb.substring(2, 4)), convert(rgb.substring(4, 6)))
   function convert(x): number {
     return Γ(1000 * Math.max(0, Math.min((isNumber(parseInt(x, 16)) ? parseInt(x, 16) : 0) / 255, 1))) / 1000
   }
 }
 function point2Vector(point: { x: number; y: number }): BABYLON.Vector2 {
-  return new B.Vector2(round(point.x), round(point.y))
+  return new BABYLON.Vector2(round(point.x), round(point.y))
 }
 function merge(arrayOfMeshes: BABYLON.Mesh[]): BABYLON.Mesh {
   // for (let i = 0; i < arrayOfMeshes.length; i++) {
   //   console.log(arrayOfMeshes[i])
   // }
   // debugger
-  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (B.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
+  return arrayOfMeshes.length === 1 ? arrayOfMeshes[0] : (BABYLON.Mesh.MergeMeshes(arrayOfMeshes, true) as BABYLON.Mesh)
 }
 
 // *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-* *-*=*  *=*-*
