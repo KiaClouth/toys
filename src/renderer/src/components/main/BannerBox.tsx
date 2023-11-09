@@ -171,7 +171,7 @@ const campusArray = [
   ['阿多比', '11.20']
 ]
 
-const textIsVisibilty = true // 是否显示文字
+const textIsVisibilty = false // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
@@ -250,7 +250,7 @@ export default function BannerBox(): JSX.Element {
       // })
 
       // 文字模型创建器
-      const Writer = MeshWriter(scene, { scale: 1 })
+      const Writer = MeshWriter(scene, { scale: 1, defaultFont: 'YouSheBiaoTiHei-2', debug: true })
 
       // 摄像机
       const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 1.97, 12.7, new BABYLON.Vector3(0, 0.66, 3), scene)
@@ -539,7 +539,6 @@ export default function BannerBox(): JSX.Element {
 
         // 最新开班时间
         const title_cn_textWriter = new Writer('最新开班时间', {
-          'font-family': 'YouSheBiaoTiHei-2',
           'letter-height': exportSets[k].container.childs.chineseTitle.fontSize * camaraScale,
           'letter-thickness': 0.001,
           color: '#e72323'
@@ -555,7 +554,6 @@ export default function BannerBox(): JSX.Element {
 
         // Lastest opening time
         const title_en_textWriter = new Writer('Lastest opening time', {
-          'font-family': 'YouSheBiaoTiHei-2',
           'letter-height': exportSets[k].container.childs.englishTitle.fontSize * camaraScale,
           'letter-thickness': 0.001
         })
@@ -586,7 +584,6 @@ export default function BannerBox(): JSX.Element {
             : time_array[0].replace(/\b(0+)/gi, '') + '月' + time_array[1] + '日'
           // 校区名称字体
           const campus_textWriter = new Writer(campusName, {
-            'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.campusName.fontSize * camaraScale,
             'letter-thickness': 0.001
           })
@@ -602,7 +599,6 @@ export default function BannerBox(): JSX.Element {
 
           // 时间文字生成
           const date_textWriter = new Writer(date, {
-            'font-family': 'YouSheBiaoTiHei-2',
             'letter-height': exportSets[k].container.childs.box.date.fontSize * camaraScale,
             'letter-thickness': 0.001
           })
