@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 import * as BABYLON from 'babylonjs'
 import 'babylonjs-loaders'
+import 'babylonjs-inspector'
 
 import BabylonBox from './components/main/BabylonBox'
 import Index from './components/main/Index'
@@ -14,8 +15,8 @@ import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('BannerBox')
-  const [content, setContent] = useState(<BannerBox />)
+  const [appState, setAppState] = useState('Index')
+  const [content, setContent] = useState(<Index />)
   const mainComponentReplace = (): string => {
     switch (appState) {
       case 'Index': {
