@@ -34,6 +34,7 @@ export default defineConfig({
         output: {
           paths: {
             'babylonjs-loaders': 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js',
+            'babylonjs-inspector': 'https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js',
             babylonjs: 'https://cdn.babylonjs.com/babylon.js'
           }
         }
