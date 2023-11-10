@@ -171,7 +171,7 @@ const campusArray = [
   ['阿多比', '11.20']
 ]
 
-const textIsVisibilty = false // 是否显示文字
+const textIsVisibilty = true // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {

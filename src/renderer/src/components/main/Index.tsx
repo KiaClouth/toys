@@ -1,18 +1,16 @@
 import { useEffect } from 'react'
+import earcut from 'earcut'
 import { canvasResize, isCanvas } from '../../tool'
 
-import model_url from '../../public/model/koduck.glb?url'
-
-// import hdr_url from '../../public/model/chun.hdr?url'
 export default function Index(): JSX.Element {
   useEffect(() => {
-    const canvas = document.getElementById('KoduckCanvas')
+    const canvas = document.getElementById('BackgroundCanvas')
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)
+      // const startTime = new Date().getTime()
+      // const perlinNosie = new PerlinNoise()
       const engine = new BABYLON.Engine(canvas, true)
-
-      //自定义加载动画
       engine.loadingScreen = {
         displayLoadingUI: (): void => {
           // console.log('display')
@@ -23,28 +21,19 @@ export default function Index(): JSX.Element {
         loadingUIBackgroundColor: '#000000',
         loadingUIText: 'Loading...'
       }
+      const fps = document.getElementById('FPS')
+      if (fps !== null) fps.innerHTML = engine.getFps().toFixed() + ' fps'
 
       const scene = new BABYLON.Scene(engine)
-      // scene.ambientColor = new Color3(1, 0, 1)
       scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
-
-      // const hdrTexture = new HDRCubeTexture(hdr_url, scene, 128, false, true, false, true, () => {
-      //   const hdrFiltering = new HDRFiltering(engine)
-      //   hdrFiltering.prefilter(hdrTexture, () => {
-      //     scene.environmentTexture = hdrTexture
-      //     // previousOnLoad();
-      //   })
-      // })
-      // scene.environmentIntensity = 1
-
-      // // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
+      // 是否开启inspector ///////////////////////////////////////////////////////////////////////////////////////////////////
       // scene.debugLayer.show({
       //   // embedMode: true
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 5, 25, BABYLON.Vector3.Zero(), scene)
-      camera.attachControl(canvas, false)
+      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 5, 255, BABYLON.Vector3.Zero(), scene)
+      camera.attachControl(canvas, true)
       camera.minZ = 0.1
       camera.fov = 0.26
       camera.wheelPrecision = 100
@@ -55,6 +44,7 @@ export default function Index(): JSX.Element {
       camera.angularSensibilityX = 800
       camera.angularSensibilityY = 800
 
+      // 相机运动函数
       const cameraControl = (event: MouseEvent): void => {
         if (event.buttons === 0) {
           camera.alpha -= event.movementX / 10000
@@ -64,78 +54,42 @@ export default function Index(): JSX.Element {
       // 注册鼠标移动事件来触发相机控制
       canvas.addEventListener('mousemove', cameraControl)
 
-      // ----------------------------静态材质定义----------------------------------
+      // const light = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 10, 0), scene)
 
-      // 加载model
-      BABYLON.SceneLoader.AppendAsync(
-        model_url.substring(0, model_url.lastIndexOf('/') + 1),
-        model_url.substring(model_url.lastIndexOf('/') + 1),
-        scene,
-        function (event) {
-          // 加载进度计算
-          const percentage = event.lengthComputable ? ' ' + Math.floor((event.loaded / event.total) * 100) + '%' : ''
-          document.getElementsByClassName('LoadingProgress')[0]
-            ? (document.getElementsByClassName('LoadingProgress')[0].innerHTML = percentage)
-            : console.log('没找到.LoadingProgress元素')
+      const polyPoints: BABYLON.Vector3[] = []
+      const objects: BABYLON.Mesh[] = []
+
+      const ground = BABYLON.MeshBuilder.CreateGround('pickPlane', { height: 2000, width: 2000 })
+      ground.visibility = 0
+      const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
+      let polygon: BABYLON.Mesh
+
+      scene.onPointerObservable.add((pointerInfo) => {
+        switch (pointerInfo.type) {
+          case BABYLON.PointerEventTypes.POINTERPICK:
+            const pickPoint = pointerInfo.pickInfo!.pickedPoint!
+            const impact1 = BABYLON.MeshBuilder.CreateSphere('sp1', {}, scene)
+            impact1.material = new BABYLON.StandardMaterial('impact1Mat', scene)
+            impact1.position = new BABYLON.Vector3(pickPoint.x, pickPoint.y, pickPoint.z)
+            polyPoints.push(new BABYLON.Vector3(pickPoint.x, pickPoint.y + 10.5, pickPoint.z))
+            objects.push(impact1)
+            if (polyPoints.length > 2) {
+              if (polygon !== undefined) {
+                console.log(polygon.id)
+                polygon.dispose()
+              }
+              polygon = BABYLON.MeshBuilder.CreatePolygon(
+                'polygon',
+                { shape: polyPoints, sideOrientation: BABYLON.Mesh.DOUBLESIDE },
+                scene,
+                earcut
+              )
+              const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
+              icosahedronMaterial.emissiveColor = baseColor
+              polygon.material = icosahedronMaterial
+            }
+            break
         }
-      ).then(() => {
-        const Sphere001 = scene.getMeshByName('Sphere.001')!
-        Sphere001.receiveShadows = true
-        const Root = scene.getMeshByName('__root__')!
-        Root.position._y = -1
-
-        const sun = new BABYLON.DirectionalLight('sun', new BABYLON.Vector3(-0.6, -1, -0.8), scene)
-        sun.diffuse = new BABYLON.Color3(1, 0.99, 0.87)
-        sun.autoCalcShadowZBounds = true
-        sun.autoCalcShadowZBounds = false
-        sun.shadowMinZ = -4
-        sun.shadowMaxZ = 10
-        sun.includedOnlyMeshes = [Root, Sphere001]
-
-        Sphere001.computeBonesUsingShaders = false
-        BABYLON.NodeMaterial.ParseFromSnippetAsync('#N1W93B#44', scene).then((node) => {
-          Sphere001.material = node
-          // node.getInputBlockByPredicate((b) => b.name === 'shadowCutOff')!.value = 0.8
-          // node.getInputBlockByPredicate((b) => b.name === 'shadowItensity')!.value = 0.71
-          // node.getInputBlockByPredicate((b) => b.name === 'rimIntensity')!.value = 0.08
-        })
-
-        // scene.getMeshByName("outline").dispose()
-        // scene.getMeshByName('outline')!.material!.albedoColor = Color3.Black()
-        // scene.getMeshByName("outline").computeBonesUsingShaders = false
-        // NodeMaterial.ParseFromSnippetAsync('#N1W93B#30', scene).then((onode) => {
-        //   scene.getMeshByName('outline')!.material = onode
-        //   // onode.getInputBlockByPredicate((b) => b.name === "shadowCutOff").value = 0.8
-        //   // node.getInputBlockByPredicate((b) => b.name === "shadowItensity").value = 0.71
-        //   // node.getInputBlockByPredicate((b) => b.name === "rimIntensity").value = 0.08
-        // })
-        const shadowGenerator = new BABYLON.ShadowGenerator(512, sun, true)
-        shadowGenerator.getShadowMap()!.renderList!.push(Sphere001)
-        shadowGenerator.setDarkness(0)
-        shadowGenerator.filter = BABYLON.ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP
-        shadowGenerator.usePoissonSampling = true
-        shadowGenerator.useContactHardeningShadow = true
-        shadowGenerator.usePercentageCloserFiltering = true
-        shadowGenerator.contactHardeningLightSizeUVRatio = 0.4
-        shadowGenerator.useKernelBlur = true
-        shadowGenerator.blurKernel = 64
-        shadowGenerator.depthScale = 100
-        shadowGenerator.normalBias = 0.1
-        shadowGenerator.blurScale = 1
-        shadowGenerator.bias = 0.01
-        shadowGenerator.darkness = 0.2
-        // shadowGenerator.addShadowCaster(Sphere001, true)
-        // shadowGenerator.addShadowCaster(Root, true)
-
-        // const groundPbrMaterial = new PBRMaterial('groundPbrMaterial', scene)
-        // groundPbrMaterial.metallic = 1
-        // groundPbrMaterial.roughness = 0.9
-        // groundPbrMaterial.emissiveColor = new Color3(194 / 255, 121 / 255, 0 / 255)
-
-        // const ground = CreateBox('ground', { width: 20, height: 2, depth: 20 }, scene)
-        // ground.material = groundPbrMaterial
-        // ground.position.y = -2
-        // ground.receiveShadows = true
       })
 
       // 世界坐标轴显示
@@ -152,7 +106,6 @@ export default function Index(): JSX.Element {
         scene.dispose()
         engine.dispose()
         canvas.removeEventListener('mousemove', cameraControl)
-        console.log('内存已清理')
       }
     } else {
       //组件卸载时
@@ -161,52 +114,11 @@ export default function Index(): JSX.Element {
   }, [])
 
   return (
-    <div id="loadingPage">
-      <div id="title">
-        <div id="mian">启动页</div>
-        <div id="info">这里会随便放一些有意思的东西，点击左下角的按钮切换页面可以查看其他内容</div>
+    <div id="Index">
+      <canvas id="BackgroundCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
+      <div className="pfs-info">
+        FPS: <span className="FPS"></span>
       </div>
-      <div id="loadingBox">
-        <div className="shadow">
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-        </div>
-        <div id="maskElement2"></div>
-        <div id="maskElement3"></div>
-        <div className="line">
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-        </div>
-      </div>
-      <canvas id="KoduckCanvas">当前浏览器不支持canvas，尝试更换Google Chrome浏览器尝试</canvas>
     </div>
   )
 }
