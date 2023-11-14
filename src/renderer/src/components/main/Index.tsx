@@ -32,7 +32,7 @@ export default function Index(): JSX.Element {
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 5, 255, BABYLON.Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 2, 100, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -54,21 +54,90 @@ export default function Index(): JSX.Element {
       // 注册鼠标移动事件来触发相机控制
       canvas.addEventListener('mousemove', cameraControl)
 
+      // 世界坐标轴显示
+      // new BABYLON.Debug.AxesViewer(scene, 3.3333)
+
       // const light = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 10, 0), scene)
 
       const polyPoints: BABYLON.Vector3[] = []
       const objects: BABYLON.Mesh[] = []
 
-      const ground = BABYLON.MeshBuilder.CreateGround('pickPlane', { height: 2000, width: 2000 })
-      ground.visibility = 0
       const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
+      icosahedronMaterial.pointsCloud = true
+      icosahedronMaterial.wireframe = true
+
+      const side = 20
+      const subdivisions = 3
+      const ground = BABYLON.MeshBuilder.CreateGround('ground', {
+        height: side,
+        width: side,
+        subdivisions: subdivisions,
+        updatable: true
+      })
+      ground.visibility = 1
+      ground.material = icosahedronMaterial
+      const groundAxesViewer = new BABYLON.Debug.AxesViewer(scene, 3.3333)
+      groundAxesViewer.xAxis.parent = ground
+      groundAxesViewer.yAxis.parent = ground
+      groundAxesViewer.zAxis.parent = ground
+
+      const positions = ground.getPositionData()
+      const newPositions: BABYLON.FloatArray = []
+
+      const indices = ground.getIndices()
+      const newIndices: BABYLON.IndicesArray = []
+      indices?.forEach((item: number) => {
+        newIndices.push(item)
+      })
+      // console.log(positions)
+      // console.log(newIndices)
+
+      if (positions && indices) {
+        for (let i = 0; i < indices.length; i += 3) {
+          const vertex1 = indices[i]
+          const vertex2 = indices[i + 1]
+          const vertex3 = indices[i + 2]
+
+          const coord1 = [positions[vertex1 * 3], positions[vertex1 * 3 + 1], positions[vertex1 * 3 + 2]]
+          const coord2 = [positions[vertex2 * 3], positions[vertex2 * 3 + 1], positions[vertex2 * 3 + 2]]
+          const coord3 = [positions[vertex3 * 3], positions[vertex3 * 3 + 1], positions[vertex3 * 3 + 2]]
+
+          console.log(`Triangle ${i / 3 + 1}:`)
+          console.log('Vertex 1:', coord1)
+          console.log('Vertex 2:', coord2)
+          console.log('Vertex 3:', coord3)
+        }
+        // 对合适的点进行偏移
+        for (let i = 0; i < positions.length / 3; i++) {
+          const row = Math.floor(i / (subdivisions + 1))
+          const column = i % (subdivisions + 1)
+          if (column >= 2 * (row + 1)) {
+            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
+            newPositions.push(positions[i * 3 + 1])
+            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions) + 5)
+            // const indexToBeDeleted = indices[i]
+          } else if (2 * (row - 1) >= column + subdivisions) {
+            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
+            newPositions.push(positions[i * 3 + 1])
+            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions) - 5)
+          } else {
+            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
+            newPositions.push(positions[i * 3 + 1])
+            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions))
+          }
+        }
+        // earcut(newPositions)
+        // ground.setIndices(earcut(newPositions))
+        // ground.setVerticesData(BABYLON.VertexBuffer.PositionKind, newPositions)
+      }
+
       let polygon: BABYLON.Mesh
 
       scene.onPointerObservable.add((pointerInfo) => {
         switch (pointerInfo.type) {
           case BABYLON.PointerEventTypes.POINTERPICK:
             const pickPoint = pointerInfo.pickInfo!.pickedPoint!
-            const impact1 = BABYLON.MeshBuilder.CreateSphere('sp1', {}, scene)
+            const impact1 = BABYLON.MeshBuilder.CreateSphere('sp1', { diameter: 0.1 }, scene)
             impact1.material = new BABYLON.StandardMaterial('impact1Mat', scene)
             impact1.position = new BABYLON.Vector3(pickPoint.x, pickPoint.y, pickPoint.z)
             polyPoints.push(new BABYLON.Vector3(pickPoint.x, pickPoint.y + 10.5, pickPoint.z))
