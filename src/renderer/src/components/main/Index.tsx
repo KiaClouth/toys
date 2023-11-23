@@ -32,7 +32,7 @@ export default function Index(): JSX.Element {
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 2, 100, BABYLON.Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 2, 10, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -59,12 +59,46 @@ export default function Index(): JSX.Element {
 
       // const light = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 10, 0), scene)
 
+      const createTriangleGrid = (side: number, column: number, row: number, alignment: 'center' | 'topLeft'): BABYLON.VertexData => {
+        const cos60 = Math.sqrt(3) / 2
+        const offsetX = alignment === 'center' ? column * side : 0
+        const offsetZ = alignment === 'center' ? row * side * cos60 : 0
+        const positions: number[] = []
+        const indices: number[] = [0, row, column * row]
+        for (let r = 0; r < row; r++) {
+          const rPosition = r * side * cos60 - offsetZ
+          for (let c = 0; c < column; c++) {
+            const cPosition = c * side - offsetX
+            positions.push(rPosition)
+            positions.push(0)
+            if (r % 2 == 0) {
+              positions.push(cPosition)
+            } else {
+              positions.push(cPosition - side / 2)
+            }
+          }
+        }
+        const vertexData = new BABYLON.VertexData()
+        vertexData.positions = positions
+        vertexData.indices = indices
+        return vertexData
+      }
+
+      const testMaterial = new BABYLON.PBRMaterial('testMaterial', scene)
+      // testMaterial.pointsCloud = true
+      testMaterial.wireframe = true
+      testMaterial.albedoColor = new BABYLON.Color3(1, 1, 0)
+
+      const testMesh = new BABYLON.Mesh('testMesh', scene)
+      testMesh.material = testMaterial
+      const triangleGrid = createTriangleGrid(1, 4, 4, 'center')
+      // console.log(triangleGrid.positions)
+      triangleGrid.applyToMesh(testMesh)
+
       const polyPoints: BABYLON.Vector3[] = []
       const objects: BABYLON.Mesh[] = []
 
       const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
-      icosahedronMaterial.pointsCloud = true
-      icosahedronMaterial.wireframe = true
 
       const side = 20
       const subdivisions = 3
@@ -74,62 +108,8 @@ export default function Index(): JSX.Element {
         subdivisions: subdivisions,
         updatable: true
       })
-      ground.visibility = 1
+      ground.visibility = 0
       ground.material = icosahedronMaterial
-      const groundAxesViewer = new BABYLON.Debug.AxesViewer(scene, 3.3333)
-      groundAxesViewer.xAxis.parent = ground
-      groundAxesViewer.yAxis.parent = ground
-      groundAxesViewer.zAxis.parent = ground
-
-      const positions = ground.getPositionData()
-      const newPositions: BABYLON.FloatArray = []
-
-      const indices = ground.getIndices()
-      const newIndices: BABYLON.IndicesArray = []
-      indices?.forEach((item: number) => {
-        newIndices.push(item)
-      })
-      // console.log(positions)
-      // console.log(newIndices)
-
-      if (positions && indices) {
-        for (let i = 0; i < indices.length; i += 3) {
-          const vertex1 = indices[i]
-          const vertex2 = indices[i + 1]
-          const vertex3 = indices[i + 2]
-
-          const coord1 = [positions[vertex1 * 3], positions[vertex1 * 3 + 1], positions[vertex1 * 3 + 2]]
-          const coord2 = [positions[vertex2 * 3], positions[vertex2 * 3 + 1], positions[vertex2 * 3 + 2]]
-          const coord3 = [positions[vertex3 * 3], positions[vertex3 * 3 + 1], positions[vertex3 * 3 + 2]]
-
-          console.log(`Triangle ${i / 3 + 1}:`)
-          console.log('Vertex 1:', coord1)
-          console.log('Vertex 2:', coord2)
-          console.log('Vertex 3:', coord3)
-        }
-        // 对合适的点进行偏移
-        for (let i = 0; i < positions.length / 3; i++) {
-          const row = Math.floor(i / (subdivisions + 1))
-          const column = i % (subdivisions + 1)
-          if (column >= 2 * (row + 1)) {
-            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
-            newPositions.push(positions[i * 3 + 1])
-            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions) + 5)
-            // const indexToBeDeleted = indices[i]
-          } else if (2 * (row - 1) >= column + subdivisions) {
-            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
-            newPositions.push(positions[i * 3 + 1])
-            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions) - 5)
-          } else {
-            newPositions.push(positions[i * 3] - column * (1 - 1.732050807569 / 2) * (side / subdivisions))
-            newPositions.push(positions[i * 3 + 1])
-            newPositions.push(positions[i * 3 + 2] + column * (1 / 2) * (side / subdivisions))
-          }
-        }
-        // earcut(newPositions)
-        // ground.setIndices(earcut(newPositions))
-        // ground.setVerticesData(BABYLON.VertexBuffer.PositionKind, newPositions)
-      }
 
       let polygon: BABYLON.Mesh
 
