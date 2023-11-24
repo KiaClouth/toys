@@ -171,6 +171,10 @@ export default function GS(): JSX.Element {
         return this.abi.int * 4 + this.abi.dex + this.wea + this.maxLv
       }
 
+      public maxHp = (): number => {
+        return 93 + (this.abi.vit / 3 + 127 / 17) * this.maxLv
+      }
+
       public synthesisWith = (
         otherPet: Pet,
         { childType, childMainAbiName, childeCharacter }: { childType: typeName; childMainAbiName: abiName; childeCharacter: number }
@@ -193,7 +197,7 @@ export default function GS(): JSX.Element {
       public display = (): void => {
         const displayData = {
           类型: this.type,
-          性格: this.character,
+          性格加成倍率: this.character,
           合成代数: this.generations,
           最大等级: Math.ceil(this.maxLv),
           教育时选择的能力: this.mainAbiName,
@@ -210,17 +214,19 @@ export default function GS(): JSX.Element {
             vit: Math.ceil(this.abi.vit),
             agi: Math.ceil(this.abi.agi),
             dex: Math.ceil(this.abi.dex)
-          }
+          },
+          武器为杖和魔导时的最终魔攻: Math.ceil(this.matk()),
+          最大HP: Math.ceil(this.maxHp())
         }
         console.table(displayData)
       }
     }
 
     const levePet = new Pet(0, 250, { str: 88, int: 285, vit: 88, agi: 88, dex: 88 }, '天才', 'int', 1)
-    let testPet = new Pet(9990, 2, { str: 96, int: 285, vit: 96, agi: 96, dex: 96 }, '天才', 'int', 1)
+    let testPet = new Pet(0, 2, { str: 96, int: 285, vit: 96, agi: 96, dex: 96 }, '天才', 'int', 1)
 
-    for (let i = 0; i < 5; i++) {
-      testPet = testPet.synthesisWith(levePet, { childType: '天才', childMainAbiName: 'vit', childeCharacter: 1 })
+    for (let i = 0; i < 8; i++) {
+      testPet = testPet.synthesisWith(levePet, { childType: '天才', childMainAbiName: 'int', childeCharacter: 1 })
       testPet.display()
     }
 
