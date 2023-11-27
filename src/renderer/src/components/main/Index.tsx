@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import earcut from 'earcut'
-import { canvasResize, isCanvas } from '../../tool'
+import { PerlinNoise, canvasResize, isCanvas } from '../../tool'
 
 export default function Index(): JSX.Element {
   useEffect(() => {
@@ -8,8 +8,8 @@ export default function Index(): JSX.Element {
 
     if (isCanvas(canvas)) {
       canvasResize(canvas)
-      // const startTime = new Date().getTime()
-      // const perlinNosie = new PerlinNoise()
+      const startTime = new Date().getTime()
+      const perlinNosie = new PerlinNoise()
       const engine = new BABYLON.Engine(canvas, true)
       engine.loadingScreen = {
         displayLoadingUI: (): void => {
@@ -32,7 +32,7 @@ export default function Index(): JSX.Element {
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, (Math.PI * 2) / 2, 10, BABYLON.Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', 0 / 2, (0 * 2) / 2, 25, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -55,45 +55,85 @@ export default function Index(): JSX.Element {
       canvas.addEventListener('mousemove', cameraControl)
 
       // 世界坐标轴显示
-      // new BABYLON.Debug.AxesViewer(scene, 3.3333)
+      new BABYLON.Debug.AxesViewer(scene, 0.3333)
 
-      // const light = new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 10, 0), scene)
+      new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 30, 0), scene)
 
-      const createTriangleGrid = (side: number, column: number, row: number, alignment: 'center' | 'topLeft'): BABYLON.VertexData => {
+      const createTriangleGrid = (
+        side: number,
+        column: number,
+        row: number,
+        alignment: 'center' | 'topLeft'
+      ): {
+        positions: number[]
+        indices: number[]
+      } => {
         const cos60 = Math.sqrt(3) / 2
-        const offsetX = alignment === 'center' ? column * side : 0
-        const offsetZ = alignment === 'center' ? row * side * cos60 : 0
+        const offsetX = alignment === 'center' ? (column - 1) * side * 0.5 + side / 4 : 0
+        const offsetZ = alignment === 'center' ? (row - 1) * side * cos60 * 0.5 : 0
         const positions: number[] = []
-        const indices: number[] = [0, row, column * row]
+        const indices: number[] = []
+        // 顶点坐标计算
         for (let r = 0; r < row; r++) {
-          const rPosition = r * side * cos60 - offsetZ
+          const rPosition = r * side * cos60
           for (let c = 0; c < column; c++) {
-            const cPosition = c * side - offsetX
-            positions.push(rPosition)
+            const cPosition = c * side
+            positions.push(rPosition - offsetZ)
             positions.push(0)
-            if (r % 2 == 0) {
-              positions.push(cPosition)
+            positions.push(cPosition + ((r % 2) * side) / 2 - offsetX)
+          }
+        }
+        // 索引计算
+        for (let r = 0; r < row - 1; r++) {
+          for (let c = 0; c < column - 1; c++) {
+            if (r % 2 === 0) {
+              indices.push(r * column + c, (r + 1) * column + c, r * column + c + 1)
+              indices.push(r * column + c + 1, (r + 1) * column + c, (r + 1) * column + c + 1)
             } else {
-              positions.push(cPosition - side / 2)
+              indices.push(r * column + c, (r + 1) * column + c, (r + 1) * column + c + 1)
+              indices.push(r * column + c, (r + 1) * column + c + 1, r * column + c + 1)
             }
           }
         }
-        const vertexData = new BABYLON.VertexData()
-        vertexData.positions = positions
-        vertexData.indices = indices
-        return vertexData
+        return {
+          positions: positions,
+          indices: indices
+        }
       }
+      const trianglePositionAndIndices = createTriangleGrid(0.1, 140, 100, 'center')
 
+      // 创建并赋予材质
       const testMaterial = new BABYLON.PBRMaterial('testMaterial', scene)
-      // testMaterial.pointsCloud = true
+      const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
+      testMaterial.albedoColor = baseColor
+      testMaterial.emissiveColor = baseColor
       testMaterial.wireframe = true
-      testMaterial.albedoColor = new BABYLON.Color3(1, 1, 0)
+      const Triangle = new BABYLON.Mesh('Triangle', scene)
+      Triangle.material = testMaterial
 
-      const testMesh = new BABYLON.Mesh('testMesh', scene)
-      testMesh.material = testMaterial
-      const triangleGrid = createTriangleGrid(1, 4, 4, 'center')
-      // console.log(triangleGrid.positions)
-      triangleGrid.applyToMesh(testMesh)
+      // 柏林噪声动画 perlinNosie.noise
+      scene.registerBeforeRender(function () {
+        const a = new Date().getTime() - startTime
+        const tempPositions: number[] = []
+        for (let i = 0; i < trianglePositionAndIndices.positions.length / 3; i++) {
+          const perlin = perlinNosie.noise(
+            trianglePositionAndIndices.positions[3 * i + 0] * 0.5 + a * 0.0001,
+            trianglePositionAndIndices.positions[3 * i + 1] * 0.5 + a * 0.0002,
+            trianglePositionAndIndices.positions[3 * i + 2] * 0.5 + a * 0.00005
+          )
+          tempPositions.push(
+            trianglePositionAndIndices.positions[3 * i + 0] * (1 + perlin * 0.01),
+            (trianglePositionAndIndices.positions[3 * i + 1] + 2) * (1 + perlin * 1),
+            trianglePositionAndIndices.positions[3 * i + 2] * (1 + perlin * 0.01)
+          )
+        }
+
+        const vertexData = new BABYLON.VertexData()
+        // console.log(tempPositions)
+        vertexData.positions = tempPositions
+        vertexData.indices = trianglePositionAndIndices.indices
+        vertexData.applyToMesh(Triangle)
+      })
 
       const polyPoints: BABYLON.Vector3[] = []
       const objects: BABYLON.Mesh[] = []

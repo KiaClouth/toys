@@ -1,7 +1,7 @@
 import { root, resize } from './tool'
 import MyPaint from './assets/js-plugin/houdini/myPain.worklet.js?url'
 import ReactDOM from 'react-dom/client'
-import GS from './Toram'
+import GS from './GS'
 
 // 启用监听
 window.addEventListener('keydown', (e: KeyboardEvent) => {
