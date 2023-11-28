@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import earcut from 'earcut'
 import { PerlinNoise, canvasResize, isCanvas } from '../../tool'
 
 export default function Index(): JSX.Element {
@@ -32,7 +31,7 @@ export default function Index(): JSX.Element {
       // })
 
       // 摄像机
-      const camera = new BABYLON.ArcRotateCamera('Camera', 0 / 2, (0 * 2) / 2, 25, BABYLON.Vector3.Zero(), scene)
+      const camera = new BABYLON.ArcRotateCamera('Camera', 0, 1, 12, BABYLON.Vector3.Zero(), scene)
       camera.attachControl(canvas, true)
       camera.minZ = 0.1
       camera.fov = 0.26
@@ -59,6 +58,8 @@ export default function Index(): JSX.Element {
 
       new BABYLON.HemisphericLight('hemiLight', new BABYLON.Vector3(10, 30, 0), scene)
 
+      // 网格纵向偏移幅度
+      const offsetY = 1
       const createTriangleGrid = (
         side: number,
         column: number,
@@ -100,18 +101,26 @@ export default function Index(): JSX.Element {
           indices: indices
         }
       }
-      const trianglePositionAndIndices = createTriangleGrid(0.1, 140, 100, 'center')
+      const trianglePositionAndIndices = createTriangleGrid(0.1, 100, 100, 'center')
 
       // 创建并赋予材质
       const testMaterial = new BABYLON.PBRMaterial('testMaterial', scene)
-      const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
+      const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 127 / 255)
       testMaterial.albedoColor = baseColor
       testMaterial.emissiveColor = baseColor
+      testMaterial.microSurface = 0.1
       testMaterial.wireframe = true
       const Triangle = new BABYLON.Mesh('Triangle', scene)
       Triangle.material = testMaterial
+      Triangle.position._y -= offsetY
+      Triangle.addRotation(0, Math.PI / 2, 0)
 
-      // 柏林噪声动画 perlinNosie.noise
+      const vertexData = new BABYLON.VertexData()
+      vertexData.positions = trianglePositionAndIndices.positions
+      vertexData.indices = trianglePositionAndIndices.indices
+      vertexData.applyToMesh(Triangle)
+
+      // 柏林噪声动画
       scene.registerBeforeRender(function () {
         const a = new Date().getTime() - startTime
         const tempPositions: number[] = []
@@ -122,67 +131,16 @@ export default function Index(): JSX.Element {
             trianglePositionAndIndices.positions[3 * i + 2] * 0.5 + a * 0.00005
           )
           tempPositions.push(
-            trianglePositionAndIndices.positions[3 * i + 0] * (1 + perlin * 0.01),
-            (trianglePositionAndIndices.positions[3 * i + 1] + 2) * (1 + perlin * 1),
-            trianglePositionAndIndices.positions[3 * i + 2] * (1 + perlin * 0.01)
+            trianglePositionAndIndices.positions[3 * i + 0] * (1 + perlin * 0.05),
+            (trianglePositionAndIndices.positions[3 * i + 1] + offsetY) * (1 + perlin * 2),
+            trianglePositionAndIndices.positions[3 * i + 2] * (1 + perlin * 0.05)
           )
         }
-
-        const vertexData = new BABYLON.VertexData()
-        // console.log(tempPositions)
         vertexData.positions = tempPositions
         vertexData.indices = trianglePositionAndIndices.indices
         vertexData.applyToMesh(Triangle)
       })
 
-      const polyPoints: BABYLON.Vector3[] = []
-      const objects: BABYLON.Mesh[] = []
-
-      const icosahedronMaterial = new BABYLON.PBRMaterial('icosahedronMaterial', scene)
-
-      const side = 20
-      const subdivisions = 3
-      const ground = BABYLON.MeshBuilder.CreateGround('ground', {
-        height: side,
-        width: side,
-        subdivisions: subdivisions,
-        updatable: true
-      })
-      ground.visibility = 0
-      ground.material = icosahedronMaterial
-
-      let polygon: BABYLON.Mesh
-
-      scene.onPointerObservable.add((pointerInfo) => {
-        switch (pointerInfo.type) {
-          case BABYLON.PointerEventTypes.POINTERPICK:
-            const pickPoint = pointerInfo.pickInfo!.pickedPoint!
-            const impact1 = BABYLON.MeshBuilder.CreateSphere('sp1', { diameter: 0.1 }, scene)
-            impact1.material = new BABYLON.StandardMaterial('impact1Mat', scene)
-            impact1.position = new BABYLON.Vector3(pickPoint.x, pickPoint.y, pickPoint.z)
-            polyPoints.push(new BABYLON.Vector3(pickPoint.x, pickPoint.y + 10.5, pickPoint.z))
-            objects.push(impact1)
-            if (polyPoints.length > 2) {
-              if (polygon !== undefined) {
-                console.log(polygon.id)
-                polygon.dispose()
-              }
-              polygon = BABYLON.MeshBuilder.CreatePolygon(
-                'polygon',
-                { shape: polyPoints, sideOrientation: BABYLON.Mesh.DOUBLESIDE },
-                scene,
-                earcut
-              )
-              const baseColor = new BABYLON.Color3((Math.random() * 255) / 255, (Math.random() * 255) / 255, 211 / 255)
-              icosahedronMaterial.emissiveColor = baseColor
-              polygon.material = icosahedronMaterial
-            }
-            break
-        }
-      })
-
-      // 世界坐标轴显示
-      // new AxesViewer(scene, 1)
       engine.displayLoadingUI()
       // 注册循环渲染函数
       engine.runRenderLoop(() => {
