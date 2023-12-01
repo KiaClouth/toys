@@ -3,6 +3,17 @@ import { useEffect } from 'react'
 import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
+type element = '无属性' | '水属性' | '火属性' | '地属性' | '风属性' | '光属性' | '暗属性'
+type parameter = {
+  str_r: number | null
+  str_v: number | null
+  int_r: number | null
+  int_v: number | null
+  agi_r: number | null
+  agi_v: number | null
+  dex_r: number | null
+  dex_v: number | null
+}
 type abi = {
   str: number
   int: number
@@ -11,6 +22,206 @@ type abi = {
   dex: number
 }
 type abiName = keyof abi
+type weaType = {
+  单手剑: {
+    baseHit: 0.25
+    baseAspd: 100
+    convert: {
+      str: {
+        patk: 2
+        stab: 0.025
+        aspd: 0.2
+      }
+      int: {
+        matk: 3
+      }
+      agi: {
+        aspd: 4.2
+      }
+      dex: {
+        patk: 2
+        stab: 0.075
+      }
+    }
+  }
+  拔刀剑: {
+    baseHit: 0.3
+    baseAspd: 200
+    convert: {
+      str: {
+        patk: 1.5
+        stab: 0.075
+        aspd: 0.3
+      }
+      int: {
+        matk: 1.5
+      }
+      agi: {
+        aspd: 3.9
+      }
+      dex: {
+        patk: 2.5
+        stab: 0.025
+      }
+    }
+  }
+  大剑: {
+    baseHit: 0.15
+    baseAspd: 50
+    convert: {
+      str: {
+        patk: 3
+        aspd: 0.2
+      }
+      int: {
+        matk: 3
+      }
+      agi: {
+        aspd: 2.2
+      }
+      dex: {
+        patk: 1
+        stab: 0.1
+      }
+    }
+  }
+  弓: {
+    baseHit: 0.1
+    baseAspd: 75
+    convert: {
+      str: {
+        patk: 1
+        stab: 0.05
+      }
+      int: {
+        matk: 3
+      }
+      agi: {
+        aspd: 3.1
+      }
+      dex: {
+        patk: 3
+        stab: 0.05
+        aspd: 0.2
+      }
+    }
+  }
+  弩: {
+    baseHit: 0.05
+    baseAspd: 100
+    convert: {
+      str: {
+        stab: 0.05
+      }
+      int: {
+        matk: 3
+      }
+      agi: {
+        aspd: 2.2
+      }
+      dex: {
+        patk: 4
+        aspd: 0.2
+      }
+    }
+  }
+  杖: {
+    baseHit: 0.3
+    baseAspd: 60
+    convert: {
+      str: {
+        patk: 3
+        stab: 0.05
+      }
+      int: {
+        matk: 4
+        patk: 1
+        aspd: 0.2
+      }
+      agi: {
+        aspd: 1.8
+      }
+      dex: {
+        aspd: 0.2
+      }
+    }
+  }
+  魔导: {
+    baseHit: 0.1
+    baseAspd: 90
+    convert: {
+      int: {
+        matk: 4
+        padtk: 2
+        aspd: 0.2
+      }
+      agi: {
+        padtk: 2
+        aspd: 4
+      }
+      dex: {
+        stab: 0.1
+      }
+    }
+  }
+  拳: {
+    baseHit: 0.1
+    baseAspd: 100
+    convert: {
+      str: {
+        aspd: 0.1
+      }
+      int: {
+        matk: 4
+      }
+      agi: {
+        patk: 2
+        aspd: 4.6
+      }
+      dex: {
+        patk: 0.5
+        stab: 0.025
+      }
+    }
+  }
+  枪: {
+    baseHit: 0.25
+    baseAspd: 20
+    convert: {
+      str: {
+        patk: 2.5
+        stab: 0.05
+        aspd: 0.2
+      }
+      int: {
+        matk: 2
+      }
+      agi: {
+        aspd: 3.5
+        patk: 1.5
+        matk: 1
+      }
+      dex: {
+        stab: 0.05
+      }
+    }
+  }
+}
+type weatypeName = keyof weaType
+type wea = {
+  type: weatypeName
+  baseAtk: number
+  stab: number
+  refv: number
+  dte: element
+}
+type passiveSkills = {
+  name: string
+  state: boolean
+  list: {
+    [key: string]: parameter
+  }
+}
 type petType = {
   天才: abi
   博而不精: abi
@@ -115,113 +326,120 @@ const petTypeArray = {
 //   }
 // }
 
-export default function GS(): JSX.Element {
-  useEffect(() => {
-    // 初始化
-    window.dispatchEvent(new CustomEvent('ReactDomRender', { detail: 'base' }))
+class Pet {
+  generations: number
+  maxLv: number
+  potential: abi
+  type: string
+  character: number
+  wea: number
+  abi: abi
+  mainAbiName: abiName
 
-    class Pet {
-      generations: number
-      maxLv: number
-      potential: abi
-      type: string
-      character: number
-      wea: number
-      abi: abi
-      mainAbiName: abiName
+  constructor(generations: number, maxLv: number, potential: abi, type: string, mainAbiName: abiName, character: number) {
+    this.generations = generations
+    this.maxLv = maxLv
+    this.potential = potential
+    this.type = type
+    this.character = character
+    this.wea = 255 * 2
+    this.abi = {
+      str: 0,
+      int: 0,
+      vit: 0,
+      agi: 0,
+      dex: 0
+    }
+    this.mainAbiName = mainAbiName
 
-      constructor(generations: number, maxLv: number, potential: abi, type: string, mainAbiName: abiName, character: number) {
-        this.generations = generations
-        this.maxLv = maxLv
-        this.potential = potential
-        this.type = type
-        this.character = character
-        this.wea = 255 * 2
-        this.abi = {
-          str: 0,
-          int: 0,
-          vit: 0,
-          agi: 0,
-          dex: 0
+    // 计算最终能力值
+    for (const abiName in this.abi) {
+      if (abiName === this.mainAbiName) {
+        if (this.generations !== 0) {
+          this.abi[abiName] = this.maxLv - 1
         }
-        this.mainAbiName = mainAbiName
-
-        // 计算最终能力值
-        for (const abiName in this.abi) {
-          if (abiName === this.mainAbiName) {
-            if (this.generations !== 0) {
-              this.abi[abiName] = this.maxLv - 1
-            }
-            for (let lv = 0; lv < this.maxLv; lv++) {
-              if (this.abi[abiName] < 255) {
-                this.abi[abiName] = this.abi[abiName] + 1 + this.potential[abiName] / 100
-              } else {
-                this.abi[abiName] = this.abi[abiName] + this.potential[abiName] / 100
-              }
-            }
+        for (let lv = 0; lv < this.maxLv; lv++) {
+          if (this.abi[abiName] < 255) {
+            this.abi[abiName] = this.abi[abiName] + 1 + this.potential[abiName] / 100
           } else {
-            for (let lv = 0; lv < this.maxLv; lv++) {
-              this.abi[abiName] = this.abi[abiName] + this.potential[abiName] / 100
-            }
+            this.abi[abiName] = this.abi[abiName] + this.potential[abiName] / 100
           }
         }
-      }
-
-      public matk = (): number => {
-        return this.abi.int * 4 + this.abi.dex + this.wea + this.maxLv
-      }
-
-      public maxHp = (): number => {
-        return 93 + (this.abi.vit / 3 + 127 / 17) * this.maxLv
-      }
-
-      public synthesisWith = (
-        otherPet: Pet,
-        { childType, childMainAbiName, childeCharacter }: { childType: typeName; childMainAbiName: abiName; childeCharacter: number }
-      ): Pet => {
-        const childGeneration = this.generations + otherPet.generations + 1
-        const childMaxLv = 1 + (this.maxLv + otherPet.maxLv) / 2
-        const childPotential = { ...petTypeArray[childType] }
-        for (const potentialName in otherPet.potential) {
-          if (potentialName === childMainAbiName) {
-            childPotential[potentialName] =
-              petTypeArray[childType][potentialName] + 195 + (this.potential[potentialName] + otherPet.potential[potentialName]) / 10
-          } else {
-            childPotential[potentialName] =
-              petTypeArray[childType][potentialName] + (this.potential[potentialName] + otherPet.potential[potentialName]) / 10
-          }
+      } else {
+        for (let lv = 0; lv < this.maxLv; lv++) {
+          this.abi[abiName] = this.abi[abiName] + this.potential[abiName] / 100
         }
-        return new Pet(childGeneration, childMaxLv, childPotential, childType, childMainAbiName, childeCharacter)
-      }
-
-      public display = (): void => {
-        const displayData = {
-          类型: this.type,
-          性格加成倍率: this.character,
-          合成代数: this.generations,
-          最大等级: Math.ceil(this.maxLv),
-          教育时选择的能力: this.mainAbiName,
-          最终潜力: {
-            str: Math.ceil(this.potential.str),
-            int: Math.ceil(this.potential.int),
-            vit: Math.ceil(this.potential.vit),
-            agi: Math.ceil(this.potential.agi),
-            dex: Math.ceil(this.potential.dex)
-          },
-          满级时的能力值: {
-            str: Math.ceil(this.abi.str),
-            int: Math.ceil(this.abi.int),
-            vit: Math.ceil(this.abi.vit),
-            agi: Math.ceil(this.abi.agi),
-            dex: Math.ceil(this.abi.dex)
-          },
-          武器为杖和魔导时的最终魔攻: Math.ceil(this.matk()),
-          最大HP: Math.ceil(this.maxHp())
-        }
-        console.table(displayData)
       }
     }
+  }
 
+  public matk = (): number => {
+    return this.abi.int * 4 + this.abi.dex + this.wea + this.maxLv
+  }
+
+  public maxHp = (): number => {
+    return 93 + (this.abi.vit / 3 + 127 / 17) * this.maxLv
+  }
+
+  public synthesisWith = (
+    otherPet: Pet,
+    { childType, childMainAbiName, childeCharacter }: { childType: typeName; childMainAbiName: abiName; childeCharacter: number }
+  ): Pet => {
+    const childGeneration = this.generations + otherPet.generations + 1
+    const childMaxLv = 1 + (this.maxLv + otherPet.maxLv) / 2
+    const childPotential = { ...petTypeArray[childType] }
+    for (const potentialName in otherPet.potential) {
+      if (potentialName === childMainAbiName) {
+        childPotential[potentialName] =
+          petTypeArray[childType][potentialName] + 195 + (this.potential[potentialName] + otherPet.potential[potentialName]) / 10
+      } else {
+        childPotential[potentialName] =
+          petTypeArray[childType][potentialName] + (this.potential[potentialName] + otherPet.potential[potentialName]) / 10
+      }
+    }
+    return new Pet(childGeneration, childMaxLv, childPotential, childType, childMainAbiName, childeCharacter)
+  }
+
+  public display = (): void => {
+    const displayData = {
+      类型: this.type,
+      性格加成倍率: this.character,
+      合成代数: this.generations,
+      最大等级: Math.ceil(this.maxLv),
+      教育时选择的能力: this.mainAbiName,
+      最终潜力: {
+        str: Math.ceil(this.potential.str),
+        int: Math.ceil(this.potential.int),
+        vit: Math.ceil(this.potential.vit),
+        agi: Math.ceil(this.potential.agi),
+        dex: Math.ceil(this.potential.dex)
+      },
+      满级时的能力值: {
+        str: Math.ceil(this.abi.str),
+        int: Math.ceil(this.abi.int),
+        vit: Math.ceil(this.abi.vit),
+        agi: Math.ceil(this.abi.agi),
+        dex: Math.ceil(this.abi.dex)
+      },
+      武器为杖和魔导时的最终魔攻: Math.ceil(this.matk()),
+      最大HP: Math.ceil(this.maxHp())
+    }
+    console.table(displayData)
+  }
+}
+class Role {
+  lv: number
+  abi: abi
+  wea: wea
+  constructor(lv: number, abi: abi, wea: wea, passiveSkills: passiveSkills) {
+    this.lv = lv
+    this.abi = abi
+    this.wea = wea
+    this.passiveSkills = passiveSkills
+  }
+}
+function PetModule(): JSX.Element {
+  useEffect(() => {
     const levePet = new Pet(0, 250, { str: 88, int: 285, vit: 88, agi: 88, dex: 88 }, '天才', 'int', 1)
     let testPet = new Pet(0, 2, { str: 96, int: 285, vit: 96, agi: 96, dex: 96 }, '天才', 'int', 1)
 
@@ -236,7 +454,53 @@ export default function GS(): JSX.Element {
   }, [])
 
   return (
+    <div id="Pet">
+      <div id="title">
+        <div id="mianTitle">Pet</div>
+        <div id="subTitle">宠物相关计算</div>
+      </div>
+      <div id="content">
+        <div id="inputModule"></div>
+        <div id="outModule"></div>
+      </div>
+    </div>
+  )
+}
+
+function RoleModule(): JSX.Element {
+  useEffect(() => {
+    return () => {
+      // 组件卸载时需要做的事
+    }
+  }, [])
+
+  return (
+    <div id="Role">
+      <div id="title">
+        <div id="mianTitle">Role</div>
+        <div id="subTitle">角色相关计算</div>
+      </div>
+      <div id="content">
+        <div id="inputModule"></div>
+        <div id="outModule"></div>
+      </div>
+    </div>
+  )
+}
+
+export default function GS(): JSX.Element {
+  useEffect(() => {
+    // 初始化
+    window.dispatchEvent(new CustomEvent('ReactDomRender', { detail: 'base' }))
+    return () => {
+      // 组件卸载时需要做的事
+    }
+  }, [])
+
+  return (
     <div id="GS">
+      <RoleModule />
+      <PetModule />
       <Versions />
       <Filing />
     </div>
