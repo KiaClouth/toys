@@ -148,19 +148,18 @@ export default function Index(): JSX.Element {
               if (floor(f32(input.vertexIndex) / ${column}) % 2 == 0) {
                 // 偶数行时
                 if(a % 3 == 2) {
-                  vertexOutputs.vColor = vec4<f32>(0,0,0,1);
+                  vertexOutputs.vColor = vec4<f32>(0,0,0,0);
                 } else {
                   vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
                 }
               } else {
                 // 奇数行时
                 if(a % 3 == 0) {
-                  vertexOutputs.vColor = vec4<f32>(0,0,0,1);
+                  vertexOutputs.vColor = vec4<f32>(0,0,0,0);
                 } else {
                   vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
                 }
               }
-              // vertexOutputs.vColor = vec4<f32>(vertexInputs.position % 1, 1.0);
           }
         `
 
@@ -169,7 +168,7 @@ export default function Index(): JSX.Element {
 
           @fragment
           fn main(input : FragmentInputs) -> FragmentOutputs {
-              if(fragmentInputs.vColor[0] == 1.0) {
+              if(fragmentInputs.vColor[0] == 0.5) {
                 discard;
               }
               fragmentOutputs.color = fragmentInputs.vColor;

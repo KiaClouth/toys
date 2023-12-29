@@ -159,16 +159,17 @@ const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时�
 const campusArray = [
   ['成都', '01.08'],
   ['重庆', '01.15'],
-  ['西安', '12.25'],
-  ['武汉', '12.27'],
+  ['西安', '01.08'],
+  ['武汉', '01.15'],
   ['南京', '01.03'],
-  ['杭州', '12.25'],
+  ['杭州', '02.28'],
   ['广州', '01.22'],
   ['凡云', '01.18'],
+  ['播趣', '01.08'],
   ['阿多比', '01.04']
 ]
 
-const textIsVisibilty = false // 是否显示文字
+const textIsVisibilty = true // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
@@ -298,7 +299,7 @@ export default function BannerBox(): JSX.Element {
         // ------------------------依赖model内容循环构建的内容------------------------------
         let b = 0
         for (let a = 0; a < campusArray.length; a++) {
-          if (campusArray[a][0] === '阿多比' || campusArray[a][0] === '凡云') {
+          if (campusArray[a][0] === '阿多比' || campusArray[a][0] === '凡云' || campusArray[a][0] === '播趣') {
             b++
             continue
           }

@@ -3,17 +3,45 @@ import { useEffect } from 'react'
 import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
-type element = '无属性' | '水属性' | '火属性' | '地属性' | '风属性' | '光属性' | '暗属性'
-type parameter = {
-  str_r: number | null
-  str_v: number | null
-  int_r: number | null
-  int_v: number | null
-  agi_r: number | null
-  agi_v: number | null
-  dex_r: number | null
-  dex_v: number | null
+const variableBonus = {
+  strR: 0,
+  strV: 0,
+  intR: 0,
+  intV: 0,
+  vitR: 0,
+  vitV: 0,
+  agiR: 0,
+  agiV: 0,
+  dexR: 0,
+  dexV: 0,
+  pAtkR: 0,
+  pAtkV: 0,
+  mAtkR: 0,
+  mAtkV: 0,
+  weaAtkR: 0,
+  weaAtkV: 0,
+  pPie: 0,
+  mPie: 0,
+  cdR: 0,
+  cdV: 0,
+  crR: 0,
+  crV: 0,
+  cdT: 0,
+  crT: 0,
+  stro: 0,
+  dis: 0,
+  pStab: 0,
+  mStab: 0,
+  total: 0,
+  final: 0,
+  aspdr: 0,
+  aspdv: 0,
+  cspdr: 0,
+  cspdv: 0,
+  am: 0
 }
+type bonus = keyof typeof variableBonus
+type element = '无属性' | '水属性' | '火属性' | '地属性' | '风属性' | '光属性' | '暗属性'
 type abi = {
   str: number
   int: number
@@ -215,26 +243,15 @@ type wea = {
   refv: number
   dte: element
 }
-type passiveSkills = {
+type permanentSkill = {
   name: string
   state: boolean
-  list: {
-    [key: string]: parameter
+  effectList: {
+    [K in bonus]?: number
   }
 }
-type petType = {
-  天才: abi
-  博而不精: abi
-  物理攻击: abi
-  物理防御: abi
-  命中: abi
-  回避: abi
-  魔法攻击: abi
-  魔法防御: abi
-  强化技能: abi
-  平凡: abi
-}
-type typeName = keyof petType
+type permanentSkillList = permanentSkill[]
+type petTypeName = '天才' | '博而不精' | '物理攻击' | '物理防御' | '命中' | '回避' | '魔法攻击' | '魔法防御' | '强化技能' | '平凡'
 const petTypeArray = {
   天才: {
     str: 80,
@@ -383,7 +400,7 @@ class Pet {
 
   public synthesisWith = (
     otherPet: Pet,
-    { childType, childMainAbiName, childeCharacter }: { childType: typeName; childMainAbiName: abiName; childeCharacter: number }
+    { childType, childMainAbiName, childeCharacter }: { childType: petTypeName; childMainAbiName: abiName; childeCharacter: number }
   ): Pet => {
     const childGeneration = this.generations + otherPet.generations + 1
     const childMaxLv = 1 + (this.maxLv + otherPet.maxLv) / 2
@@ -427,15 +444,20 @@ class Pet {
     console.table(displayData)
   }
 }
-class Role {
+class Character {
   lv: number
   abi: abi
   wea: wea
-  constructor(lv: number, abi: abi, wea: wea, passiveSkills: passiveSkills) {
+  permanentSkillList: permanentSkillList
+  constructor(lv: number, abi: abi, wea: wea, permanentSkillList: permanentSkillList) {
     this.lv = lv
     this.abi = abi
     this.wea = wea
-    this.passiveSkills = passiveSkills
+    this.permanentSkillList = permanentSkillList
+  }
+
+  public display = (): void => {
+    console.log(this)
   }
 }
 function PetModule(): JSX.Element {
@@ -467,7 +489,62 @@ function PetModule(): JSX.Element {
   )
 }
 
-function RoleModule(): JSX.Element {
+function CharacterModule(): JSX.Element {
+  useEffect(() => {
+    const cLv = 1
+    const cAbi: abi = {
+      str: 1,
+      int: 415,
+      vit: 1,
+      agi: 1,
+      dex: 247
+    }
+    const cWeapon: wea = {
+      type: '魔导',
+      baseAtk: 320,
+      stab: 60,
+      refv: 15,
+      dte: '光属性'
+    }
+    const cPermanentSkillList: permanentSkillList = [
+      {
+        name: '魔法要领',
+        state: true,
+        effectList: {
+          mAtkR: 3,
+          weaAtkR: 3
+        }
+      },
+      {
+        name: '远程狙击',
+        state: true,
+        effectList: {
+          total: 10
+        }
+      }
+    ]
+    const character = new Character(cLv, cAbi, cWeapon, cPermanentSkillList)
+    character.display()
+    return () => {
+      // 组件卸载时需要做的事
+    }
+  }, [])
+
+  return (
+    <div id="Character">
+      <div id="title">
+        <div id="mianTitle">Character</div>
+        <div id="subTitle">= =</div>
+      </div>
+      <div id="content">
+        <div id="inputModule"></div>
+        <div id="outModule"></div>
+      </div>
+    </div>
+  )
+}
+
+function Main(): JSX.Element {
   useEffect(() => {
     return () => {
       // 组件卸载时需要做的事
@@ -475,15 +552,9 @@ function RoleModule(): JSX.Element {
   }, [])
 
   return (
-    <div id="Role">
-      <div id="title">
-        <div id="mianTitle">Role</div>
-        <div id="subTitle">角色相关计算</div>
-      </div>
-      <div id="content">
-        <div id="inputModule"></div>
-        <div id="outModule"></div>
-      </div>
+    <div id="Main">
+      <CharacterModule />
+      <PetModule />
     </div>
   )
 }
@@ -499,8 +570,7 @@ export default function GS(): JSX.Element {
 
   return (
     <div id="GS">
-      <RoleModule />
-      <PetModule />
+      <Main />
       <Versions />
       <Filing />
     </div>
