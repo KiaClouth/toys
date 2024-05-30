@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { PerlinNoise, canvasResize, isCanvas } from '../../tool'
-import textureUrl from '../../public/img/babylonImg/jianbian.jpg?url'
+// import textureUrl from '../../public/img/babylonImg/jianbian.jpg?url'
 
 export default function Index(): JSX.Element {
   useEffect(() => {
     const canvas = document.getElementById('BackgroundCanvas')
-    async function createEngine(canvas: HTMLCanvasElement): Promise<BABYLON.Engine> {
+    async function createEngine(canvas: HTMLCanvasElement): Promise<BABYLON.Engine | BABYLON.WebGPUEngine> {
       const webGPUSupported = await BABYLON.WebGPUEngine.IsSupportedAsync
       if (webGPUSupported) {
         const engine = new BABYLON.WebGPUEngine(canvas)
@@ -131,49 +131,49 @@ export default function Index(): JSX.Element {
         const trianglePositionAndIndices = createTriangleGrid(0.1, row, column, 'center')
 
         BABYLON.ShaderStore.ShadersStoreWGSL['customcubeVertexShader'] = `
-          #include<sceneUboDeclaration>
-          #include<meshUboDeclaration>
+        #include<sceneUboDeclaration>
+        #include<meshUboDeclaration>
 
-          // Attributes
-          attribute position : vec3<f32>;
+        // Attributes
+        attribute position : vec3<f32>;
 
-          // Varying
-          varying vColor : vec4<f32>;
+        // Varying
+        varying vColor : vec4<f32>;
 
-          @vertex
-          fn main(input : VertexInputs) -> FragmentInputs {
-              vertexOutputs.position = scene.viewProjection * mesh.world * vec4<f32>(vertexInputs.position, 1.0);
-              let a = input.vertexIndex % ${column};
-              // 计算六边形顶点
-              if (floor(f32(input.vertexIndex) / ${column}) % 2 == 0) {
-                // 偶数行时
-                if(a % 3 == 2) {
-                  vertexOutputs.vColor = vec4<f32>(0,0,0,0);
-                } else {
-                  vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
-                }
+        @vertex
+        fn main(input : VertexInputs) -> FragmentInputs {
+            vertexOutputs.position = scene.viewProjection * mesh.world * vec4<f32>(vertexInputs.position, 1.0);
+            let a = input.vertexIndex % ${column};
+            // 查找六边形顶点
+            if (floor(f32(input.vertexIndex) / ${column}) % 2 == 0) {
+              // 偶数行时
+              if(a % 3 == 2) {
+                vertexOutputs.vColor = vec4<f32>(0,0,0,0);
               } else {
-                // 奇数行时
-                if(a % 3 == 0) {
-                  vertexOutputs.vColor = vec4<f32>(0,0,0,0);
-                } else {
-                  vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
-                }
+                vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
               }
-          }
-        `
+            } else {
+              // 奇数行时
+              if(a % 3 == 0) {
+                vertexOutputs.vColor = vec4<f32>(0,0,0,0);
+              } else {
+                vertexOutputs.vColor = vec4<f32>(0.5, 1.0, 1.0, 1.0);
+              }
+            }
+        }
+      `
 
         BABYLON.ShaderStore.ShadersStoreWGSL['customcubeFragmentShader'] = `
-          varying vColor : vec4<f32>;
+        varying vColor : vec4<f32>;
 
-          @fragment
-          fn main(input : FragmentInputs) -> FragmentOutputs {
-              if(fragmentInputs.vColor[0] == 0.5) {
-                discard;
-              }
-              fragmentOutputs.color = fragmentInputs.vColor;
-          }
-        `
+        @fragment
+        fn main(input : FragmentInputs) -> FragmentOutputs {
+            if(fragmentInputs.vColor[0] < 0.5) {
+              discard;
+            }
+            fragmentOutputs.color = fragmentInputs.vColor;
+        }
+      `
 
         const myUBO = new BABYLON.UniformBuffer(engine)
 
@@ -181,7 +181,7 @@ export default function Index(): JSX.Element {
         myUBO.updateFloat('scale', 1)
         myUBO.update()
 
-        const mainTexture = new BABYLON.Texture(textureUrl, scene)
+        // const mainTexture = new BABYLON.Texture(textureUrl, scene)
 
         const shaderMaterial = new BABYLON.ShaderMaterial(
           'shader',
@@ -199,7 +199,7 @@ export default function Index(): JSX.Element {
 
         shaderMaterial.setFloats('vColor', [1, 0, 0, 1, 0, 1, 0, 1])
         shaderMaterial.setUniformBuffer('myUBO', myUBO)
-        shaderMaterial.setTexture('diffuse', mainTexture)
+        // shaderMaterial.setTexture('diffuse', mainTexture)
 
         const sampler = new BABYLON.TextureSampler()
 
