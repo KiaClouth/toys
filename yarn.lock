@@ -704,6 +704,11 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
+"@types/color-diff@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@types/color-diff/-/color-diff-1.2.5.tgz#497a8ff063cdd724a2d82082379b51b680a99e34"
+  integrity sha512-O+poH2XxhkQg8yGA5c4ejheHLpFcZaE33BG6rLp1eJq2W39iij9+9kGldqsoLq5BQuNt1FjsKwmdDitniK/Qtw==
+
 "@types/debug@^4.1.6":
   version "4.1.10"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.10.tgz#f23148a6eb771a34c466a4fc28379d8101e84494"
@@ -1430,6 +1435,11 @@ color-convert@^2.0.1:
   integrity sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==
   dependencies:
     color-name "~1.1.4"
+
+color-diff@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/color-diff/-/color-diff-1.4.0.tgz#f63c7020c4819b3f7bc379e61d8d19eabf6e1b8a"
+  integrity sha512-4oDB/o78lNdppbaqrg0HjOp7pHmUc+dfCxWKWFnQg6AB/1dkjtBDop3RZht5386cq9xBUDRvDvSCA7WUlM9Jqw==
 
 color-name@1.1.3:
   version "1.1.3"

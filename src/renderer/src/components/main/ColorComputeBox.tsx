@@ -46,7 +46,8 @@ export default function ColorComputeBox(): JSX.Element {
               key={key}
               className="subDiv"
               style={{
-                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                border: '1px solid rgb(0, 0, 0)'
               }}
             >
               {`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
