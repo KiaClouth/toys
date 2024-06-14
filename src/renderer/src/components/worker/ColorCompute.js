@@ -295,31 +295,52 @@ function aHpF(C1, C2, h1p, h2p) {
   else throw new Error()
 }
 
+// 精度
+const dEThreshold = 1
+const LThreshold = 1
+
+// 将dE小于此值的颜色视为同一颜色
+const colorThreshold = 10
+
 onmessage = (e) => {
-  // 接收消息
   const el = e.data.el
   const bg = e.data.bg
-  // 执行计算
+  // 目标颜色亮度记录
   const L = rgbaToLab(el).L
-  // 目标颜色与背景色差值
+  // 目标颜色与背景色dE
   const dE = ciede2000(el, bg)
   let result = []
-  for (let r = 0; r < 255; r += 1) {
-    for (let g = 0; g < 255; g += 1) {
-      for (let b = 0; b < 255; b += 1) {
+  // 遍历所有rgb颜色
+  for (let r = 0; r < 255; r++) {
+    for (let g = 0; g < 255; g++) {
+      for (let b = 0; b < 255; b++) {
         const newElColor = { r, g, b }
         const newL = rgbaToLab(newElColor).L
         const newDE = ciede2000(newElColor, bg)
-        if (Math.abs(newDE - dE) < 1 && Math.abs(newL - L) < 1) {
+        if (Math.abs(newDE - dE) < dEThreshold && Math.abs(newL - L) < LThreshold) {
           // 与背景色差值小于阈值时，判断为目标颜色。然后将后续相似颜色过滤
-          if (result.every((el) => ciede2000(newElColor, el) > 7)) {
-            postMessage({ class: 'color', value: [r, g, b] }) // 发送结果回主线程
+          if (result.every((el) => ciede2000(newElColor, el) > colorThreshold)) {
+            postMessage({
+              class: 'color',
+              value: {
+                color: {
+                  oklch: undefined,
+                  srgb: {
+                    r: r,
+                    g: g,
+                    b: b
+                  }
+                },
+                dE: newDE,
+                dL: 0
+              }
+            }) // 发送结果回主线程
             result.push(newElColor)
           }
         }
       }
     }
-    postMessage({ class: 'progress', value: r / 255 }) // 发送进度
+    postMessage({ class: 'progress', value: (r * 100) / 255 }) // 发送进度
   }
   postMessage({ class: 'finish', value: 255 * 255 * 255 }) // 固定消息
 }

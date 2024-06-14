@@ -32,7 +32,7 @@ export default function ColorComputeBox(): JSX.Element {
       // 从 Web Worker 接收结果
       // 处理结果
       if (e.data.class === 'progress') {
-        setProgress('[当前进度：' + (e.data.value * 100).toFixed(2) + '%' + ']，已找到' + key + '个')
+        setProgress('[当前进度：' + e.data.value.toFixed(2) + '%' + ']，已找到' + key + '个')
       } else if (e.data.class === 'color') {
         if (key++ >= 1000) {
           ColorComputeWorker.terminate()
@@ -40,17 +40,24 @@ export default function ColorComputeBox(): JSX.Element {
           setMainComponentState('idle')
           setProgress('已终止，点击再次计算')
         } else {
-          const color = e.data.value
+          const color = e.data.value.color
           const newDiv = (
             <div
               key={key}
               className="subDiv"
               style={{
-                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                border: '1px solid rgb(0, 0, 0)'
+                backgroundColor: color.oklch
+                  ? `oklch(${color.oklch.l / 100} ${color.oklch.c / 100} ${color.oklch.h})`
+                  : `rgb(${color.srgb.r} ${color.srgb.g} ${color.srgb.b})`,
+                border: '1px solid rgb(0, 0, 0)',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
-              {`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
+              <span>{`rgb(${color.srgb.r}, ${color.srgb.g}, ${color.srgb.b})`}</span>
+              {color.oklch ? <span>{`OkLch(${color.oklch.l}, ${color.oklch.c}, ${color.oklch.h})`}</span> : null}
+              <span>{`dE：${e.data.value.dE.toFixed(2)}`}</span>
+              <span>{`dL: ${e.data.value.dL.toFixed(2)}`}</span>
             </div>
           )
           colorBoxContent.push(newDiv)

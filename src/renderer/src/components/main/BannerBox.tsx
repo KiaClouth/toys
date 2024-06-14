@@ -157,18 +157,18 @@ const exportSets = [
 ]
 const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
-  ['成都', '06.03'],
+  ['成都', '06.24'],
   ['重庆', '06.24'],
   ['西安', '07.08'],
   ['武汉', '06.17'],
-  ['南京', '06.03'],
+  ['南京', '06.24'],
   ['杭州', '06.24'],
   ['广州', '06.17'],
-  ['凡云', '06.03'],
+  ['凡云', '06.17'],
   ['阿多比', '06.20']
 ]
 
-const textIsVisibilty = false // 是否显示文字
+const textIsVisibilty = true // 是否显示文字
 
 // 按时间顺序对校区数组重排
 for (let i = 0; i < campusArray.length - 1; i++) {
