@@ -1,6 +1,4 @@
-mod lib;
-
-use lib::run;
+use kiya_gpu::run;
 
 fn main() {
     run();

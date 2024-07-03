@@ -13,7 +13,6 @@ log = "0.4"
 wgpu = "0.15"
 
 [lib]
-name = "mylib"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 
