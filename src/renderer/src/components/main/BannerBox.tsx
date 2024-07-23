@@ -3,7 +3,7 @@ import { canvasResize, isCanvas, hsvOffset } from '../../tool'
 
 import MeshWriter from '../../assets/js-plugin/meshwriter/meshwriter.ES'
 
-import banner_model_url from '../../public/model/banner_new.glb?url'
+import scene_model_url from '../../public/model/banner_new.glb?url'
 
 const exportSets = [
   {
@@ -157,15 +157,15 @@ const exportSets = [
 ]
 const camaraScale = 1.62 / 1500 // 当前相机配置下babylon世界中z=13时，中心部分每单位尺寸与设计稿单位尺寸（px）的比例
 const campusArray = [
-  ['成都', '06.24'],
-  ['重庆', '06.24'],
-  ['西安', '07.08'],
-  ['武汉', '06.17'],
-  ['南京', '06.24'],
-  ['杭州', '06.24'],
-  ['广州', '06.17'],
-  ['凡云', '06.17'],
-  ['阿多比', '06.20']
+  ['成都', '07.29'],
+  ['重庆', '08.05'],
+  ['西安', '07.22'],
+  ['武汉', '08.12'],
+  ['南京', '07.22'],
+  ['杭州', '07.22'],
+  ['广州', '07.21'],
+  ['凡云', '07.24'],
+  ['阿多比', '08.07']
 ]
 
 const textIsVisibilty = true // 是否显示文字
@@ -268,8 +268,8 @@ export default function BannerBox(): JSX.Element {
 
       // 加载model
       BABYLON.SceneLoader.AppendAsync(
-        banner_model_url.substring(0, banner_model_url.lastIndexOf('/') + 1),
-        banner_model_url.substring(banner_model_url.lastIndexOf('/') + 1),
+        scene_model_url.substring(0, scene_model_url.lastIndexOf('/') + 1),
+        scene_model_url.substring(scene_model_url.lastIndexOf('/') + 1),
         scene,
         function (event) {
           // 加载进度计算

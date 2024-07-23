@@ -9,14 +9,15 @@ import Index from './components/main/Index'
 import BannerBox from './components/main/BannerBox'
 import PaintBox from './components/main/PaintBox'
 import ColorComputeBox from './components/main/ColorComputeBox'
+import MatrixEffectBox from './components/main/MatrixEffectBox'
 
 import Menu from './components/accessory/Menu'
 import Versions from './components/accessory/Versions'
 import Filing from './components/accessory/Filing'
 
 export default function GS(): JSX.Element {
-  const [appState, setAppState] = useState('ColorComputeBox')
-  const [content, setContent] = useState(<ColorComputeBox />)
+  const [appState, setAppState] = useState('MatrixEffectBox')
+  const [content, setContent] = useState(<MatrixEffectBox />)
   const mainComponentReplace = (): string => {
     switch (appState) {
       case 'Index': {
@@ -40,6 +41,11 @@ export default function GS(): JSX.Element {
       }
 
       case 'ColorComputeBox': {
+        setContent(<MatrixEffectBox />)
+        return 'MatrixEffectBox'
+      }
+
+      case 'MatrixEffectBox': {
         setContent(<Index />)
         return 'Index'
       }
