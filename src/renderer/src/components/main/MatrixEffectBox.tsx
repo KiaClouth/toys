@@ -1,15 +1,34 @@
 import { useEffect, useRef } from 'react'
 import { canvasResize, isCanvas } from '../../tool'
-import AI_B from '../../public/img/WoniuSec/AI-black.svg?url'
-import AI_W from '../../public/img/WoniuSec/AI-white.svg?url'
+import AI_B from '../../public/img/WoniuSec/Title-B.svg?url'
+import AI_W from '../../public/img/WoniuSec/Title-W.svg?url'
 import T1 from '../../public/img/WoniuSec/1st.svg?url'
 import T2 from '../../public/img/WoniuSec/2nd.svg?url'
 import T3 from '../../public/img/WoniuSec/3rd.svg?url'
 import T4 from '../../public/img/WoniuSec/4th.svg?url'
-// import Nav from '../../public/img/WoniuSec/Nav.svg?url'
+import Nav from '../../public/img/WoniuSec/Nav.svg?url'
+import Btn from '../../public/img/WoniuSec/Btn.svg?url'
 
 export default function MatrixEffectBox(): JSX.Element {
+  // 配置-------------------------------------------------------------------------------------------
+  const fps = 30 // 帧率，影响数字雨下路速度和动画速度
+  const TitleImageOffsetY = 100 // 字体Y轴方向上距离屏幕正中心的偏移量，正值向上偏移，负值向下偏移
+
+  // 字体雨
+  const characters = '0123456789abcdefghijklmnopqrstuvwxyz' // 字符集
+  const charactersArray = characters.split('')
+  const font_size = 6 // 字体大小，字体越小性能要求越高
+  const fillColors = ['rgba(211,115,255,1)', 'rgba(161, 9, 255, 0.5)', 'rgba(161, 9, 255, 0.3)', 'rgba(161, 9, 255, 0.1)'] // 字体颜色
+  const highlightColor = '#FFF' // 高亮颜色
+  const titleGlowBrightness = '0.8' // 标题辉光亮度
+  const titleTextBrightness = 0.005 // 标题文字每帧不透明度降低量
+  const titleBgBrightness = 0.03 // 标题背景每帧不透明度降低量
+
+  // 视差动画
+  const offsetD = 0.2 // 视差明显程度
+
   const TitleImageRef = useRef<HTMLImageElement>(null)
+
   // canvas1和canvas2是辅助画布，canvas3是主画布
   const templateCanvas1Ref = useRef<HTMLCanvasElement>(null)
   const templateCanvas2Ref = useRef<HTMLCanvasElement>(null)
@@ -24,7 +43,7 @@ export default function MatrixEffectBox(): JSX.Element {
 
   useEffect(() => {
     const titleImage = TitleImageRef.current
-    if (titleImage) titleImage.style.opacity = '0.5'
+    if (titleImage) titleImage.style.opacity = titleGlowBrightness
     // 视差动画
     const img1 = img1Ref.current
     const img2 = img2Ref.current
@@ -34,9 +53,9 @@ export default function MatrixEffectBox(): JSX.Element {
     const matrixEffectBoxParallaxFn = (): void => {
       const scrollOffsetY = matrixEffectBox?.scrollTop ?? 0
       if (img1 && img2 && img3) {
-        img1.style.transform = `translateY(${-scrollOffsetY * 0.3}px)`
-        img2.style.transform = `translateY(${-scrollOffsetY * 0.2}px)`
-        img3.style.transform = `translateY(${-scrollOffsetY * 0.1}px)`
+        img1.style.transform = `translateY(${-scrollOffsetY * 3 * offsetD}px)`
+        img2.style.transform = `translateY(${-scrollOffsetY * 2 * offsetD}px)`
+        img3.style.transform = `translateY(${-scrollOffsetY * offsetD}px)`
       }
     }
     matrixEffectBox?.addEventListener('scroll', matrixEffectBoxParallaxFn)
@@ -66,14 +85,7 @@ export default function MatrixEffectBox(): JSX.Element {
       const ctxE2 = ce2.getContext('2d')
       const ctxE3 = ce3.getContext('2d')
       if (!ctx1 || !ctx2 || !ctxE1 || !ctxE2 || !ctxE3) return
-
-      // 字体雨
-      const characters = '0123456789abcdefghijklmnopqrstuvwxyz'
-      const charactersArray = characters.split('')
-      const font_size = 8
       const columns = ce1.width / font_size
-      const fillColors = ['rgba(211,115,255,1)', 'rgba(161, 9, 255, 0.5)', 'rgba(161, 9, 255, 0.3)', 'rgba(161, 9, 255, 0.1)']
-      const highlightColor = '#FFF'
 
       const drops: number[] = []
 
@@ -125,7 +137,7 @@ export default function MatrixEffectBox(): JSX.Element {
         ctxA.fillStyle = 'black'
         // 绘制位置居中
         const x = (cA.width - image.width) / 2
-        const y = (cA.height - image.height) / 2 - 140
+        const y = (cA.height - image.height) / 2 - TitleImageOffsetY
         ctxA.drawImage(image, x, y)
         const pixels = ctxA.getImageData(0, 0, cA.width, cA.height)
         // 记录像素数据
@@ -146,9 +158,9 @@ export default function MatrixEffectBox(): JSX.Element {
         const cData = cImageData.data
         for (let i = 0; i < cData.length; i += 4) {
           if (cData[i] === 255 && cData[i + 1] === 255 && cData[i + 2] === 255) {
-            cData[i + 3] = 0.994 * cData[i + 3]
+            cData[i + 3] = (1 - titleTextBrightness) * cData[i + 3]
           } else {
-            cData[i + 3] = 0.98 * cData[i + 3]
+            cData[i + 3] = (1 - titleBgBrightness) * cData[i + 3]
           }
         }
         ctxB.clearRect(0, 0, cB.width, cB.height)
@@ -228,7 +240,7 @@ export default function MatrixEffectBox(): JSX.Element {
           ctx: ctxE3
         }
       }
-      setInterval(() => draw(c1, ctx1, c2, ctx2, effectCanvas, img), 30)
+      setInterval(() => draw(c1, ctx1, c2, ctx2, effectCanvas, img), fps)
 
       const matrixEffectBoxCanvasResizeFn = (): void => {
         canvasResize(c1)
@@ -252,7 +264,7 @@ export default function MatrixEffectBox(): JSX.Element {
 
   return (
     <div id="MatrixEffectBox" ref={matrixEffectBoxRef} style={{ backgroundColor: 'rgba(5, 15, 40, 1)', overflow: 'auto' }}>
-      {/* <img src={Nav} alt="Nav" className="nav" /> */}
+      <img src={Nav} alt="Nav" className="nav" />
       <div className="firstScreen" style={{ position: 'relative', zIndex: 1 }}>
         <canvas ref={templateCanvas1Ref} className="templateCanvas"></canvas>
         <canvas ref={templateCanvas2Ref} className="effectCanvas"></canvas>
@@ -262,6 +274,14 @@ export default function MatrixEffectBox(): JSX.Element {
         </canvas>
         <img ref={img3Ref} src={T3} alt="illustration" className="illustration" style={{ zIndex: 3, top: 'calc(100vh - 240px)' }} />
         <canvas ref={effectCanvas2Ref} className="effectCanvas" style={{ zIndex: 4 }}></canvas>
+        <img
+          src={Btn}
+          alt="Btn"
+          style={{ zIndex: 5, left: '50%', transform: 'translateX(-50%)', position: 'fixed', bottom: 0, cursor: 'pointer' }}
+          onClick={(): void => {
+            alert('该功能暂未开放')
+          }}
+        />
         <img ref={img2Ref} src={T2} alt="illustration" className="illustration" style={{ zIndex: 5, top: 'calc(100vh - 210px)' }} />
         <canvas ref={effectCanvas3Ref} className="effectCanvas" style={{ zIndex: 6 }}></canvas>
         <img ref={img1Ref} src={T1} alt="illustration" className="illustration" style={{ zIndex: 7, top: 'calc(100vh - 100px)' }} />
@@ -272,18 +292,19 @@ export default function MatrixEffectBox(): JSX.Element {
           style={{
             zIndex: 1,
             position: 'fixed',
-            top: 'calc(50vh - 140px)',
+            top: `calc(50vh - ${TitleImageOffsetY}px)`,
             left: '50%',
             transform: 'translateX(-50%) translateY(-50%)',
             filter: 'drop-shadow(0px 0px 80px #CA74FF) blur(15px)',
             mixBlendMode: 'plus-lighter',
-            transition: 'all 2s',
-            transitionDelay: '2s',
-            opacity: 0
+            transition: 'all 4s',
+            transitionDelay: '3s',
+            opacity: 0,
+            pointerEvents: 'none'
           }}
         />
       </div>
-      <div className="mainContent" style={{ position: 'relative', height: '2000px', backgroundColor: '#000', zIndex: 100 }}></div>
+      <div className="mainContent" style={{ position: 'relative', height: '2000px', backgroundColor: '#ECF0F3', zIndex: 100 }}></div>
     </div>
   )
 }
